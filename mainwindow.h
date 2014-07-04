@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QStandardItem>
 #include <QProcess>
+#include <QSettings>
 
 #include "rssfeed.h"
 
@@ -24,6 +25,7 @@ public:
 public slots:
   void displayingVideos();
   void outProc();
+  void videoDoneDownloading(QString code);
 
     
 private:
@@ -35,6 +37,9 @@ private:
     RssFeed *rssFeed;
     QList<Video *> *listVideos;
 
+    QStringList *downloadedVideos;
+
+    QSettings *settings;
     QProcess *proc;
     QProcess *installProc;
 
