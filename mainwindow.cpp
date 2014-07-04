@@ -16,10 +16,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
 
+  downloadedVideos = new QStringList();
+
+  settings = new QSettings(QString("configs/config.ini"), QSettings::IniFormat);
+  QString videoDownloaded = settings->value("downloaded", "").toString();
+  *downloadedVideos = videoDownloaded.split("/");
 
   installYoutubeDl();
 
-  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos");
+  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", downloadedVideos);
 
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
 
@@ -27,7 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+  settings->setValue("downloaded", downloadedVideos->join("/"));
+  settings->sync();
+
+  delete ui;
 }
 
 
@@ -35,7 +43,7 @@ void MainWindow::displayingVideos(){
 
   listVideos = rssFeed->getListVideos();
 
-  modelListVideo = new QStandardItemModel( listVideos->count(), 2, this );
+  modelListVideo = new QStandardItemModel( listVideos->count(), 3, this );
 
   Video *vid;
   for(int i=0; i<listVideos->count(); i++){
@@ -44,6 +52,8 @@ void MainWindow::displayingVideos(){
 
     modelListVideo->setItem(i, 0, new QStandardItem(vid->getTitle()));
     modelListVideo->setItem(i, 1, new QStandardItem(vid->getCode()));
+    if(vid->haveAlreadyBeenDownloaded()) modelListVideo->setItem(i, 2, new QStandardItem("yes"));
+    else modelListVideo->setItem(i, 2, new QStandardItem("no"));
   }
 
   ui->widgetListVideos->setModel(modelListVideo);
@@ -64,7 +74,17 @@ void MainWindow::downloadVideo(){
   //connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(wrongMessage()) );
 
   QList<Video *> *listvid = rssFeed->getListVideos();
-  listvid->at(0)->download();
+  //listvid->at(1)->download();
+  for(int i=0; i<listvid->count(); i++){
+
+      if(!listvid->at(i)->haveAlreadyBeenDownloaded()){
+
+          listvid->at(i)->download();
+          connect(listvid->at(i), SIGNAL(videoDownloaded(QString)), this, SLOT(videoDoneDownloading(QString)));
+          break;
+      }
+  }
+
 
 }
 
@@ -85,4 +105,11 @@ void MainWindow::installYoutubeDl(){
 
   installProc = new QProcess();
   installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz && tar -xvf youtube-dl.tar.gz && rm youtube-dl.tar.gz");
+}
+
+
+void MainWindow::videoDoneDownloading(QString code){
+
+  downloadedVideos->append(code);
+  displayingVideos();
 }

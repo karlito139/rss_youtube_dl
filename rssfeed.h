@@ -18,7 +18,7 @@ class RssFeed: public QObject
 Q_OBJECT
 
 public:
-    RssFeed(QString url);
+    RssFeed(QString url, QStringList *downloadedVideos);
 
     QList<Video *> *getListVideos(){return listVideos;}
 
@@ -42,6 +42,8 @@ private:
     QString linkString;
     QString titleString;
     QStringList linkStrings;
+
+    QStringList *downloadedVideos;
 
     QList<Video *> *listVideos;
 

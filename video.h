@@ -11,7 +11,7 @@ class Video : public QObject
 {
   Q_OBJECT
 public:
-  explicit Video(QString title, QString link, QObject *parent = 0);
+  explicit Video(QString title, QString link, QStringList *downloadedVideos, QObject *parent = 0);
   QString getTitle(){return title;}
   QString getLink(){return link;}
   QString getCode(){return code;}
@@ -21,6 +21,7 @@ public:
 
 
 signals:
+  void videoDownloaded(QString code);
   
 public slots:
   void doneDownloading();

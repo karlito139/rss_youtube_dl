@@ -1,6 +1,6 @@
 #include "video.h"
 
-Video::Video(QString title, QString link, QObject *parent) :
+Video::Video(QString title, QString link, QStringList *downloadedVideos, QObject *parent) :
   QObject(parent)
 {
 
@@ -8,10 +8,7 @@ Video::Video(QString title, QString link, QObject *parent) :
   this->link = link;
   this->code = extractCode(link);
 
-  this->alreadyDownloaded = false;
-
-
-
+  this->alreadyDownloaded = downloadedVideos->contains(code);
 }
 
 
@@ -27,16 +24,16 @@ QString Video::extractCode(QString link){
 
 void Video::download(){
 
+  if(!alreadyDownloaded){
+    /* create QProcess object */
+    proc= new QProcess();
+    proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best https://www.youtube.com/watch?v="+this->code);
 
-  /* create QProcess object */
-  proc= new QProcess();
-  proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best https://www.youtube.com/watch?v="+this->code);
-
-  /* show output */
-  connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
-  //connect(proc, SIGNAL(readyReadStandardOutput()),this, SLOT(rightMessage()) );
-  //connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(wrongMessage()) );
-
+    /* show output */
+    connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
+    //connect(proc, SIGNAL(readyReadStandardOutput()),this, SLOT(rightMessage()) );
+    //connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(wrongMessage()) );
+  }
 }
 
 
@@ -45,4 +42,5 @@ void Video::doneDownloading(){
   //qDebug() << proc->readAllStandardOutput();
   this->alreadyDownloaded = true;
 
+  emit videoDownloaded(this->code);
 }
