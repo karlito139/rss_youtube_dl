@@ -8,6 +8,26 @@ QT       += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
+
+INCLUDEPATH += /usr/include/libappindicator-0.1 \
+        /usr/include/gtk-2.0 \
+        /usr/lib/gtk-2.0/include \
+        /usr/include/glib-2.0 \
+        /usr/lib/glib-2.0/include \
+        /usr/include/cairo \
+        /usr/include/atk-1.0 \
+        /usr/include/pango-1.0
+
+LIBS += -L/usr/lib -lappindicator -lnotify
+
+CONFIG += link_pkgconfig
+
+PKGCONFIG = gtk+-2.0
+
+
+
+
 TARGET = rss_youtube_dl
 TEMPLATE = app
 
@@ -22,3 +42,13 @@ HEADERS  += mainwindow.h \
     video.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    ressource.qrc
+
+
+
+
+
+
+

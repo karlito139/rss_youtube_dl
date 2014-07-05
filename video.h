@@ -24,6 +24,7 @@ public:
 
 signals:
   void videoDownloaded(Video *);
+  void videoDownloadStarted(Video *);
   
 public slots:
   void doneDownloading();
