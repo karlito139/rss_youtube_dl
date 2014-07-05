@@ -1,10 +1,11 @@
 #include "rssfeed.h"
 
-RssFeed::RssFeed(QString url, QStringList *downloadedVideos) :
+RssFeed::RssFeed(QString url, QSettings *settings, QStringList *downloadedVideos) :
   currentReply(0)
 {
 
   this->downloadedVideos = downloadedVideos;
+  this->settings = settings;
 
   listVideos = new QList<Video *>();
 
@@ -65,7 +66,7 @@ void RssFeed::parseXml()
 
                 //qDebug() << "kikoo : " << titleString << "\n\n url : " << linkString << "\n\r";
 
-                listVideos->append(new Video(titleString, linkString, downloadedVideos));
+                listVideos->append(new Video(titleString, linkString, settings, downloadedVideos));
 
                 titleString.clear();
                 linkString.clear();

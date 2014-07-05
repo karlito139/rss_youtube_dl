@@ -10,6 +10,7 @@
 #include <QTreeWidgetItem>
 #include <QDebug>
 #include <QList>
+#include <QSettings>
 
 #include "video.h"
 
@@ -18,7 +19,7 @@ class RssFeed: public QObject
 Q_OBJECT
 
 public:
-    RssFeed(QString url, QStringList *downloadedVideos);
+    RssFeed(QString url, QSettings *settings, QStringList *downloadedVideos);
 
     QList<Video *> *getListVideos(){return listVideos;}
 
@@ -42,6 +43,7 @@ private:
     QString linkString;
     QString titleString;
     QStringList linkStrings;
+    QSettings *settings;
 
     QStringList *downloadedVideos;
 

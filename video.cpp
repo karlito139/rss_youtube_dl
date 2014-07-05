@@ -1,12 +1,13 @@
 #include "video.h"
 
-Video::Video(QString title, QString link, QStringList *downloadedVideos, QObject *parent) :
+Video::Video(QString title, QString link, QSettings *settings, QStringList *downloadedVideos, QObject *parent) :
   QObject(parent)
 {
 
   this->title = title;
   this->link = link;
   this->code = extractCode(link);
+  this->settings = settings;
 
   this->alreadyDownloaded = downloadedVideos->contains(code);
 }
@@ -27,7 +28,7 @@ void Video::download(){
   if(!alreadyDownloaded){
     /* create QProcess object */
     proc= new QProcess();
-    proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best https://www.youtube.com/watch?v="+this->code);
+    proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best -o '"+settings->value("destination", "").toString()+"%(title)s.%(ext)s' "+this->code);
 
     /* show output */
     connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
