@@ -41,7 +41,8 @@ signals:
 private:
     void get(QUrl &url);
     void parseXml();
-
+    QString extractCode(QString link);
+    bool isInVideoList(QString code);
 
     QXmlStreamReader xml;
     QString currentTag;

@@ -55,11 +55,29 @@ void RssFeed::read()
 }
 
 
+QString RssFeed::extractCode(QString link){
+
+  QRegExp regExp("videos/.*");
+
+  regExp.indexIn(link, 0);
+
+  return regExp.cap(0).mid(7,-1);
+}
+
+bool RssFeed::isInVideoList(QString code){
+
+  for(int i=0; i<listVideos->count(); i++){
+
+      if(listVideos->at(i)->getCode() == code)     return true;
+  }
+
+  return false;
+}
+
+
+
 void RssFeed::parseXml()
 {
-
-  delete listVideos;
-  listVideos = new QList<Video *>();
 
   while (!xml.atEnd()) {
       xml.readNext();
@@ -68,17 +86,25 @@ void RssFeed::parseXml()
       } else if (xml.isEndElement()) {
           if (xml.name() == "entry") {
 
-              listVideos->append(new Video(titleString, linkString, settings));
+              QString code = extractCode(linkString);
+
+              if(!isInVideoList(code)){ //code video is not already in list
+
+                  listVideos->append(new Video(titleString, code, settings));
+              }
 
               titleString.clear();
               linkString.clear();
           }
 
       } else if (xml.isCharacters() && !xml.isWhitespace()) {
-          if (currentTag == "title")
-            titleString += xml.text().toString();
-          else if (currentTag == "id")
+          if (currentTag == "title") {
+
+            if(!xml.text().toString().contains("New Subscription Videos")) titleString += xml.text().toString();
+          }else if (currentTag == "id"){
+
             linkString += xml.text().toString();
+          }
       }
   }
   if (xml.error() && xml.error() != QXmlStreamReader::PrematureEndOfDocumentError) {
