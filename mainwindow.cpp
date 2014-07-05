@@ -4,8 +4,9 @@
 
 
 //TODO
-//- check if the install of youtube dl worked well befaur download files
-
+//- put icon for the downloaded and not yet downloaded
+//- ajouter un status en cours de dl dans le tableau
+//- ajouter l'option de minimisation de l'application : https://qt-project.org/doc/qt-4.8/desktop-systray.html
 
 
 
@@ -15,23 +16,35 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
 
-  downloadedVideos = new QStringList();
+  this->downloadEnable = true;
 
   settings = new QSettings(QString("configs/config.ini"), QSettings::IniFormat);
-  QString videoDownloaded = settings->value("downloaded", "").toString();
-  *downloadedVideos = videoDownloaded.split("/");
+  ui->downloadDestination->setText(settings->value("destination", "").toString());
 
+  modelListVideo = new QStandardItemModel(0, 0, this);
+
+  this->YoutubeDlInstalled = false;
   installYoutubeDl();
 
-  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", settings, downloadedVideos);
+  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", settings);
 
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
 
+
+  timer = new QTimer();
+  timer->setInterval(1*60*1000);
+  timer->start();
+
+  connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
 }
 
 MainWindow::~MainWindow()
 {
-  settings->setValue("downloaded", downloadedVideos->join("/"));
+  delete installProc;
+  installProc = new QProcess();
+  installProc->start("/bin/bash", QStringList() << "-c" << "rm -r youtube-dl");
+
+
   settings->setValue("destination", "/home/karlito/Downloads/a_voir/");
   settings->sync();
 
@@ -43,7 +56,13 @@ void MainWindow::displayingVideos(){
 
   listVideos = rssFeed->getListVideos();
 
-  modelListVideo = new QStandardItemModel( listVideos->count(), 3, this );
+  modelListVideo->clear();
+  modelListVideo->setColumnCount(3);
+  modelListVideo->setRowCount(listVideos->count());
+
+  modelListVideo->setHorizontalHeaderItem(0, new QStandardItem(QString("Title")));
+  modelListVideo->setHorizontalHeaderItem(1, new QStandardItem(QString("Code")));
+  modelListVideo->setHorizontalHeaderItem(2, new QStandardItem(QString("Downloaded")));
 
   Video *vid;
   for(int i=0; i<listVideos->count(); i++){
@@ -65,27 +84,20 @@ void MainWindow::displayingVideos(){
 
 void MainWindow::downloadVideo(){
 
-  /* create QProcess object */
-  //proc= new QProcess();
-  //proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best ");
+  if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
-  /* show output */
-  //connect(proc, SIGNAL(readyReadStandardOutput()),this, SLOT(outProc()) );
-  //connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(wrongMessage()) );
-
-  QList<Video *> *listvid = rssFeed->getListVideos();
-  //listvid->at(1)->download();
-  for(int i=0; i<listvid->count(); i++){
+    QList<Video *> *listvid = rssFeed->getListVideos();
+    for(int i=0; i<listvid->count(); i++){
 
       if(!listvid->at(i)->haveAlreadyBeenDownloaded()){
 
-          listvid->at(i)->download();
-          connect(listvid->at(i), SIGNAL(videoDownloaded(QString)), this, SLOT(videoDoneDownloading(QString)));
-          break;
+        listvid->at(i)->download();
+        connect(listvid->at(i), SIGNAL(videoDownloaded(Video *)), this, SLOT(videoDoneDownloading(Video *)));
+        connect(this, SIGNAL(stopDownloading()), listvid->at(i), SLOT(stopDownload()));
+        break;
       }
+    }
   }
-
-
 }
 
 
@@ -105,11 +117,48 @@ void MainWindow::installYoutubeDl(){
 
   installProc = new QProcess();
   installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz && tar -xvf youtube-dl.tar.gz && rm youtube-dl.tar.gz");
+
+  connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
+
+}
+
+void MainWindow::doneInstallingYoutubeDl(){
+
+  this->YoutubeDlInstalled = true;
+}
+
+void MainWindow::videoDoneDownloading(Video *vid){
+
+  disconnect(vid, SLOT(stopDownload()));
+  //TODO : add icon to notifications :
+  // -i /usr/share/pixmaps/idle.xpm
+  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' '-t' 5000");
+  displayingVideos();
+}
+
+void MainWindow::on_browse_clicked()
+{
+  QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
+  if ( path.isNull() == false )
+  {
+      ui->downloadDestination->setText(path);
+  }
+}
+
+void MainWindow::on_downloadDestination_textChanged()
+{
+  settings->setValue("destination", ui->downloadDestination->text());
+}
+
+void MainWindow::on_Download_clicked(bool checked)
+{
+  this->downloadEnable = checked;
+  if(!this->downloadEnable) emit stopDownloading();
+  else displayingVideos();
 }
 
 
-void MainWindow::videoDoneDownloading(QString code){
+void MainWindow::recheckFeed(){
 
-  downloadedVideos->append(code);
-  displayingVideos();
+  rssFeed->fetch();
 }

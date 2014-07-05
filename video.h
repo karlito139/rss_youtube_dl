@@ -12,20 +12,22 @@ class Video : public QObject
 {
   Q_OBJECT
 public:
-  explicit Video(QString title, QString link, QSettings *settings, QStringList *downloadedVideos, QObject *parent = 0);
+  explicit Video(QString title, QString link, QSettings *settings, QObject *parent = 0);
   QString getTitle(){return title;}
   QString getLink(){return link;}
   QString getCode(){return code;}
   bool haveAlreadyBeenDownloaded(){return alreadyDownloaded;}
+  bool isCurrentlyDownloading(){return currentlyDownloading;}
 
   void download();
 
 
 signals:
-  void videoDownloaded(QString code);
+  void videoDownloaded(Video *);
   
 public slots:
   void doneDownloading();
+  void stopDownload();
 
 
 private:
@@ -36,6 +38,7 @@ private:
   QString link;
   QString code;
   bool alreadyDownloaded;
+  bool currentlyDownloading;
   QProcess *proc;
   QSettings *settings;
 

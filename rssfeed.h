@@ -19,13 +19,19 @@ class RssFeed: public QObject
 Q_OBJECT
 
 public:
-    RssFeed(QString url, QSettings *settings, QStringList *downloadedVideos);
+    RssFeed(QString url, QSettings *settings);
 
     QList<Video *> *getListVideos(){return listVideos;}
 
 
 public slots:
+
+    void fetch();
+
+private slots:
     void read();
+
+
 
 signals:
     void doneReading();
@@ -34,7 +40,6 @@ signals:
 
 private:
     void get(QUrl &url);
-    void fetch(QString url);
     void parseXml();
 
 
@@ -44,6 +49,7 @@ private:
     QString titleString;
     QStringList linkStrings;
     QSettings *settings;
+    QString url;
 
     QStringList *downloadedVideos;
 

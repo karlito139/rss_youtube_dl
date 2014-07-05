@@ -6,6 +6,8 @@
 #include <QStandardItem>
 #include <QProcess>
 #include <QSettings>
+#include <QFileDialog>
+#include <QTimer>
 
 #include "rssfeed.h"
 
@@ -22,22 +24,34 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+signals:
+  void stopDownloading();
+
 public slots:
   void displayingVideos();
   void outProc();
-  void videoDoneDownloading(QString code);
+  void videoDoneDownloading(Video *vid);
+  void doneInstallingYoutubeDl();
 
     
+private slots:
+  void on_browse_clicked();
+  void on_downloadDestination_textChanged();
+  void on_Download_clicked(bool checked);
+
+  void recheckFeed();
+
 private:
     Ui::MainWindow *ui;
 
     void installYoutubeDl();
     void downloadVideo();
 
+    bool downloadEnable;
+    bool YoutubeDlInstalled;
     RssFeed *rssFeed;
     QList<Video *> *listVideos;
-
-    QStringList *downloadedVideos;
+    QTimer *timer;
 
     QProcess *proc;
     QProcess *installProc;
