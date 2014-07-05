@@ -5,13 +5,14 @@
 #include <QRegExp>
 #include <QProcess>
 #include <QDebug>
+#include <QSettings>
 
 
 class Video : public QObject
 {
   Q_OBJECT
 public:
-  explicit Video(QString title, QString link, QStringList *downloadedVideos, QObject *parent = 0);
+  explicit Video(QString title, QString link, QSettings *settings, QStringList *downloadedVideos, QObject *parent = 0);
   QString getTitle(){return title;}
   QString getLink(){return link;}
   QString getCode(){return code;}
@@ -36,6 +37,7 @@ private:
   QString code;
   bool alreadyDownloaded;
   QProcess *proc;
+  QSettings *settings;
 
 
 

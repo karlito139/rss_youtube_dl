@@ -39,9 +39,10 @@ private:
 
     QStringList *downloadedVideos;
 
-    QSettings *settings;
     QProcess *proc;
     QProcess *installProc;
+
+    QSettings *settings;
 
 
     QStandardItemModel *modelListVideo;

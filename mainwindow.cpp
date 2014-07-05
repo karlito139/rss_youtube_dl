@@ -9,7 +9,6 @@
 
 
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -24,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   installYoutubeDl();
 
-  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", downloadedVideos);
+  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", settings, downloadedVideos);
 
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
 
@@ -33,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
   settings->setValue("downloaded", downloadedVideos->join("/"));
+  settings->setValue("destination", "/home/karlito/Downloads/a_voir/");
   settings->sync();
 
   delete ui;
