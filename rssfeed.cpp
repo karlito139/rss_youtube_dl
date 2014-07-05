@@ -1,19 +1,19 @@
 #include "rssfeed.h"
 
-RssFeed::RssFeed(QString url, QSettings *settings, QStringList *downloadedVideos) :
+RssFeed::RssFeed(QString url, QSettings *settings) :
   currentReply(0)
 {
 
   this->downloadedVideos = downloadedVideos;
   this->settings = settings;
+  this->url = url;
 
   listVideos = new QList<Video *>();
 
-  fetch(url);
-
+  fetch();
 }
 
-void RssFeed::fetch(QString url)
+void RssFeed::fetch()
 {
     xml.clear();
 
@@ -57,31 +57,33 @@ void RssFeed::read()
 
 void RssFeed::parseXml()
 {
-    while (!xml.atEnd()) {
-        xml.readNext();
-        if (xml.isStartElement()) {
-            currentTag = xml.name().toString();
-        } else if (xml.isEndElement()) {
-            if (xml.name() == "entry") {
 
-                //qDebug() << "kikoo : " << titleString << "\n\n url : " << linkString << "\n\r";
+  delete listVideos;
+  listVideos = new QList<Video *>();
 
-                listVideos->append(new Video(titleString, linkString, settings, downloadedVideos));
+  while (!xml.atEnd()) {
+      xml.readNext();
+      if (xml.isStartElement()) {
+          currentTag = xml.name().toString();
+      } else if (xml.isEndElement()) {
+          if (xml.name() == "entry") {
 
-                titleString.clear();
-                linkString.clear();
-            }
+              listVideos->append(new Video(titleString, linkString, settings));
 
-        } else if (xml.isCharacters() && !xml.isWhitespace()) {
-            if (currentTag == "title")
-              titleString += xml.text().toString();
-            else if (currentTag == "id")
-              linkString += xml.text().toString();
-        }
-    }
-    if (xml.error() && xml.error() != QXmlStreamReader::PrematureEndOfDocumentError) {
-        //qWarning() << "XML ERROR:" << xml.lineNumber() << ": " << xml.errorString();
-    }
+              titleString.clear();
+              linkString.clear();
+          }
+
+      } else if (xml.isCharacters() && !xml.isWhitespace()) {
+          if (currentTag == "title")
+            titleString += xml.text().toString();
+          else if (currentTag == "id")
+            linkString += xml.text().toString();
+      }
+  }
+  if (xml.error() && xml.error() != QXmlStreamReader::PrematureEndOfDocumentError) {
+      //qWarning() << "XML ERROR:" << xml.lineNumber() << ": " << xml.errorString();
+  }
 }
 
 

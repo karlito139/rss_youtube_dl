@@ -1,6 +1,6 @@
 #include "video.h"
 
-Video::Video(QString title, QString link, QSettings *settings, QStringList *downloadedVideos, QObject *parent) :
+Video::Video(QString title, QString link, QSettings *settings, QObject *parent) :
   QObject(parent)
 {
 
@@ -8,8 +8,11 @@ Video::Video(QString title, QString link, QSettings *settings, QStringList *down
   this->link = link;
   this->code = extractCode(link);
   this->settings = settings;
+  this->currentlyDownloading = false;
 
-  this->alreadyDownloaded = downloadedVideos->contains(code);
+
+  QString videoDownloaded = settings->value("downloaded", "").toString();
+  this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
 }
 
 
@@ -29,6 +32,7 @@ void Video::download(){
     /* create QProcess object */
     proc= new QProcess();
     proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best -o '"+settings->value("destination", "").toString()+"%(title)s.%(ext)s' "+this->code);
+    this->currentlyDownloading = true;
 
     /* show output */
     connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
@@ -41,7 +45,29 @@ void Video::download(){
 void Video::doneDownloading(){
 
   //qDebug() << proc->readAllStandardOutput();
-  this->alreadyDownloaded = true;
+  if(!proc->exitStatus()){
 
-  emit videoDownloaded(this->code);
+    this->alreadyDownloaded = true;
+    this->currentlyDownloading = false;
+    QString listVideoDownloaded = settings->value("downloaded", "").toString();
+    listVideoDownloaded.append("/"+code);
+    settings->setValue("downloaded", listVideoDownloaded);
+
+
+    emit videoDownloaded(this);
+  }
 }
+
+void Video::stopDownload(){
+
+  proc->kill();
+  this->currentlyDownloading = false;
+}
+
+
+
+
+
+
+
+
