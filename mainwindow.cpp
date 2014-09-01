@@ -17,11 +17,12 @@
 //* ajouter une config complète (setting du l'id de l'utilisateur)
 //* (durty hak)debug de pourquoi la fenetre ne se cache pas
 //* quand on quite (croix) on cache en fait
-//- ajouter un menu fichier/quitter pour vraiement quitter
-//- tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
+//* ajouter un menu fichier/quitter pour vraiement quitter
+//* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
 //- doxygen/QT documentation
 //- debug all warnings
+//- ajouter la date et heure du dernier check des videos
 //- ajouter une fenetre de config
   //- update rate of the videos
 
@@ -147,7 +148,7 @@ void MainWindow::downloadVideo(){
 void MainWindow::installYoutubeDl(){
 
   installProc = new QProcess();
-  installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz && tar -xvf youtube-dl.tar.gz && rm youtube-dl.tar.gz");
+  installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz -O youtube-dl.tar.gz && tar -xvf youtube-dl.tar.gz && rm youtube-dl.tar.gz");
 
   connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
 
@@ -296,8 +297,6 @@ void MainWindow::showWindow(GtkCheckMenuItem *menu, gpointer data){
 
 
 void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
-
-  //change that methode to use the real nice destruction of the window
 
   Q_UNUSED(menu);
   QApplication *self = static_cast<QApplication *>(data);
