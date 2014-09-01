@@ -25,6 +25,7 @@
 //* the file/quit doesn't destroy the app, only the window
 //- destroy everything we created when quitting the app
 //- ajouter la date et heure du dernier check des videos
+//- ajouter source des icon
 //- ajouter une fenetre de config
   //- update rate of the videos
 
@@ -120,7 +121,7 @@ void MainWindow::displayingVideos(){
     modelListVideo->setItem(i, 0, new QStandardItem(vid->getTitle()));
     modelListVideo->setItem(i, 1, new QStandardItem(vid->getCode()));
     if(vid->haveAlreadyBeenDownloaded()) modelListVideo->setItem(i, 2, new QStandardItem("yes"));
-    else if(vid->isCurrentlyDownloading()) modelListVideo->setItem(i, 2, new QStandardItem("downloading"));
+    else if(vid->isCurrentlyDownloading()) modelListVideo->setItem(i, 2, new QStandardItem("..."));
     else modelListVideo->setItem(i, 2, new QStandardItem("no"));
   }
 

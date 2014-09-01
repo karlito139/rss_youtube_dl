@@ -12,6 +12,7 @@
 #include <QWindow>
 #include <QHeaderView>
 #include <QCloseEvent>
+#include <QFileIconProvider>
 
 #include "rssfeed.h"
 
