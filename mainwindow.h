@@ -11,6 +11,7 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 #include <QHeaderView>
+#include <QCloseEvent>
 
 #include "rssfeed.h"
 
@@ -58,7 +59,6 @@ public slots:
   static void showWindow(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
   static void quitWindow(GtkMenu *menu, gpointer data);
 
-
     
 private slots:
   void on_browse_clicked();
@@ -69,6 +69,8 @@ private slots:
   void recheckFeed();
 
   void on_userId_editingFinished();
+
+  void on_actionQuite_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -102,7 +104,8 @@ private:
 
     QStandardItemModel *modelListVideo;
 
-
+protected:
+     void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H
