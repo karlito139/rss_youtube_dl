@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>images/icon.png</file>
+        <file alias="downloaded">images/downloaded.png</file>
+        <file alias="downloading">images/downloading.png</file>
+        <file alias="not_downloaded">images/not_downloaded.png</file>
     </qresource>
 </RCC>
