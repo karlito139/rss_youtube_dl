@@ -15,7 +15,7 @@
 //* add the user rss feed to the config file
 //- when stating, start hidden
 //* ajouter une config complète (setting du l'id de l'utilisateur)
-//- debug de pourquoi la fenetre ne se cache pas
+//* (durty hak)debug de pourquoi la fenetre ne se cache pas
 //- quand on quite (croix) on cache en fait
 //- ajouter un menu fichier/quitter pour vraiement quitter
 //- tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
@@ -279,10 +279,19 @@ void MainWindow::showWindow(GtkCheckMenuItem *menu, gpointer data){
   bool checked = gtk_check_menu_item_get_active(menu);
   QApplication *self = static_cast<QApplication *>(data);
 
-  if(checked)
-      self->allWindows().at(0)->show();
-  else
-      self->allWindows().at(0)->hide();
+  if(checked){
+
+    for(int i=0; i<self->allWindows().count(); i++){
+
+      self->allWindows().at(i)->show();
+    }
+  }else{
+
+    for(int i=0; i<self->allWindows().count(); i++){
+
+      self->allWindows().at(i)->hide();
+    }
+  }
 }
 
 
@@ -319,5 +328,13 @@ void MainWindow::on_userId_editingFinished()
 
 
 
+void MainWindow::on_actionQuite_triggered()
+{
+    this->destroy();
+}
 
 
+void MainWindow::closeEvent(QCloseEvent *event){
+
+  event->ignore();
+}
