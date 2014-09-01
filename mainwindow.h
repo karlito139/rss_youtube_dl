@@ -52,9 +52,9 @@ signals:
 public slots:
   void displayingVideos();
   void videoDoneDownloading(Video *vid);
-  void videoStartDownloading(Video *vid);
+  void videoStartDownloading(Video *);
   void doneInstallingYoutubeDl();
-  static void showWindow(GtkMenu *menu, gpointer data); //static needed for GTK
+  static void showWindow(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
   static void quitWindow(GtkMenu *menu, gpointer data);
 
 
@@ -63,9 +63,12 @@ private slots:
   void on_browse_clicked();
   void on_downloadDestination_textChanged();
   void on_Download_clicked(bool checked);
+  void updateRSSFeed();
 
   void recheckFeed();
 
+
+  void on_userId_editingFinished();
 
 private:
     Ui::MainWindow *ui;
@@ -80,6 +83,7 @@ private:
     bool downloadEnable;
     bool YoutubeDlInstalled;
     bool currentlyDownloading;
+    bool starting;
     RssFeed *rssFeed;
     QList<Video *> *listVideos;
     QTimer *timer;
@@ -92,6 +96,8 @@ private:
     QProcess *installProc;
 
     QSettings *settings;
+
+    QVariant user;
 
 
     QStandardItemModel *modelListVideo;

@@ -4,13 +4,22 @@ RssFeed::RssFeed(QString url, QSettings *settings) :
   currentReply(0)
 {
 
-  this->downloadedVideos = downloadedVideos;
+  //this->downloadedVideos = downloadedVideos;
   this->settings = settings;
   this->url = url;
 
   listVideos = new QList<Video *>();
 
   fetch();
+}
+
+RssFeed::RssFeed(QSettings *settings) :
+  currentReply(0)
+{
+
+  this->settings = settings;
+
+  listVideos = new QList<Video *>();
 }
 
 void RssFeed::fetch()
@@ -20,6 +29,15 @@ void RssFeed::fetch()
     QUrl qurl(url);
     get(qurl);
 }
+
+
+
+void RssFeed::setURL(QString url){
+
+  this->url = url;
+  fetch();
+}
+
 
 
 void RssFeed::get(QUrl &url)
