@@ -63,7 +63,6 @@ public slots:
 private slots:
   void on_browse_clicked();
   void on_downloadDestination_textChanged();
-  void on_Download_clicked(bool checked);
   void updateRSSFeed();
 
   void recheckFeed();
@@ -78,7 +77,11 @@ private:
     void installYoutubeDl();
     void downloadVideo();
     void createTrayIcon();
+
+    AppIndicator *indicator;
+    GtkWidget *menu;
     GtkWidget *showItem;
+    GtkWidget *quitItem;
 
 
 

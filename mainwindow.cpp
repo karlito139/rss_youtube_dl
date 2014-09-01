@@ -21,7 +21,9 @@
 //* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
 //- doxygen/QT documentation
-//- debug all warnings
+//* debug all warnings
+//* the file/quit doesn't destroy the app, only the window
+//- destroy everything we created when quitting the app
 //- ajouter la date et heure du dernier check des videos
 //- ajouter une fenetre de config
   //- update rate of the videos
@@ -32,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+
+  this->setParent(0);
 
   this->downloadEnable = true;
 
@@ -75,11 +79,12 @@ MainWindow::MainWindow(QWidget *parent) :
   createTrayIcon();
 
   timer = new QTimer();
-  timer->setInterval(3*1000); //fetch new video every 10 minutes : 10*60*1000
+  timer->setInterval(3*1000); //fetch new video every 10 minutes
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -90,6 +95,11 @@ MainWindow::~MainWindow()
 
   settings->setValue("destination", "/home/karlito/Downloads/a_voir/");
   settings->sync();
+
+
+  //delete menu;
+
+  qDebug("kikoo");
 
   delete ui;
 }
@@ -190,13 +200,6 @@ void MainWindow::on_downloadDestination_textChanged()
   settings->setValue("destination", ui->downloadDestination->text());
 }
 
-void MainWindow::on_Download_clicked(bool checked)
-{
-  this->downloadEnable = checked;
-  if(!this->downloadEnable) emit stopDownloading();
-  else displayingVideos();
-}
-
 
 void MainWindow::recheckFeed(){
 
@@ -234,10 +237,6 @@ void MainWindow::createTrayIcon(){
 
   if(isUnity) //only use this in unity
   {
-      AppIndicator *indicator;
-      GtkWidget *menu;
-      GtkWidget *quitItem;
-
       menu = gtk_menu_new();
 
       //show Item
@@ -312,9 +311,6 @@ void MainWindow::updateRSSFeed(){
 
 
 
-
-
-
 void MainWindow::on_userId_editingFinished()
 {
   user = ui->userId->text();
@@ -329,7 +325,7 @@ void MainWindow::on_userId_editingFinished()
 
 void MainWindow::on_actionQuite_triggered()
 {
-    this->destroy();
+  QApplication::quit();
 }
 
 
@@ -341,3 +337,6 @@ void MainWindow::closeEvent(QCloseEvent *event){
   //an ignore the close event
   event->ignore();
 }
+
+
+
