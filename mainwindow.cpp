@@ -19,7 +19,7 @@
 //- quand on quite (croix) on cache en fait
 //- ajouter un menu fichier/quitter pour vraiement quitter
 //- tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
-//- don't reset the config of the list (sizes) when we update it.
+//* don't reset the config of the list (sizes) when we update it.
 //- doxygen/QT documentation
 //- ajouter une fenetre de config
   //- update rate of the videos
@@ -39,6 +39,21 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->downloadDestination->setText(settings->value("destination", "").toString());
 
   modelListVideo = new QStandardItemModel(0, 0, this);
+  modelListVideo->setColumnCount(3);
+  modelListVideo->setHorizontalHeaderItem(0, new QStandardItem(QString("Title")));
+  modelListVideo->setHorizontalHeaderItem(1, new QStandardItem(QString("Code")));
+  modelListVideo->setHorizontalHeaderItem(2, new QStandardItem(QString("Done")));
+
+  ui->widgetListVideos->setModel(modelListVideo);
+
+  QHeaderView *headerView = new QHeaderView(Qt::Horizontal, ui->widgetListVideos);
+  ui->widgetListVideos->setHorizontalHeader(headerView);
+  headerView->setSectionResizeMode(0, QHeaderView::Stretch);
+  headerView->setSectionResizeMode(1, QHeaderView::Interactive);
+  headerView->resizeSection(1, 150);
+  headerView->resizeSection(2, 50);
+
+
 
   this->currentlyDownloading = false;
   this->YoutubeDlInstalled = false;
@@ -82,13 +97,8 @@ void MainWindow::displayingVideos(){
 
   listVideos = rssFeed->getListVideos();
 
-  modelListVideo->clear();
-  modelListVideo->setColumnCount(3);
+  modelListVideo->removeRows(0, modelListVideo->rowCount());
   modelListVideo->setRowCount(listVideos->count());
-
-  modelListVideo->setHorizontalHeaderItem(0, new QStandardItem(QString("Title")));
-  modelListVideo->setHorizontalHeaderItem(1, new QStandardItem(QString("Code")));
-  modelListVideo->setHorizontalHeaderItem(2, new QStandardItem(QString("Downloaded")));
 
   Video *vid;
   for(int i=0; i<listVideos->count(); i++){
