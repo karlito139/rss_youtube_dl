@@ -11,9 +11,9 @@
 
 
 //TODO
-//- put icon for the downloaded and not yet downloaded
 //* add the user rss feed to the config file
-//- when stating, start hidden
+//* debug all warnings
+//* the file/quit doesn't destroy the app, only the window
 //* ajouter une config complète (setting du l'id de l'utilisateur)
 //* (durty hak)debug de pourquoi la fenetre ne se cache pas
 //* quand on quite (croix) on cache en fait
@@ -21,13 +21,12 @@
 //* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
 //- doxygen/QT documentation
-//* debug all warnings
-//* the file/quit doesn't destroy the app, only the window
+//- when stating, start hidden
 //- destroy everything we created when quitting the app
 //- ajouter la date et heure du dernier check des videos
 //- ajouter source des icon
-//- ajouter une fenetre de config
-  //- update rate of the videos
+//- put icon for the downloaded and not yet downloaded
+//- ajouter une fenetre de config (update rate of the videos)
 
 
 MainWindow::MainWindow(QWidget *parent) :
