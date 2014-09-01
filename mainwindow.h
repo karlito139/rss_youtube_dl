@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QSystemTrayIcon>
 #include <QWindow>
+#include <QHeaderView>
 
 #include "rssfeed.h"
 
@@ -66,7 +67,6 @@ private slots:
   void updateRSSFeed();
 
   void recheckFeed();
-
 
   void on_userId_editingFinished();
 
