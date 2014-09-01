@@ -16,11 +16,12 @@
 //- when stating, start hidden
 //* ajouter une config complète (setting du l'id de l'utilisateur)
 //* (durty hak)debug de pourquoi la fenetre ne se cache pas
-//- quand on quite (croix) on cache en fait
+//* quand on quite (croix) on cache en fait
 //- ajouter un menu fichier/quitter pour vraiement quitter
 //- tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
 //- doxygen/QT documentation
+//- debug all warnings
 //- ajouter une fenetre de config
   //- update rate of the videos
 
@@ -234,7 +235,6 @@ void MainWindow::createTrayIcon(){
   {
       AppIndicator *indicator;
       GtkWidget *menu;
-      GtkWidget *showItem;
       GtkWidget *quitItem;
 
       menu = gtk_menu_new();
@@ -336,5 +336,9 @@ void MainWindow::on_actionQuite_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event){
 
+  //we hide the window
+  gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, false);
+
+  //an ignore the close event
   event->ignore();
 }
