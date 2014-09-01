@@ -78,6 +78,7 @@ private:
     void installYoutubeDl();
     void downloadVideo();
     void createTrayIcon();
+    GtkWidget *showItem;
 
 
 
