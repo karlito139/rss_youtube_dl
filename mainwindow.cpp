@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
   createTrayIcon();
 
   timer = new QTimer();
-  timer->setInterval(3*1000); //fetch new video every 10 minutes
+  timer->setInterval(10*60*1000); //fetch new video every 10 minutes
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
