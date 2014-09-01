@@ -20,17 +20,18 @@ Q_OBJECT
 
 public:
     RssFeed(QString url, QSettings *settings);
+    RssFeed(QSettings *settings);
 
     QList<Video *> *getListVideos(){return listVideos;}
 
 
 public slots:
-
     void fetch();
+    void setURL(QString url);
+
 
 private slots:
     void read();
-
 
 
 signals:

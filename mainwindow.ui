@@ -2,31 +2,48 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
-    <height>328</height>
+    <width>690</width>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Youtube rss feed downloader</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="ressource.qrc">
+    <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="destination">
       <item>
-       <widget class="QPushButton" name="Download">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Download</string>
+         <string>User : </string>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="userId">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -42,6 +59,13 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Destination : </string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLineEdit" name="downloadDestination"/>
@@ -78,14 +102,28 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>564</width>
+     <width>690</width>
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuite"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionQuite">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="ressource.qrc"/>
+ </resources>
  <connections/>
 </ui>

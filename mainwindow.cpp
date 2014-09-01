@@ -12,9 +12,17 @@
 
 //TODO
 //- put icon for the downloaded and not yet downloaded
-//- ajouter un status en cours de dl dans le tableau
-//* ajouter l'option de minimisation de l'application : https://qt-project.org/doc/qt-4.8/desktop-systray.html
-
+//* add the user rss feed to the config file
+//- when stating, start hidden
+//* ajouter une config complète (setting du l'id de l'utilisateur)
+//- debug de pourquoi la fenetre ne se cache pas
+//- quand on quite (croix) on cache en fait
+//- ajouter un menu fichier/quitter pour vraiement quitter
+//- tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
+//- don't reset the config of the list (sizes) when we update it.
+//- doxygen/QT documentation
+//- ajouter une fenetre de config
+  //- update rate of the videos
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -25,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   this->downloadEnable = true;
 
+  this->starting = true;
+
   settings = new QSettings(QString("configs/config.ini"), QSettings::IniFormat);
   ui->downloadDestination->setText(settings->value("destination", "").toString());
 
@@ -34,18 +44,21 @@ MainWindow::MainWindow(QWidget *parent) :
   this->YoutubeDlInstalled = false;
   installYoutubeDl();
 
-  rssFeed = new RssFeed("https://gdata.youtube.com/feeds/api/users/fczJ-auI5DysJ2n-cvh0Sg/newsubscriptionvideos", settings);
 
+  user = settings->value("user", "");
+
+  ui->userId->setText(user.toString());
+
+
+  rssFeed = new RssFeed(settings);
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
+  updateRSSFeed();
 
 
   createTrayIcon();
-  //trayIcon->show();
-
 
   timer = new QTimer();
-  //timer->setInterval(10*60*1000);
-  timer->setInterval(10*1000);
+  timer->setInterval(3*1000); //fetch new video every 10 minutes : 10*60*1000
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
@@ -92,6 +105,7 @@ void MainWindow::displayingVideos(){
   ui->widgetListVideos->setModel(modelListVideo);
 
   if(!currentlyDownloading) downloadVideo();
+
 }
 
 
@@ -131,9 +145,10 @@ void MainWindow::installYoutubeDl(){
 void MainWindow::doneInstallingYoutubeDl(){
 
   this->YoutubeDlInstalled = true;
+  displayingVideos();
 }
 
-void MainWindow::videoStartDownloading(Video *vid){
+void MainWindow::videoStartDownloading(Video *){
 
   this->currentlyDownloading = true;
   displayingVideos();
@@ -141,13 +156,11 @@ void MainWindow::videoStartDownloading(Video *vid){
 
 void MainWindow::videoDoneDownloading(Video *vid){
 
-  qDebug() << "done";
-
   disconnect(vid, SLOT(stopDownload()));
   this->currentlyDownloading = false;
   //TODO : add icon to notifications :
   // -i /usr/share/pixmaps/idle.xpm
-  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' '-t' 5000");
+  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+THEME_PATH+"/icon.png -t 5000");
   displayingVideos();
 }
 
@@ -192,7 +205,13 @@ void MainWindow::createTrayIcon(){
 
     /*trayIcon = new QSystemTrayIcon(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setIcon(QIcon(":/images/Wario.ico"));*/
+    trayIcon->setIcon(QIcon(":/images/icon.png"));
+
+    trayIcon->show();*/
+
+
+
+
 
 
   QString desktop;
@@ -233,7 +252,7 @@ void MainWindow::createTrayIcon(){
       app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
       app_indicator_set_menu(indicator, GTK_MENU(menu));
   }
-  else //other DE's and OS's
+  else //other OS's
   {
 
   }
@@ -242,17 +261,18 @@ void MainWindow::createTrayIcon(){
 
 
 
-
-void MainWindow::showWindow(GtkMenu *menu, gpointer data){
+void MainWindow::showWindow(GtkCheckMenuItem *menu, gpointer data){
 
   //http://ubuntuforums.org/showthread.php?t=2179045
 
   Q_UNUSED(menu);
+  bool checked = gtk_check_menu_item_get_active(menu);
   QApplication *self = static_cast<QApplication *>(data);
 
-  QWindow *wind = self->allWindows().at(0);
-  if(wind->isVisible()) wind->hide();
-  else wind->show();
+  if(checked)
+      self->allWindows().at(0)->show();
+  else
+      self->allWindows().at(0)->hide();
 }
 
 
@@ -267,8 +287,25 @@ void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
 
 
 
+void MainWindow::updateRSSFeed(){
+
+  rssFeed->setURL("https://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
+}
 
 
+
+
+
+
+void MainWindow::on_userId_editingFinished()
+{
+  user = ui->userId->text();
+
+  settings->setValue("user", user.toString());
+  settings->sync();
+
+  updateRSSFeed();
+}
 
 
 
