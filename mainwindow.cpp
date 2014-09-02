@@ -20,6 +20,7 @@
 //* ajouter un menu fichier/quitter pour vraiement quitter
 //* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
+//* use the home folder to store the config
 //- doxygen/QT documentation
 //- when stating, start hidden
 //- destroy everything we created when quitting the app
@@ -27,6 +28,9 @@
 //- ajouter source des icon
 //- put icon for the downloaded and not yet downloaded
 //- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
+//- what append when we don't have setted any download folder
+//- use the resource file for the GTK icon
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -41,7 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   this->starting = true;
 
-  settings = new QSettings(QString("configs/config.ini"), QSettings::IniFormat);
+  settings = new QSettings("youtube_rss_dl", "config");
+
   ui->downloadDestination->setText(settings->value("destination", "").toString());
 
   modelListVideo = new QStandardItemModel(0, 0, this);
@@ -92,14 +97,7 @@ MainWindow::~MainWindow()
   installProc = new QProcess();
   installProc->start("/bin/bash", QStringList() << "-c" << "rm -r youtube-dl");
 
-
-  settings->setValue("destination", "/home/karlito/Downloads/a_voir/");
   settings->sync();
-
-
-  //delete menu;
-
-  qDebug("kikoo");
 
   delete ui;
 }
