@@ -14,13 +14,9 @@
 #include <QCloseEvent>
 #include <QFileIconProvider>
 
+
 #include "rssfeed.h"
 
-
-
-
-
-#define THEME_PATH "/home/karlito/creation/rss_youtube_dl/images/"
 
 
 #undef signals
@@ -83,7 +79,7 @@ private:
     GtkWidget *menu;
     GtkWidget *showItem;
     GtkWidget *quitItem;
-
+    QString *pathToFiles;
 
 
 
