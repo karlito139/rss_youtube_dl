@@ -26,7 +26,7 @@
 //- ajouter la date et heure du dernier check des videos
 //- ajouter source des icon
 //- put icon for the downloaded and not yet downloaded
-//- ajouter une fenetre de config (update rate of the videos)
+//- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
 
 
 MainWindow::MainWindow(QWidget *parent) :
