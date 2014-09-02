@@ -21,16 +21,16 @@
 //* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
 //* don't reset the config of the list (sizes) when we update it.
 //* use the home folder to store the config
+//* use the resource file for the GTK icon
+//* the download folder must have a / at the end
+
 //- doxygen/QT documentation
 //- when stating, start hidden
 //- destroy everything we created when quitting the app
 //- ajouter la date et heure du dernier check des videos
-//- ajouter source des icon
 //- put icon for the downloaded and not yet downloaded
 //- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
 //- what append when we don't have setted any download folder
-//- use the resource file for the GTK icon
-
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -39,13 +39,21 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
 
-  this->setParent(0);
 
   this->downloadEnable = true;
 
   this->starting = true;
 
   settings = new QSettings("youtube_rss_dl", "config");
+
+
+
+  QFileInfo setting_file(settings->fileName());
+  pathToFiles = new QString(setting_file.path());
+
+  QImage *img = new QImage(":/images/icon.png");
+  img->save(pathToFiles->toLatin1()+"/icon.png");
+
 
   ui->downloadDestination->setText(settings->value("destination", "").toString());
 
@@ -178,9 +186,7 @@ void MainWindow::videoDoneDownloading(Video *vid){
 
   disconnect(vid, SLOT(stopDownload()));
   this->currentlyDownloading = false;
-  //TODO : add icon to notifications :
-  // -i /usr/share/pixmaps/idle.xpm
-  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+THEME_PATH+"/icon.png -t 5000");
+  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toLatin1()+"/icon.png -t 5000");
   displayingVideos();
 }
 
@@ -189,7 +195,7 @@ void MainWindow::on_browse_clicked()
   QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
   if ( path.isNull() == false )
   {
-      ui->downloadDestination->setText(path);
+      ui->downloadDestination->setText(path+"/");
   }
 }
 
@@ -254,7 +260,7 @@ void MainWindow::createTrayIcon(){
 
       indicator = app_indicator_new("example", "indicator-messages", APP_INDICATOR_CATEGORY_OTHER);
 
-      app_indicator_set_icon_theme_path(indicator, THEME_PATH);
+      app_indicator_set_icon_theme_path(indicator, pathToFiles->toLatin1());
       app_indicator_set_icon_full(indicator, "icon", "description");
 
       app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
