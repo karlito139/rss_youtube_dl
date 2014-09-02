@@ -23,6 +23,7 @@
 //* use the home folder to store the config
 //* use the resource file for the GTK icon
 //* the download folder must have a / at the end
+//* (in the downloads folder of home) what append when we don't have setted any download folder
 
 //- doxygen/QT documentation
 //- when stating, start hidden
@@ -30,7 +31,6 @@
 //- ajouter la date et heure du dernier check des videos
 //- put icon for the downloaded and not yet downloaded
 //- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
-//- what append when we don't have setted any download folder
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -46,16 +46,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
   settings = new QSettings("youtube_rss_dl", "config");
 
-
-
   QFileInfo setting_file(settings->fileName());
   pathToFiles = new QString(setting_file.path());
+
+
+  //wreate the path to the images if it doesn't exist
+  QDir resourceFolder(*pathToFiles);
+  if(!resourceFolder.exists()){
+
+      resourceFolder.mkpath(".");
+  }
+
 
   QImage *img = new QImage(":/images/icon.png");
   img->save(pathToFiles->toLatin1()+"/icon.png");
 
 
-  ui->downloadDestination->setText(settings->value("destination", "").toString());
+  ui->downloadDestination->setText(settings->value("destination", "~/Downloads/").toString());
 
   modelListVideo = new QStandardItemModel(0, 0, this);
   modelListVideo->setColumnCount(3);
