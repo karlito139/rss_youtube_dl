@@ -31,6 +31,8 @@
 //- ajouter la date et heure du dernier check des videos
 //- put icon for the downloaded and not yet downloaded
 //- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
+//- dl youtube-dl in the config folder
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
