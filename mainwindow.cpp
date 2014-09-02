@@ -25,6 +25,7 @@
 //* the download folder must have a / at the end
 //* (in the downloads folder of home) what append when we don't have setted any download folder
 
+//- move that todo list to the issues of github
 //- doxygen/QT documentation
 //- when stating, start hidden
 //- destroy everything we created when quitting the app
