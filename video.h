@@ -8,6 +8,11 @@
 #include <QSettings>
 
 
+extern QString *pathToFiles;
+
+
+
+
 class Video : public QObject
 {
   Q_OBJECT
