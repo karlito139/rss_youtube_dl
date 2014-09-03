@@ -32,7 +32,7 @@ void Video::download(){
   if(!alreadyDownloaded){
     /* create QProcess object */
     proc= new QProcess();
-    proc->start("/bin/bash", QStringList() << "-c" << "youtube-dl/youtube-dl -f best -o '"+settings->value("destination", "").toString()+"%(title)s.%(ext)s' "+this->code);
+    proc->start("/bin/bash", QStringList() << "-c" << pathToFiles->toLatin1()+"/youtube-dl/youtube-dl -f best -o '"+settings->value("destination", "").toString()+"%(title)s.%(ext)s' "+this->code);
     this->currentlyDownloading = true;
 
     emit videoDownloadStarted(this);

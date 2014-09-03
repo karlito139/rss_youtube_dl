@@ -25,13 +25,7 @@
 //* the download folder must have a / at the end
 //* (in the downloads folder of home) what append when we don't have setted any download folder
 
-//- move that todo list to the issues of github
 //- doxygen/QT documentation
-//- when stating, start hidden
-//- destroy everything we created when quitting the app
-//- ajouter la date et heure du dernier check des videos
-//- put icon for the downloaded and not yet downloaded
-//- ajouter une fenetre de config (update rate of the videos, definition of the videos downloaded)
 //- dl youtube-dl in the config folder
 
 
@@ -113,7 +107,7 @@ MainWindow::~MainWindow()
 {
   delete installProc;
   installProc = new QProcess();
-  installProc->start("/bin/bash", QStringList() << "-c" << "rm -r youtube-dl");
+  installProc->start("/bin/bash", QStringList() << "-c" << "rm -r "+pathToFiles->toLatin1()+"/youtube-dl");
 
   settings->sync();
 
@@ -174,7 +168,7 @@ void MainWindow::downloadVideo(){
 void MainWindow::installYoutubeDl(){
 
   installProc = new QProcess();
-  installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz -O youtube-dl.tar.gz && tar -xvf youtube-dl.tar.gz && rm youtube-dl.tar.gz");
+  installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz -O "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz && tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz && rm "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
 
   connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
 

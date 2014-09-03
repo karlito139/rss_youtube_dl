@@ -17,6 +17,7 @@
 
 #include "rssfeed.h"
 
+extern QString *pathToFiles;
 
 
 #undef signals
@@ -79,7 +80,6 @@ private:
     GtkWidget *menu;
     GtkWidget *showItem;
     GtkWidget *quitItem;
-    QString *pathToFiles;
 
 
 
