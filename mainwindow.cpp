@@ -9,27 +9,6 @@
 
 
 
-
-//TODO
-//* add the user rss feed to the config file
-//* debug all warnings
-//* the file/quit doesn't destroy the app, only the window
-//* ajouter une config complète (setting du l'id de l'utilisateur)
-//* (durty hak)debug de pourquoi la fenetre ne se cache pas
-//* quand on quite (croix) on cache en fait
-//* ajouter un menu fichier/quitter pour vraiement quitter
-//* tester si il y a déjà des fichiers dl pour yt dl (éviter les entassement de fichiers)
-//* don't reset the config of the list (sizes) when we update it.
-//* use the home folder to store the config
-//* use the resource file for the GTK icon
-//* the download folder must have a / at the end
-//* (in the downloads folder of home) what append when we don't have setted any download folder
-
-//- doxygen/QT documentation
-//- dl youtube-dl in the config folder
-
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
