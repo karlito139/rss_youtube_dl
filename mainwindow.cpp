@@ -222,8 +222,8 @@ void MainWindow::createTrayIcon(){
   desktop = getenv("XDG_CURRENT_DESKTOP");
   isUnity = (desktop.toLower() == "unity");
 
-  if(isUnity) //only use this in unity
-  {
+  //if(isUnity) //only use this in unity
+  //{
       menu = gtk_menu_new();
 
       //show Item
@@ -248,11 +248,11 @@ void MainWindow::createTrayIcon(){
 
       app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
       app_indicator_set_menu(indicator, GTK_MENU(menu));
-  }
+  /*}
   else //other OS's
   {
 
-  }
+  }*/
 
 }
 
