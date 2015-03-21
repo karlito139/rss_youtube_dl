@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 
-!WIN32{
+!win32{
 
   INCLUDEPATH += /usr/include/libappindicator-0.1 \
           /usr/include/gtk-2.0 \
