@@ -248,41 +248,21 @@ void MainWindow::recheckFeed(){
 
 void MainWindow::createTrayIcon(){
 
-    /*trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(new QAction(tr("Mi&nimize"), this));*/
-
-    /*trayIconMenu->addAction(minimizeAction);
-    trayIconMenu->addAction(maximizeAction);
-    trayIconMenu->addAction(restoreAction);
-    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(quitAction);*/
-
-    /*trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setIcon(QIcon(":/images/icon.png"));
-
-    trayIcon->show();*/
-
-
-
-
-
-
   QString desktop;
   bool isUnity;
 
   desktop = getenv("XDG_CURRENT_DESKTOP");
   isUnity = (desktop.toLower() == "unity");
 
-  //if(isUnity) //only use this in unity
-  //{
+  if(isUnity) //only use this in unity
+  {
       menu = gtk_menu_new();
 
       //show Item
       showItem = gtk_check_menu_item_new_with_label("Show");
       gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, true);
       gtk_menu_shell_append(GTK_MENU_SHELL(menu), showItem);
-      g_signal_connect(showItem, "toggled", G_CALLBACK(MainWindow::showWindow), qApp);
+      g_signal_connect(showItem, "toggled", G_CALLBACK(MainWindow::showWindowGTK), qApp);
 
       //g_signal_connect()
       gtk_widget_show(showItem);
@@ -300,17 +280,34 @@ void MainWindow::createTrayIcon(){
 
       app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
       app_indicator_set_menu(indicator, GTK_MENU(menu));
-  /*}
+  }
   else //other OS's
   {
 
-  }*/
+    showAction = new QAction(tr("&Show"), this);
+    showAction->setCheckable(true);
+    connect(showAction, SIGNAL(triggered()), this, SLOT(showWindow()));
 
+    quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(showAction);
+    trayIconMenu->addAction(quitAction);
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setIcon(QIcon(":/images/icon.png"));
+
+    trayIcon->show();
+  }
 }
 
 
 
-void MainWindow::showWindow(GtkCheckMenuItem *menu, gpointer data){
+void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
+{
 
   //http://ubuntuforums.org/showthread.php?t=2179045
 
@@ -331,6 +328,15 @@ void MainWindow::showWindow(GtkCheckMenuItem *menu, gpointer data){
       self->allWindows().at(i)->hide();
     }
   }
+}
+
+
+void MainWindow::showWindow()
+{
+  if(showAction->isChecked())
+    this->hide();
+  else
+    this->show();
 }
 
 
