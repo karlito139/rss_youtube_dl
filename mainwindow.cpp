@@ -79,7 +79,27 @@ MainWindow::MainWindow(QWidget *parent) :
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
+
+
+  installProc = new QProcess();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 MainWindow::~MainWindow()
@@ -146,16 +166,48 @@ void MainWindow::downloadVideo(){
 
 void MainWindow::installYoutubeDl(){
 
-  installProc = new QProcess();
-  installProc->start("/bin/bash", QStringList() << "-c" << "wget http://yt-dl.org/latest/youtube-dl.tar.gz -O "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz && tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz && rm "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+  url = "http://yt-dl.org/latest/youtube-dl.tar.gz";
+  reply = qnam.get(QNetworkRequest(url));
 
-  connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
-
+  connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 }
+
+
+void MainWindow::downloadFinished(QNetworkReply* pReply)
+{
+    QByteArray m_DownloadedData;
+    m_DownloadedData = pReply->readAll();
+    pReply->deleteLater();
+
+
+    QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+    file.open(QIODevice::WriteOnly);
+    file.write(m_DownloadedData);
+    file.close();
+
+    installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+
+    connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
+}
+
+
+
+
+
+
+
+
+
+
 
 void MainWindow::doneInstallingYoutubeDl(){
 
   this->YoutubeDlInstalled = true;
+
+  QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+  file.remove();
+
+
   displayingVideos();
 }
 

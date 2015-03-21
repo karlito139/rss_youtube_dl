@@ -13,7 +13,9 @@
 #include <QHeaderView>
 #include <QCloseEvent>
 #include <QFileIconProvider>
-
+#include <QMessageBox>
+#include <qgraphicsitem.h>
+#include <qgraphicsscene.h>
 
 #include "rssfeed.h"
 
@@ -69,6 +71,9 @@ private slots:
 
   void on_actionQuite_triggered();
 
+
+  void downloadFinished(QNetworkReply* pReply);
+
 private:
     Ui::MainWindow *ui;
 
@@ -104,6 +109,30 @@ private:
 
 
     QStandardItemModel *modelListVideo;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    QNetworkAccessManager qnam;
+    QNetworkReply *reply;
+    QUrl url;
+    QFile *file;
+
+    QPixmap buttonImage;
+    QGraphicsScene scene;
+    QGraphicsPixmapItem item;
+
+
 
 protected:
      void closeEvent(QCloseEvent *event);
