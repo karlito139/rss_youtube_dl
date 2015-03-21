@@ -10,22 +10,23 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 
-INCLUDEPATH += /usr/include/libappindicator-0.1 \
-        /usr/include/gtk-2.0 \
-        /usr/lib/gtk-2.0/include \
-        /usr/include/glib-2.0 \
-        /usr/lib/glib-2.0/include \
-        /usr/include/cairo \
-        /usr/include/atk-1.0 \
-        /usr/include/pango-1.0
+!WIN32{
 
-LIBS += -L/usr/lib -lappindicator -lnotify
+  INCLUDEPATH += /usr/include/libappindicator-0.1 \
+          /usr/include/gtk-2.0 \
+          /usr/lib/gtk-2.0/include \
+          /usr/include/glib-2.0 \
+          /usr/lib/glib-2.0/include \
+          /usr/include/cairo \
+          /usr/include/atk-1.0 \
+          /usr/include/pango-1.0
 
-CONFIG += link_pkgconfig
+  PKGCONFIG = gtk+-2.0
 
-PKGCONFIG = gtk+-2.0
+  LIBS += -L/usr/lib -lappindicator -lnotify
 
-
+  CONFIG += link_pkgconfig
+}
 
 
 TARGET = rss_youtube_dl
@@ -34,12 +35,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    rssfeed.cpp \
-    video.cpp
+        rssfeed.cpp \
+        video.cpp
 
 HEADERS  += mainwindow.h \
-    rssfeed.h \
-    video.h
+            rssfeed.h \
+            video.h
 
 FORMS    += mainwindow.ui
 

@@ -4,9 +4,9 @@
 
 
 
+
 //need to be installed :
 //- sudo apt-get install libgtk2.0-dev libappindicator-dev libnotify-dev
-
 
 
 MainWindow::MainWindow(QWidget *parent) :

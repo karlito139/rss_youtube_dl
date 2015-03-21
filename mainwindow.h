@@ -23,18 +23,19 @@
 extern QString *pathToFiles;
 
 
-#undef signals
-extern "C"
-{
-    #include <libappindicator/app-indicator.h>
-    #include <libnotify/notify.h>
-    #include <gtk/gtk.h>
+#ifdef  Q_OS_LINUX
+  #undef signals
+  extern "C"
+  {
+      #include <libappindicator/app-indicator.h>
+      #include <libnotify/notify.h>
+      #include <gtk/gtk.h>
 
-void onShow(GtkCheckMenuItem *, gpointer);
-void onQuit(GtkMenu *, gpointer);
-}
-#define signals public
-
+  void onShow(GtkCheckMenuItem *, gpointer);
+  void onQuit(GtkMenu *, gpointer);
+  }
+  #define signals public
+#endif
 
 
 namespace Ui {
