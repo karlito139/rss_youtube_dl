@@ -265,6 +265,8 @@ void MainWindow::createTrayIcon(){
 
   if(isUnity) //only use this in unity
   {
+#ifdef  Q_OS_LINUX
+
       menu = gtk_menu_new();
 
       //show Item
@@ -289,6 +291,7 @@ void MainWindow::createTrayIcon(){
 
       app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
       app_indicator_set_menu(indicator, GTK_MENU(menu));
+#endif
   }
   else //other OS's
   {
@@ -314,7 +317,7 @@ void MainWindow::createTrayIcon(){
 }
 
 
-
+#ifdef  Q_OS_LINUX
 void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
 {
 
@@ -338,7 +341,7 @@ void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
     }
   }
 }
-
+#endif
 
 void MainWindow::showWindow()
 {
@@ -348,14 +351,14 @@ void MainWindow::showWindow()
     this->show();
 }
 
-
+#ifdef  Q_OS_LINUX
 void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
 
   Q_UNUSED(menu);
   QApplication *self = static_cast<QApplication *>(data);
   self->quit();
 }
-
+#endif
 
 
 void MainWindow::updateRSSFeed(){
@@ -385,8 +388,10 @@ void MainWindow::on_actionQuite_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event){
 
+#ifdef  Q_OS_LINUX
   //we hide the window
   gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, false);
+#endif
 
   //an ignore the close event
   event->ignore();

@@ -58,8 +58,12 @@ public slots:
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
   void doneInstallingYoutubeDl();
+
+#ifdef  Q_OS_LINUX
   static void showWindowGTK(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
   static void quitWindow(GtkMenu *menu, gpointer data);
+#endif
+
   void showWindow();
 
     
@@ -84,12 +88,12 @@ private:
     void downloadVideo();
     void createTrayIcon();
 
+#ifdef  Q_OS_LINUX
     AppIndicator *indicator;
     GtkWidget *menu;
     GtkWidget *showItem;
     GtkWidget *quitItem;
-
-
+#endif
 
     bool downloadEnable;
     bool YoutubeDlInstalled;
