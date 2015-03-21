@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
+#include <QAction>
 
 #include "rssfeed.h"
 
@@ -56,8 +57,9 @@ public slots:
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
   void doneInstallingYoutubeDl();
-  static void showWindow(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
+  static void showWindowGTK(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
   static void quitWindow(GtkMenu *menu, gpointer data);
+  void showWindow();
 
     
 private slots:
@@ -111,9 +113,8 @@ private:
     QStandardItemModel *modelListVideo;
 
 
-
-
-
+    QAction *showAction;
+    QAction *quitAction;
 
 
 
