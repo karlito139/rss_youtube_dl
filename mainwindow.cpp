@@ -128,9 +128,18 @@ void MainWindow::displayingVideos(){
 
     modelListVideo->setItem(i, 0, new QStandardItem(vid->getTitle()));
     modelListVideo->setItem(i, 1, new QStandardItem(vid->getCode()));
-    if(vid->haveAlreadyBeenDownloaded()) modelListVideo->setItem(i, 2, new QStandardItem("yes"));
-    else if(vid->isCurrentlyDownloading()) modelListVideo->setItem(i, 2, new QStandardItem("..."));
-    else modelListVideo->setItem(i, 2, new QStandardItem("no"));
+
+    QStandardItem *item = new QStandardItem();
+    QImage itemIcon;
+
+    if(vid->haveAlreadyBeenDownloaded()) itemIcon.load(":downloaded_small");
+    else if(vid->isCurrentlyDownloading()) itemIcon.load(":downloading_small");
+    else itemIcon.load(":not_downloaded_small");
+
+    itemIcon.scaled(QSize(5, 5), Qt::KeepAspectRatio);
+
+    item->setData(QVariant(QPixmap::fromImage(itemIcon)), Qt::DecorationRole);
+    modelListVideo->setItem(i, 2, item);
   }
 
   ui->widgetListVideos->setModel(modelListVideo);
