@@ -17,6 +17,7 @@
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
 #include <QAction>
+#include <QStandardPaths>
 
 #include "rssfeed.h"
 

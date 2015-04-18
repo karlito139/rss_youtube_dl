@@ -17,11 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
   this->downloadEnable = true;
-
   this->starting = true;
 
-  settings = new QSettings("youtube_rss_dl", "config");
-
+  settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "youtube_rss_dl", "config");
   QFileInfo setting_file(settings->fileName());
   pathToFiles = new QString(setting_file.path());
 
@@ -39,8 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
   QImage *img = new QImage(":/images/icon.png");
   img->save(pathToFiles->toLatin1()+"/icon.png");
 
-
-  ui->downloadDestination->setText(settings->value("destination", "~/Downloads/").toString());
 
   modelListVideo = new QStandardItemModel(0, 0, this);
   modelListVideo->setColumnCount(3);
