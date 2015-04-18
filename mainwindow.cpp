@@ -340,7 +340,7 @@ void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
 
 void MainWindow::showWindow()
 {
-  if(showAction->isChecked())
+  if(!showAction->isChecked())
     this->hide();
   else
     this->show();
@@ -383,9 +383,12 @@ void MainWindow::on_actionQuite_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event){
 
+    //we hide the window
 #ifdef  Q_OS_LINUX
-  //we hide the window
   gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, false);
+#else
+    this->hide();
+    showAction->setChecked(false);
 #endif
 
   //an ignore the close event
