@@ -40,9 +40,6 @@ void RssFeed::setURL(QString url){
 
 void RssFeed::get(QUrl &url)
 {
-
-    qDebug() << "download the url : " << url.toString();
-
     QNetworkRequest request(url);
     if (currentReply) {
         currentReply->disconnect(this);
