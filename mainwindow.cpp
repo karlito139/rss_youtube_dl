@@ -56,8 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
   headerView->resizeSection(2, 50);
 
 
-
-  this->currentlyDownloading = false;
   this->YoutubeDlInstalled = false;
   installYoutubeDl();
 
@@ -82,25 +80,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
   installProc = new QProcess();
+
+
+  actionReset = NULL;
+  actionDownloaded = NULL;
+
+  ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 MainWindow::~MainWindow()
 {
@@ -114,9 +100,17 @@ MainWindow::~MainWindow()
 }
 
 
+
+
+
 void MainWindow::displayingVideos(){
 
+  int isCurrentlyDownloading = 0;
+
   listVideos = rssFeed->getListVideos();
+
+  for(int i=0; i<listVideos->count(); i++)
+    connect(listVideos->at(i), SIGNAL(videoStatusChanged()), this, SLOT(displayingVideos()), Qt::UniqueConnection );
 
   modelListVideo->removeRows(0, modelListVideo->rowCount());
   modelListVideo->setRowCount(listVideos->count());
@@ -125,6 +119,9 @@ void MainWindow::displayingVideos(){
   for(int i=0; i<listVideos->count(); i++){
 
     vid = listVideos->at(i);
+
+    if(vid->isCurrentlyDownloading())
+      isCurrentlyDownloading++;
 
     modelListVideo->setItem(i, 0, new QStandardItem(vid->getTitle()));
     modelListVideo->setItem(i, 1, new QStandardItem(vid->getCode()));
@@ -144,8 +141,8 @@ void MainWindow::displayingVideos(){
 
   ui->widgetListVideos->setModel(modelListVideo);
 
-  if(!currentlyDownloading) downloadVideo();
-
+  if(isCurrentlyDownloading == 0)
+    downloadVideo();
 }
 
 
@@ -222,14 +219,12 @@ void MainWindow::doneInstallingYoutubeDl(){
 
 void MainWindow::videoStartDownloading(Video *){
 
-  this->currentlyDownloading = true;
   displayingVideos();
 }
 
 void MainWindow::videoDoneDownloading(Video *vid){
 
   disconnect(vid, SLOT(stopDownload()));
-  this->currentlyDownloading = false;
   system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toLatin1()+"/icon.png -t 5000");
   displayingVideos();
 }
@@ -397,5 +392,35 @@ void MainWindow::closeEvent(QCloseEvent *event){
   event->ignore();
 }
 
+
+
+
+void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &pos)
+{
+  QModelIndex index = ui->widgetListVideos->indexAt(pos);
+  Video *vid;
+  vid = listVideos->at(index.row());
+
+  QMenu *menu=new QMenu(this);
+
+  if(vid->haveAlreadyBeenDownloaded())
+    {
+    if(actionReset != NULL)
+      delete actionReset;
+    actionReset = new QAction("Reset", this);
+    connect(actionReset, SIGNAL(triggered()), vid, SLOT(reset()));
+    menu->addAction(actionReset);
+  }
+  else
+  {
+    if(actionDownloaded != NULL)
+      delete actionDownloaded;
+    actionDownloaded = new QAction("Set as downloaded", this);
+    connect(actionDownloaded, SIGNAL(triggered()), vid, SLOT(setAsDownloaded()));
+    menu->addAction(actionDownloaded);
+  }
+
+  menu->popup(ui->widgetListVideos->viewport()->mapToGlobal(pos));
+}
 
 
