@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
   QFileInfo setting_file(settings->fileName());
   pathToFiles = new QString(setting_file.path());
 
+  //just FYI
+  //QString settingsPath = QFileInfo(settings.fileName()).absolutePath();
 
   //wreate the path to the images if it doesn't exist
   QDir resourceFolder(*pathToFiles);
@@ -92,8 +94,9 @@ MainWindow::~MainWindow()
 {
   delete installProc;
   installProc = new QProcess();
+#ifdef  Q_OS_LINUX
   installProc->start("/bin/bash", QStringList() << "-c" << "rm -r "+pathToFiles->toLatin1()+"/youtube-dl");
-
+#endif
   settings->sync();
 
   delete ui;
@@ -172,7 +175,12 @@ void MainWindow::downloadVideo(){
 
 void MainWindow::installYoutubeDl(){
 
+#ifdef  Q_OS_LINUX
   url = "http://yt-dl.org/latest/youtube-dl.tar.gz";
+#else
+  url = "http://yt-dl.org/latest/youtube-dl.exe";
+#endif
+
   reply = qnam.get(QNetworkRequest(url));
 
   connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
@@ -185,15 +193,23 @@ void MainWindow::downloadFinished(QNetworkReply* pReply)
     m_DownloadedData = pReply->readAll();
     pReply->deleteLater();
 
-
+#ifdef  Q_OS_LINUX
     QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+#else
+    QFile file(pathToFiles->toLatin1()+"/youtube-dl.exe");
+#endif
+
     file.open(QIODevice::WriteOnly);
     file.write(m_DownloadedData);
     file.close();
 
+#ifdef  Q_OS_LINUX
     installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
-
     connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
+#else
+    doneInstallingYoutubeDl();
+#endif
+
 }
 
 
@@ -210,9 +226,10 @@ void MainWindow::doneInstallingYoutubeDl(){
 
   this->YoutubeDlInstalled = true;
 
-  QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
-  file.remove();
-
+#ifdef  Q_OS_LINUX
+    QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+    file.remove();
+#endif
 
   displayingVideos();
 }
@@ -358,7 +375,7 @@ void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
 
 void MainWindow::updateRSSFeed(){
 
-  rssFeed->setURL("https://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
+  rssFeed->setURL("http://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
 }
 
 

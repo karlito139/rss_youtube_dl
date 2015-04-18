@@ -31,7 +31,7 @@ public slots:
 
 
 private slots:
-    void read();
+    void read(QNetworkReply *reply);
 
 
 signals:
