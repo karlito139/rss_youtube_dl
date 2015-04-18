@@ -10,6 +10,7 @@ Video::Video(QString title, QString link, QSettings *settings, QObject *parent) 
   this->code = link;
   this->settings = settings;
   this->currentlyDownloading = false;
+  this->proc = NULL;
 
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
@@ -47,15 +48,9 @@ void Video::download(){
 
 void Video::doneDownloading(){
 
-  //qDebug() << proc->readAllStandardOutput();
   if(!proc->exitStatus()){
 
-    this->alreadyDownloaded = true;
-    this->currentlyDownloading = false;
-    QString listVideoDownloaded = settings->value("downloaded", "").toString();
-    listVideoDownloaded.append("/"+code);
-    settings->setValue("downloaded", listVideoDownloaded);
-
+    setAsDownloaded();
 
     emit videoDownloaded(this);
   }
@@ -68,6 +63,31 @@ void Video::stopDownload(){
 }
 
 
+void Video::reset()
+{
+  this->alreadyDownloaded = false;
+
+  QString listVideoDownloaded = settings->value("downloaded", "").toString();
+  listVideoDownloaded.replace("/"+code, "");
+  settings->setValue("downloaded", listVideoDownloaded);
+
+  emit videoStatusChanged();
+}
+
+void Video::setAsDownloaded()
+{
+  if(proc != NULL)
+    if(proc->state() != QProcess::NotRunning)
+      stopDownload();
+
+  this->alreadyDownloaded = true;
+  this->currentlyDownloading = false;
+  QString listVideoDownloaded = settings->value("downloaded", "").toString();
+  listVideoDownloaded.append("/"+code);
+  settings->setValue("downloaded", listVideoDownloaded);
+
+  emit videoStatusChanged();
+}
 
 
 

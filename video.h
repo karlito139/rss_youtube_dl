@@ -30,11 +30,13 @@ public:
 signals:
   void videoDownloaded(Video *);
   void videoDownloadStarted(Video *);
+  void videoStatusChanged();
   
 public slots:
   void doneDownloading();
   void stopDownload();
-
+  void reset();
+  void setAsDownloaded();
 
 private:
 

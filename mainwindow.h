@@ -73,13 +73,11 @@ private slots:
   void updateRSSFeed();
 
   void recheckFeed();
-
   void on_userId_editingFinished();
-
   void on_actionQuite_triggered();
 
-
   void downloadFinished(QNetworkReply* pReply);
+  void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;
@@ -97,7 +95,6 @@ private:
 
     bool downloadEnable;
     bool YoutubeDlInstalled;
-    bool currentlyDownloading;
     bool starting;
     RssFeed *rssFeed;
     QList<Video *> *listVideos;
@@ -138,6 +135,11 @@ private:
     QGraphicsScene scene;
     QGraphicsPixmapItem item;
 
+
+
+
+    QAction *actionReset;
+    QAction *actionDownloaded;
 
 
 protected:
