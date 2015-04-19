@@ -85,6 +85,9 @@ MainWindow::MainWindow(QWidget *parent) :
   actionDownloaded = NULL;
 
   ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
+
+  //Hide as soon as possible the app once created
+  QTimer::singleShot(1, this, SLOT(close()));
 }
 
 MainWindow::~MainWindow()
