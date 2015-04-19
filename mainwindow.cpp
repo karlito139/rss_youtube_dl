@@ -303,7 +303,22 @@ void MainWindow::videoStartDownloading(Video *){
 void MainWindow::videoDoneDownloading(Video *vid){
 
   disconnect(vid, SLOT(stopDownload()));
-  system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toLatin1()+"/icon.png -t 5000");
+
+  QString desktop;
+  bool isUnity;
+
+  desktop = getenv("XDG_CURRENT_DESKTOP");
+  isUnity = (desktop.toLower() == "unity");
+
+  if(isUnity) //only use this in unity
+  {
+    system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toLatin1()+"/icon.png -t 5000");
+  }
+  else
+  {
+    trayIcon->showMessage("Video downloaded", vid->getTitle().toUtf8(), QSystemTrayIcon::Information, 5000);
+  }
+
   displayingVideos();
 }
 
