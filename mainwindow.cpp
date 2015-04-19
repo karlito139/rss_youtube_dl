@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
   //just FYI
   //QString settingsPath = QFileInfo(settings.fileName()).absolutePath();
 
-  //wreate the path to the images if it doesn't exist
+  //create the path to the images if it doesn't exist
   QDir resourceFolder(*pathToFiles);
   if(!resourceFolder.exists()){
 
@@ -93,12 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
   delete installProc;
-  installProc = new QProcess();
-#ifdef  Q_OS_LINUX
-  installProc->start("/bin/bash", QStringList() << "-c" << "rm -r "+pathToFiles->toLatin1()+"/youtube-dl");
-#endif
   settings->sync();
-
   delete ui;
 }
 
@@ -173,17 +168,37 @@ void MainWindow::downloadVideo(){
 
 
 
-void MainWindow::installYoutubeDl(){
+void MainWindow::installYoutubeDl()
+{
+  reply = qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
 
+  connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadYoutubeDlIfNecessary(QNetworkReply*)));
+}
+
+
+void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
+{
+  disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadYoutubeDlIfNecessary(QNetworkReply*)));
+
+  QString installedVersion, currentLastVersion;
+  installedVersion = settings->value("yt-dl_version", "").toString();
+  currentLastVersion = QString(pReply->readAll());
+
+  if(QString::compare(installedVersion, currentLastVersion, Qt::CaseInsensitive))
+  {
 #ifdef  Q_OS_LINUX
-  url = "http://yt-dl.org/latest/youtube-dl.tar.gz";
+    url = "http://yt-dl.org/latest/youtube-dl.tar.gz";
 #else
-  url = "http://yt-dl.org/latest/youtube-dl.exe";
+    url = "http://yt-dl.org/latest/youtube-dl.exe";
 #endif
 
-  reply = qnam.get(QNetworkRequest(url));
-
-  connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+    reply = qnam.get(QNetworkRequest(url));
+    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+  }
+  else
+  {
+    doneInstallingYoutubeDl();
+  }
 }
 
 
@@ -199,20 +214,33 @@ void MainWindow::downloadFinished(QNetworkReply* pReply)
     QFile file(pathToFiles->toLatin1()+"/youtube-dl.exe");
 #endif
 
+    if(file.exists())
+      file.remove();
     file.open(QIODevice::WriteOnly);
     file.write(m_DownloadedData);
     file.close();
 
+    disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+    //Write down the version we downloaded
+    reply = qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
+    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(writeDownVersion(QNetworkReply*)));
+
 #ifdef  Q_OS_LINUX
+    QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
+    if(installFolder.exists())
+      installFolder.remove();
     installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
     connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
 #else
     doneInstallingYoutubeDl();
 #endif
-
 }
 
 
+void MainWindow::writeDownVersion(QNetworkReply* pReply)
+{
+  settings->setValue("yt-dl_version", QString(pReply->readAll()));
+}
 
 
 
