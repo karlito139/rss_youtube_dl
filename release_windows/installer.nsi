@@ -26,7 +26,7 @@ RequestExecutionLevel user
 ;--------------------------------
 
 ; Pages
-
+Page components
 Page directory
 Page instfiles
 
@@ -80,6 +80,12 @@ Section "Start Menu Shortcuts"
   
 SectionEnd
 
+; Optional section (can be disabled by the user)
+Section "Auto start at boot"
+
+  CreateShortCut "$SMPROGRAMS\Startup\rss-youtube-dl.lnk" "$INSTDIR\rss_youtube_dl.exe" "" "$INSTDIR\rss_youtube_dl.exe" 0
+  
+SectionEnd
 
 ;--------------------------------
 
@@ -108,6 +114,7 @@ Section "Uninstall"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\rss-youtube-dl\*.*"
+  Delete "$SMPROGRAMS\Startup\rss-youtube-dl.lnk"
 
   ; Remove directories used
   RMDir "$SMPROGRAMS\rss-youtube-dl"
