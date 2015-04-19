@@ -17,6 +17,16 @@ Video::Video(QString title, QString link, QSettings *settings, QObject *parent) 
   this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
 }
 
+Video::~Video(){
+
+  if(proc != NULL)
+  {
+    if(this->currentlyDownloading)
+      stopDownload();
+
+    delete proc;
+  }
+}
 
 QString Video::extractCode(QString link){
 
@@ -59,8 +69,6 @@ void Video::download(){
 
 
 void Video::doneDownloading(){
-
-    qDebug() << proc->readAllStandardOutput() << proc->readAllStandardError();
 
   if(!proc->exitStatus()){
 

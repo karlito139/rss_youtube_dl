@@ -18,6 +18,7 @@ class Video : public QObject
   Q_OBJECT
 public:
   explicit Video(QString title, QString link, QSettings *settings, QObject *parent = 0);
+  ~Video();
   QString getTitle(){return title;}
   QString getLink(){return link;}
   QString getCode(){return code;}
