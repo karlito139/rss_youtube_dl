@@ -22,6 +22,8 @@ RssFeed::RssFeed(QSettings *settings) :
 
 RssFeed::~RssFeed()
 {
+  qDeleteAll(*listVideos);
+  listVideos->clear();
   delete listVideos;
 }
 

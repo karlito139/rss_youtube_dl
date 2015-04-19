@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
   modelListVideo->setHorizontalHeaderItem(1, new QStandardItem(QString("Code")));
   modelListVideo->setHorizontalHeaderItem(2, new QStandardItem(QString("Done")));
 
+  listVideos = NULL;
   ui->widgetListVideos->setModel(modelListVideo);
 
   QHeaderView *headerView = new QHeaderView(Qt::Horizontal, ui->widgetListVideos);
@@ -68,7 +69,10 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
   updateRSSFeed();
 
-
+  trayIcon = NULL;
+  trayIconMenu = NULL;
+  showAction = NULL;
+  quitAction = NULL;
   createTrayIcon();
 
   timer = new QTimer();
@@ -92,8 +96,37 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+
+#ifdef  Q_OS_LINUX
+  //delete indicator;
+  gtk_widget_destroy(menu);
+  gtk_widget_destroy(showItem);
+  gtk_widget_destroy(quitItem);
+#endif
+
+  delete rssFeed;
+  delete timer;
+  if(trayIcon)
+    delete trayIcon;
+  if(trayIconMenu)
+    delete trayIconMenu;
+  if(showAction)
+    delete showAction;
+  if(quitAction)
+    delete quitAction;
+
   delete installProc;
+
   settings->sync();
+  delete settings;
+
+  delete modelListVideo;
+
+  if(actionReset)
+    delete actionReset;
+  if(actionDownloaded)
+    delete actionDownloaded;
+
   delete ui;
 }
 
@@ -170,7 +203,7 @@ void MainWindow::downloadVideo(){
 
 void MainWindow::installYoutubeDl()
 {
-  reply = qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
+  qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
 
   connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadYoutubeDlIfNecessary(QNetworkReply*)));
 }
@@ -192,7 +225,7 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
     url = "http://yt-dl.org/latest/youtube-dl.exe";
 #endif
 
-    reply = qnam.get(QNetworkRequest(url));
+    qnam.get(QNetworkRequest(url));
     connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
   }
   else
@@ -222,7 +255,7 @@ void MainWindow::downloadFinished(QNetworkReply* pReply)
 
     disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
     //Write down the version we downloaded
-    reply = qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
+    qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
     connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(writeDownVersion(QNetworkReply*)));
 
 #ifdef  Q_OS_LINUX

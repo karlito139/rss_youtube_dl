@@ -105,41 +105,20 @@ private:
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
 
-
-
-    QProcess *proc;
     QProcess *installProc;
-
     QSettings *settings;
-
     QVariant user;
-
-
     QStandardItemModel *modelListVideo;
-
 
     QAction *showAction;
     QAction *quitAction;
 
-
-
-
-
-
-
-
-
     QNetworkAccessManager qnam;
-    QNetworkReply *reply;
     QUrl url;
-    QFile *file;
 
     QPixmap buttonImage;
     QGraphicsScene scene;
     QGraphicsPixmapItem item;
-
-
-
 
     QAction *actionReset;
     QAction *actionDownloaded;
