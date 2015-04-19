@@ -1,7 +1,7 @@
 #include "rssfeed.h"
 
 RssFeed::RssFeed(QString url, QSettings *settings) :
-  currentReply(0)
+  QObject()
 {
   this->settings = settings;
   this->url = url;
@@ -12,12 +12,17 @@ RssFeed::RssFeed(QString url, QSettings *settings) :
 }
 
 RssFeed::RssFeed(QSettings *settings) :
-  currentReply(0)
+  QObject()
 {
 
   this->settings = settings;
 
   listVideos = new QList<Video *>();
+}
+
+RssFeed::~RssFeed()
+{
+  delete listVideos;
 }
 
 void RssFeed::fetch()
@@ -41,11 +46,7 @@ void RssFeed::setURL(QString url){
 void RssFeed::get(QUrl &url)
 {
     QNetworkRequest request(url);
-    if (currentReply) {
-        currentReply->disconnect(this);
-        currentReply->deleteLater();
-    }
-    currentReply = manager.get(request);
+    manager.get(request);
     connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(read(QNetworkReply*)));
 
     //TODO : code those two next ones
