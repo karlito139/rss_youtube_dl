@@ -21,6 +21,7 @@ Q_OBJECT
 public:
     RssFeed(QString url, QSettings *settings);
     RssFeed(QSettings *settings);
+    ~RssFeed();
 
     QList<Video *> *getListVideos(){return listVideos;}
 
@@ -52,13 +53,7 @@ private:
     QStringList linkStrings;
     QSettings *settings;
     QString url;
-
-    QStringList *downloadedVideos;
-
     QList<Video *> *listVideos;
-
-
-    QNetworkReply *currentReply;
     QNetworkAccessManager manager;
 
 
