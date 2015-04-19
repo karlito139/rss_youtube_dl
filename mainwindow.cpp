@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QImage *img = new QImage(":/images/icon.png");
   img->save(pathToFiles->toLatin1()+"/icon.png");
 
+  ui->downloadDestination->setText(settings->value("destination", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString());
 
   modelListVideo = new QStandardItemModel(0, 0, this);
   modelListVideo->setColumnCount(3);
