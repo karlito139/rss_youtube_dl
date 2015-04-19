@@ -372,7 +372,12 @@ void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
 
 void MainWindow::updateRSSFeed(){
 
+  //Don't know why the https doesn't works on windows, and I don't want to spend time figuring out why.
+#ifdef  Q_OS_LINUX
+  rssFeed->setURL("https://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
+#else
   rssFeed->setURL("http://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
+#endif
 }
 
 
