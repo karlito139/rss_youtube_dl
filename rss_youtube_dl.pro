@@ -28,6 +28,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
   CONFIG += link_pkgconfig
 }
 
+RC_FILE = rss-youtube-dl.rc
 
 TARGET = rss_youtube_dl
 TEMPLATE = app
