@@ -1,0 +1,15 @@
+Source: rss-youtube-dl
+Maintainer: karlito <karlito@martobre.fr>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.5
+Build-Depends: debhelper (>= 9)
+
+Package: rss-youtube-dl
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Download atuomaticaly an rss feed of 
+ youtube videos
+ .
+ Rss-youtube-dl automatically downloading
+ youtube videos from an rss feed.

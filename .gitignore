@@ -1,1 +1,4 @@
-*.user
+*.user*
+release_linux
+doc/*.gz
+icon/debian

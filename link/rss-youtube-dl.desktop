@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=rss youtube downloader
+Comment=Download a youtube rss feed
+Exec=rss-youtube-dl
+Icon=rss-youtube-dl
+Terminal=false
+Categories=Internet;
+Name[en_US]=rss-youtube-dl
