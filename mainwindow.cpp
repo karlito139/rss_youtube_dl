@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 
   //Hide as soon as possible the app once created
-  QTimer::singleShot(100, this, SLOT(close()));
+  QTimer::singleShot(1, this, SLOT(close()));
 }
 
 MainWindow::~MainWindow()
@@ -420,6 +420,7 @@ void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
     for(int i=0; i<self->allWindows().count(); i++){
 
       self->allWindows().at(i)->show();
+      self->allWindows().at(i)->raise();
     }
   }else{
 
@@ -436,7 +437,10 @@ void MainWindow::showWindow()
   if(!showAction->isChecked())
     this->hide();
   else
+  {
     this->show();
+    this->raise();
+  }
 }
 
 #ifdef  Q_OS_LINUX
