@@ -8,8 +8,8 @@ Build-Depends: debhelper (>= 9)
 Package: rss-youtube-dl
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Download atuomaticaly an rss feed of 
- youtube videos
+Description: Download automaticaly an rss feed of youtube videos
  .
- Rss-youtube-dl automatically downloading
- youtube videos from an rss feed.
+ This software will simply fetch the youtube channels you have subscribed 
+ to and automaticaly download to your computer the new videos released 
+ by thoses channels.

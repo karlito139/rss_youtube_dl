@@ -1,5 +1,5 @@
 This package was debianized by Clement Roblot (karlito139)
- on Sat, 2 Mar 2013 20:13:44 +0200.
+ on Sat, 25 Apr 2015 15:28:44 +0200.
 
 Upstream Author:
 
@@ -7,12 +7,12 @@ Upstream Author:
 
 Files: *
 Copyright:
-    2013, Clement Roblot
+    2015, Clement Roblot
 License: GPL
 
 Files: debian/*
 Copyright:
-    2013, Clement Roblot
+    2015, Clement Roblot
 License: GPL
 
 License: GPL
