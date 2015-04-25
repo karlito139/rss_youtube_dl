@@ -53,7 +53,7 @@ Section "" ;No components page, name is not important
   File Qt5Network.dll
   File Qt5Widgets.dll
 
-  File rss_youtube_dl.exe
+  File rss-youtube-dl.exe
 
 
 	
