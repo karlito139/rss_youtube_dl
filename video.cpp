@@ -11,7 +11,24 @@ Video::Video(QString title, QString link, QSettings *settings, QObject *parent) 
   this->settings = settings;
   this->currentlyDownloading = false;
   this->proc = NULL;
+  this->haveBeenInitialised = true;
 
+  QString videoDownloaded = settings->value("downloaded", "").toString();
+  this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
+}
+
+
+//Using youtuve API V3.0
+Video::Video(QString id, QSettings *settings, QObject *parent) :
+  QObject(parent)
+{
+  this->link = id;
+  this->code = id;
+  this->title = "Unknown";
+  this->settings = settings;
+  this->currentlyDownloading = false;
+  this->proc = NULL;
+  this->haveBeenInitialised = false;
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
   this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
@@ -113,6 +130,25 @@ void Video::setAsDownloaded()
 
 
 
+void Video::decodeVideoInfo(QJsonObject reply)
+{
+  QString videoTitle = reply.value("title").toString();
+  QString releaseDate = reply.value("publishedAt").toString();
 
+  this->title = videoTitle;
+  this->releaseDate = QDateTime::fromString(releaseDate, "yyyy-MM-ddThh:mm:ss.zzzZ");
+
+  emit videoStatusChanged();
+
+
+}
+
+bool Video::lessThan(const Video *v1, const Video *v2)
+{
+  if(v1->getReleaseDate() > v2->getReleaseDate())
+    return true;
+  else
+    return false;
+}
 
 

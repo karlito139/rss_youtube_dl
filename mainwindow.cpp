@@ -64,10 +64,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
   ui->userId->setText(user.toString());
 
+  //Get the API key that is in the apiKey.txt file
+  QFile apiKeyFile(":/apiKey.txt");
+  apiKeyFile.open(QIODevice::ReadOnly);
 
-  rssFeed = new RssFeed(settings);
+  QTextStream apiKeyStream(&apiKeyFile);
+  QString apiKey = apiKeyStream.readAll();
+  apiKeyFile.close();
+
+  apiKey.remove(QRegExp("[\\n\\t\\r]"));
+
+
+  rssFeed = new RssFeed(settings, apiKey);
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
-  updateRSSFeed();
 
   trayIcon = NULL;
   trayIconMenu = NULL;
@@ -76,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
   createTrayIcon();
 
   timer = new QTimer();
-  timer->setInterval(10*60*1000); //fetch new video every 10 minutes
+  timer->setInterval(15*60*1000); //fetch new video every 10 minutes
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
@@ -137,8 +146,10 @@ MainWindow::~MainWindow()
 void MainWindow::displayingVideos(){
 
   int isCurrentlyDownloading = 0;
+  QModelIndex currentlySelected = ui->widgetListVideos->currentIndex();
 
   listVideos = rssFeed->getListVideos();
+  qSort(listVideos->begin(), listVideos->end(), Video::lessThan);
 
   for(int i=0; i<listVideos->count(); i++)
     connect(listVideos->at(i), SIGNAL(videoStatusChanged()), this, SLOT(displayingVideos()), Qt::UniqueConnection );
@@ -171,6 +182,7 @@ void MainWindow::displayingVideos(){
   }
 
   ui->widgetListVideos->setModel(modelListVideo);
+  ui->widgetListVideos->setCurrentIndex(currentlySelected);
 
   if(isCurrentlyDownloading == 0)
     downloadVideo();
@@ -292,7 +304,7 @@ void MainWindow::doneInstallingYoutubeDl(){
     file.remove();
 #endif
 
-  displayingVideos();
+  updateRSSFeed();
 }
 
 void MainWindow::videoStartDownloading(Video *){
@@ -455,24 +467,24 @@ void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
 
 void MainWindow::updateRSSFeed(){
 
-  //Don't know why the https doesn't works on windows, and I don't want to spend time figuring out why.
-#ifdef  Q_OS_LINUX
-  rssFeed->setURL("https://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
-#else
-  rssFeed->setURL("http://gdata.youtube.com/feeds/api/users/"+user.toString()+"/newsubscriptionvideos");
-#endif
+  rssFeed->setChannelId(ui->userId->text());
 }
 
 
 
 void MainWindow::on_userId_editingFinished()
 {
-  user = ui->userId->text();
+  if( ui->userId->text() != user)
+  {
+    user = ui->userId->text();
 
-  settings->setValue("user", user.toString());
-  settings->sync();
+    settings->setValue("user", user.toString());
+    settings->sync();
 
-  updateRSSFeed();
+    updateRSSFeed();
+
+    qDebug() << "finished user id";
+  }
 }
 
 
@@ -502,30 +514,51 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &pos)
 {
-  QModelIndex index = ui->widgetListVideos->indexAt(pos);
   Video *vid;
-  vid = listVideos->at(index.row());
-
+  QItemSelectionModel *selections = ui->widgetListVideos->selectionModel();
+  QModelIndexList selected = selections->selectedRows();
   QMenu *menu=new QMenu(this);
+  bool containDownloadedVid = false;
+  bool containsUndownloadedVid = false;
 
-  if(vid->haveAlreadyBeenDownloaded())
-    {
-    if(actionReset != NULL)
-      delete actionReset;
-    actionReset = new QAction("Reset", this);
-    connect(actionReset, SIGNAL(triggered()), vid, SLOT(reset()));
-    menu->addAction(actionReset);
-  }
-  else
+
+
+  if(actionReset != NULL)
+    delete actionReset;
+  actionReset = new QAction("Reset", this);
+
+  if(actionDownloaded != NULL)
+    delete actionDownloaded;
+  actionDownloaded = new QAction("Set as downloaded", this);
+
+
+  for( int i = 0 ; i < selected.size(); i++ )
   {
-    if(actionDownloaded != NULL)
-      delete actionDownloaded;
-    actionDownloaded = new QAction("Set as downloaded", this);
+    vid = listVideos->at(selected[i].row());
+
+    if(vid->haveAlreadyBeenDownloaded())
+      containDownloadedVid = true;
+    else
+      containsUndownloadedVid = true;
+
+    connect(actionReset, SIGNAL(triggered()), vid, SLOT(reset()));
     connect(actionDownloaded, SIGNAL(triggered()), vid, SLOT(setAsDownloaded()));
-    menu->addAction(actionDownloaded);
   }
+
+
+  if(containDownloadedVid == true)
+    menu->addAction(actionReset);
+
+  if(containsUndownloadedVid == true)
+    menu->addAction(actionDownloaded);
 
   menu->popup(ui->widgetListVideos->viewport()->mapToGlobal(pos));
 }
 
+
+
+void MainWindow::on_helpButton_clicked()
+{
+    QDesktopServices::openUrl(QUrl("http://www.youtube.com/account_advanced"));
+}
 

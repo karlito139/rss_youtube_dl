@@ -89,6 +89,8 @@ icon128.path = /$(DESTDIR)/usr/share/icons/hicolor/128x128/apps
 iconscal.files = icon/debian/usr/share/icons/hicolor/scalable/apps/rss-youtube-dl.svgz
 iconscal.path = /$(DESTDIR)/usr/share/icons/hicolor/scalable/apps
 
+DISTFILES +=
+
 
 
 
