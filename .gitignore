@@ -2,3 +2,4 @@
 release_linux
 doc/*.gz
 icon/debian
+apiKey.txt

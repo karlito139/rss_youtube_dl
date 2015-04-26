@@ -18,6 +18,8 @@
 #include <qgraphicsscene.h>
 #include <QAction>
 #include <QStandardPaths>
+#include <QDesktopServices>
+#include <QItemSelectionModel>
 
 #include "rssfeed.h"
 
@@ -81,6 +83,8 @@ private slots:
   void writeDownVersion(QNetworkReply* pReply);
   void downloadYoutubeDlIfNecessary(QNetworkReply* pReply);
   void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
+
+  void on_helpButton_clicked();
 
 private:
     Ui::MainWindow *ui;
