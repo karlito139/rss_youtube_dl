@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
   this->downloadEnable = true;
   this->starting = true;
 
-  settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "youtube_rss_dl", "config");
+  settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "localtube", "config");
   QFileInfo setting_file(settings->fileName());
   pathToFiles = new QString(setting_file.path());
 
