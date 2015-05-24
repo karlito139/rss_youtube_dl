@@ -28,6 +28,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
   CONFIG += link_pkgconfig
 }
 
+#win32{
+#    LIBS += -LC:/OpenSSL-Win32/bin -lubsec
+#    INCLUDEPATH += C:/OpenSSL-Win32/include
+#}
 
 RC_FILE = rss-youtube-dl.rc
 
