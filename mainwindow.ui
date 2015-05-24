@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Youtube rss feed downloader</string>
+   <string>Localtube</string>
   </property>
   <property name="windowIcon">
    <iconset resource="ressource.qrc">
@@ -147,7 +147,7 @@
      <x>0</x>
      <y>0</y>
      <width>817</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
