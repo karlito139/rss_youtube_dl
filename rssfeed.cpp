@@ -11,6 +11,7 @@ RssFeed::RssFeed(QString url, QSettings *settings, QString apiKey) :
   videoInfoFetchingTimer->setInterval(10*1000);  //10 seconds
   videoInfoFetchingTimer->stop();
   connect(videoInfoFetchingTimer, SIGNAL(timeout()), this, SLOT(getMissingVidInfos()));
+  initPlaylistsInfos();
 
   listVideos = new QList<Video *>();
   quotaCount = 0;
@@ -26,6 +27,7 @@ RssFeed::RssFeed(QSettings *settings, QString apiKey) :
   this->apiKey = apiKey;
 
   quotaCount = 0;
+  initPlaylistsInfos();
 
   videoInfoFetchingTimer = new QTimer();
   videoInfoFetchingTimer->setInterval(10*1000);  //10 seconds
@@ -64,6 +66,35 @@ void RssFeed::fetch()
 }
 
 
+void RssFeed::initPlaylistsInfos()
+{
+  int size = settings->beginReadArray("playlists");
+  for (int i = 0; i < size; ++i) {
+    settings->setArrayIndex(i);
+    PlaylistInfo playlist;
+
+    playlist.channelID = settings->value("channel").toString();
+    playlist.playlistID = settings->value("playlist").toString();
+
+    playlistInfos.append(playlist);
+  }
+  settings->endArray();
+}
+
+
+void RssFeed::savePlaylistsInfos()
+{
+  settings->beginWriteArray("playlists");
+  for(int i=0; i<playlistInfos.count(); i++)
+  {
+    settings->setArrayIndex(i);
+    settings->setValue("channel", playlistInfos.at(i).channelID);
+    settings->setValue("playlist", playlistInfos.at(i).playlistID);
+  }
+
+  settings->endArray();
+  settings->sync();
+}
 
 
 
@@ -81,6 +112,8 @@ void RssFeed::getSubscribedChannelsList()
     url += "&channelId=" + this->channelID;
     url += "&maxResults=50";
     url += "&key=" + this->apiKey;
+
+    //qDebug() << url;
 
     QNetworkRequest request(url);
     manager.get(request);
@@ -102,20 +135,35 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
 
 
       QJsonArray channelList = jsonResponseObj.value("items").toArray();
-      QList<QString> listOfChannels;
+      QList<QString> channelsToFetch;
       for(int i=0; i<channelList.count(); i++)
       {
         QJsonObject channel = channelList.at(i).toObject();
 
         //QString channelName = channel.value("snippet").toObject().value("title").toString();
         QString channelID = channel.value("snippet").toObject().value("resourceId").toObject().value("channelId").toString();
-        //qDebug() << "Channel : " << channelName << " it's ID is : " << channelID;
+        //qDebug() << "Channel's ID is : " << channelID;
 
-        listOfChannels.append(channelID);
+
+        bool isAlreadyFetched = false;
+        QString playlistId;
+        for(int j=0; j<playlistInfos.size(); j++)
+        {
+          if(playlistInfos.at(j).channelID == channelID)
+            playlistId = playlistInfos.at(j).playlistID;
+            isAlreadyFetched = true;
+        }
+
+        if(isAlreadyFetched == false)
+          channelsToFetch.append(channelID);
+        else
+          getListOfVideos(playlistId);
       }
 
-      if(listOfChannels.count() > 0)
-        getPlaylistId(listOfChannels);
+      //qDebug() << "I need to fetch : " << channelsToFetch.count() << "playlits";
+
+      if(channelsToFetch.count() > 0)
+        getPlaylistId(channelsToFetch);
   }
 }
 
@@ -164,15 +212,24 @@ void RssFeed::decondePlaylistId(QNetworkReply* reply)
       QJsonObject jsonResponseObj = jsonResponse.object();
 
       QJsonArray playlistList = jsonResponseObj.value("items").toArray();
+
       for(int i=0; i<playlistList.count(); i++)
       {
         QJsonObject playlist = playlistList.at(i).toObject();
 
+        QString channelID = playlist.value("id").toString();
         QString playlistID = playlist.value("contentDetails").toObject().value("relatedPlaylists").toObject().value("uploads").toString();
 
         //qDebug() << "Ask about the playlist : " << playlistID;
         getListOfVideos(playlistID);
+
+        PlaylistInfo playlistInfo;
+        playlistInfo.channelID = channelID;
+        playlistInfo.playlistID = playlistID;
+        playlistInfos.append(playlistInfo);
       }
+
+      savePlaylistsInfos();
   }
 }
 

@@ -22,6 +22,14 @@
 #define MAX_ITEMS_PER_REQUESTS 50
 
 
+
+struct PlaylistInfo{
+
+  QString channelID;
+  QString playlistID;
+};
+
+
 class RssFeed: public QObject
 {
 Q_OBJECT
@@ -64,6 +72,8 @@ private:
     bool isInVideoList(QString code);
     void addQuotaUsage(int amount);
     void getVideosInfo(QList<QString> videoList);
+    void initPlaylistsInfos();
+    void savePlaylistsInfos();
 
     QXmlStreamReader xml;
     QString currentTag;
@@ -82,7 +92,7 @@ private:
 
     //youtube API V3.0
     int quotaCount;
-
+    QList<PlaylistInfo> playlistInfos;
 
 
 
