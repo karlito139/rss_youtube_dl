@@ -33,6 +33,9 @@ Source: "release_windows\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Name: "{group}\localtube"; Filename: "{app}\localtube.exe"
 Name: "{userstartup}\localtube"; Filename: "{app}\localtube.exe"; Check: autoStartApp
 
+[Run]
+Filename: "{app}\localtube.exe"; Description: "Launch localtube"; Flags: nowait postinstall skipifsilent
+
 [Code]
 var
   Opt : TInputOptionWizardPage; 
