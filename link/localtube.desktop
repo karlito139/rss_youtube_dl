@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=localtube
+Comment=Download a youtube feed
+Exec=localtube
+Icon=localtube
+Terminal=false
+Categories=Internet;
+Name[en_US]=localtube

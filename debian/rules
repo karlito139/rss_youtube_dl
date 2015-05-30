@@ -3,4 +3,4 @@
 	dh $@
 
 override_dh_auto_install:
-	$(MAKE) DESTDIR=$$(pwd)/debian/rss-youtube-dl prefix=/usr install
+	$(MAKE) DESTDIR=$$(pwd)/debian/localtube prefix=/usr install

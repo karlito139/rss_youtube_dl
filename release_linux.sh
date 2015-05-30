@@ -3,27 +3,27 @@
 #https://wiki.debian.org/IntroDebianPackaging
 #https://bhavyanshu.me/how-to-make-debian-packages-for-qt-c-based-applications/11/10/2014/
 
-#sudo apt-get install build-essential devscripts debhelper 
+#sudo apt-get install build-essential devscripts debhelper librsvg2-bin
 
 rm -r release_linux
-rm rss-youtube-dl_1.0.tar.gz
-rm doc/rss-youtube-dl.1.gz
+rm localtube_1.0.tar.gz
+rm doc/localtube.1.gz
 
 
-tar -cvf doc/rss-youtube-dl.1.gz doc/rss-youtube-dl.1 
-tar -czf rss-youtube-dl_1.0.tar.gz *
+tar -cvf doc/localtube.1.gz doc/localtube.1 
+tar -czf localtube_1.0.tar.gz *
 
 cd icon
 rm -r debian
-./resize.sh rss-youtube-dl.svg
+./resize.sh localtube.svg
 cd ..
 
 mkdir release_linux
-mv rss-youtube-dl_1.0.tar.gz release_linux/rss-youtube-dl_1.0.orig.tar.gz
+mv localtube_1.0.tar.gz release_linux/localtube_1.0.orig.tar.gz
 
 cd release_linux
-mkdir rss-youtube-dl_1.0
-tar -xvf rss-youtube-dl_1.0.orig.tar.gz -C rss-youtube-dl_1.0/
+mkdir localtube_1.0
+tar -xvf localtube_1.0.orig.tar.gz -C localtube_1.0/
 
-cd rss-youtube-dl_1.0
+cd localtube_1.0
 debuild -us -uc 

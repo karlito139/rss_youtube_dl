@@ -1,14 +1,14 @@
-Source: rss-youtube-dl
+Source: localtube
 Maintainer: karlito <karlito@martobre.fr>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.5
 Build-Depends: debhelper (>= 9)
 
-Package: rss-youtube-dl
+Package: localtube
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Download automatically an rss feed of youtube videos
+Description: Download automatically a feed of youtube videos
  .
  This software will simply fetch the youtube channels you have subscribed 
  to and automatically download to your computer the new videos released 
