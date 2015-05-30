@@ -9,14 +9,13 @@ rm -r release_linux
 rm localtube_1.0.tar.gz
 rm doc/localtube.1.gz
 
-
-tar -cvf doc/localtube.1.gz doc/localtube.1 
-tar -czf localtube_1.0.tar.gz *
-
 cd icon
 rm -r debian
 ./resize.sh localtube.svg
 cd ..
+
+tar -cvf doc/localtube.1.gz doc/localtube.1 
+tar -czf localtube_1.0.tar.gz *
 
 mkdir release_linux
 mv localtube_1.0.tar.gz release_linux/localtube_1.0.orig.tar.gz
