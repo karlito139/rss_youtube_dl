@@ -124,14 +124,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-
-#ifdef  Q_OS_LINUX
-  //delete indicator;
-  gtk_widget_destroy(menu);
-  gtk_widget_destroy(showItem);
-  gtk_widget_destroy(quitItem);
-#endif
-
   delete rssFeed;
   delete timer;
   if(trayIcon)
@@ -376,92 +368,25 @@ void MainWindow::recheckFeed(){
 
 void MainWindow::createTrayIcon(){
 
-  QString desktop;
-  bool isUnity;
+  showAction = new QAction(tr("&Show"), this);
+  showAction->setCheckable(true);
+  connect(showAction, SIGNAL(triggered()), this, SLOT(showWindow()));
 
-  desktop = getenv("XDG_CURRENT_DESKTOP");
-  isUnity = (desktop.toLower() == "unity");
-
-  if(isUnity) //only use this in unity
-  {
-#ifdef  Q_OS_LINUX
-
-      menu = gtk_menu_new();
-
-      //show Item
-      showItem = gtk_check_menu_item_new_with_label("Show");
-      gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, true);
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), showItem);
-      g_signal_connect(showItem, "toggled", G_CALLBACK(MainWindow::showWindowGTK), qApp);
-
-      //g_signal_connect()
-      gtk_widget_show(showItem);
-
-      //quit item
-      quitItem = gtk_menu_item_new_with_label("Quit");
-      gtk_menu_shell_append(GTK_MENU_SHELL(menu), quitItem);
-      g_signal_connect(quitItem, "activate", G_CALLBACK(MainWindow::quitWindow), qApp);
-      gtk_widget_show(quitItem);
-
-      indicator = app_indicator_new("example", "indicator-messages", APP_INDICATOR_CATEGORY_OTHER);
-
-      app_indicator_set_icon_theme_path(indicator, pathToFiles->toLatin1());
-      app_indicator_set_icon_full(indicator, "icon", "description");
-
-      app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
-      app_indicator_set_menu(indicator, GTK_MENU(menu));
-#endif
-  }
-  else //other OS's
-  {
-
-    showAction = new QAction(tr("&Show"), this);
-    showAction->setCheckable(true);
-    connect(showAction, SIGNAL(triggered()), this, SLOT(showWindow()));
-
-    quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+  quitAction = new QAction(tr("&Quit"), this);
+  connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 
-    trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(showAction);
-    trayIconMenu->addAction(quitAction);
+  trayIconMenu = new QMenu(this);
+  trayIconMenu->addAction(showAction);
+  trayIconMenu->addAction(quitAction);
 
-    trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setIcon(QIcon(":/images/icon.png"));
+  trayIcon = new QSystemTrayIcon(this);
+  trayIcon->setContextMenu(trayIconMenu);
+  trayIcon->setIcon(QIcon(":/images/icon.png"));
 
-    trayIcon->show();
-  }
+  trayIcon->show();
 }
 
-
-#ifdef  Q_OS_LINUX
-void MainWindow::showWindowGTK(GtkCheckMenuItem *menu, gpointer data)
-{
-
-  //http://ubuntuforums.org/showthread.php?t=2179045
-
-  Q_UNUSED(menu);
-  bool checked = gtk_check_menu_item_get_active(menu);
-  QApplication *self = static_cast<QApplication *>(data);
-
-  if(checked){
-
-    for(int i=0; i<self->allWindows().count(); i++){
-
-      self->allWindows().at(i)->show();
-      self->allWindows().at(i)->raise();
-    }
-  }else{
-
-    for(int i=0; i<self->allWindows().count(); i++){
-
-      self->allWindows().at(i)->hide();
-    }
-  }
-}
-#endif
 
 void MainWindow::showWindow()
 {
@@ -473,15 +398,6 @@ void MainWindow::showWindow()
     this->raise();
   }
 }
-
-#ifdef  Q_OS_LINUX
-void MainWindow::quitWindow(GtkMenu *menu, gpointer data){
-
-  Q_UNUSED(menu);
-  QApplication *self = static_cast<QApplication *>(data);
-  self->quit();
-}
-#endif
 
 
 void MainWindow::updateRSSFeed(){
@@ -516,13 +432,9 @@ void MainWindow::on_actionQuite_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event){
 
-    //we hide the window
-#ifdef  Q_OS_LINUX
-  gtk_check_menu_item_set_active((GtkCheckMenuItem*)showItem, false);
-#else
-    this->hide();
-    showAction->setChecked(false);
-#endif
+  //we hide the window
+  this->hide();
+  showAction->setChecked(false);
 
   //an ignore the close event
   event->ignore();
