@@ -159,18 +159,22 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
       {
         QJsonObject channel = channelList.at(i).toObject();
 
-        //QString channelName = channel.value("snippet").toObject().value("title").toString();
+        QString channelName = channel.value("snippet").toObject().value("title").toString();
         QString channelID = channel.value("snippet").toObject().value("resourceId").toObject().value("channelId").toString();
-        //qDebug() << "Channel's ID is : " << channelID;
+        //qDebug() << "Channel " << channelName << "'s ID is : " << channelID;
 
 
         bool isAlreadyFetched = false;
         QString playlistId;
+
+        //Seach in the current config if we didn't already fetch the right playlist ID for this channel
         for(int j=0; j<playlistInfos.size(); j++)
         {
           if(playlistInfos.at(j).channelID == channelID)
+          {
             playlistId = playlistInfos.at(j).playlistID;
             isAlreadyFetched = true;
+          }
         }
 
         if(isAlreadyFetched == false)
@@ -179,7 +183,7 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
           getListOfVideos(playlistId);
       }
 
-      //qDebug() << "I need to fetch : " << channelsToFetch.count() << "playlits";
+      qDebug() << "I need to fetch : " << channelsToFetch.count() << "playlits";
 
       if(channelsToFetch.count() > 0)
         getPlaylistId(channelsToFetch);
