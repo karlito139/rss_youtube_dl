@@ -45,20 +45,6 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 extern QString *pathToFiles;
 
 
-#ifdef  Q_OS_LINUX
-  #undef signals
-  extern "C"
-  {
-      #include <libappindicator/app-indicator.h>
-      #include <libnotify/notify.h>
-      #include <gtk/gtk.h>
-
-  void onShow(GtkCheckMenuItem *, gpointer);
-  void onQuit(GtkMenu *, gpointer);
-  }
-  #define signals public
-#endif
-
 
 namespace Ui {
 class MainWindow;
@@ -80,12 +66,6 @@ public slots:
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
   void doneInstallingYoutubeDl();
-
-#ifdef  Q_OS_LINUX
-  static void showWindowGTK(GtkCheckMenuItem *menu, gpointer data); //static needed for GTK
-  static void quitWindow(GtkMenu *menu, gpointer data);
-#endif
-
   void showWindow();
 
     
@@ -111,14 +91,6 @@ private:
     void installYoutubeDl();
     void downloadVideo();
     void createTrayIcon();
-
-#ifdef  Q_OS_LINUX
-    AppIndicator *indicator;
-    GtkWidget *menu;
-    GtkWidget *showItem;
-    GtkWidget *quitItem;
-#endif
-
     bool downloadEnable;
     bool YoutubeDlInstalled;
     bool starting;
