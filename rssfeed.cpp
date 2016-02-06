@@ -33,8 +33,6 @@ RssFeed::RssFeed(QString url, QSettings *settings) :
 
   listVideos = new QList<Video *>();
   quotaCount = 0;
-
-  //fetch();
 }
 
 RssFeed::RssFeed(QSettings *settings) :
@@ -65,8 +63,6 @@ RssFeed::~RssFeed()
 
 void RssFeed::fetch(QString clientId, QString clientSecret)
 {
-  //getSubscribedChannelsList();
-
   getNewToken(clientId, clientSecret);
 }
 
@@ -126,6 +122,8 @@ void RssFeed::decodeNewToken(QNetworkReply* reply)
 {
   int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+  //qDebug() << "statusCode : " << statusCode;
+
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
 
@@ -134,9 +132,12 @@ void RssFeed::decodeNewToken(QNetworkReply* reply)
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();
 
-      currentToken = jsonResponseObj.value("access_token").toString();
+      QString token = jsonResponseObj.value("access_token").toString();
 
-      //qDebug() << "new tocken : " << token;
+      if(!token.isEmpty())
+        currentToken = token;
+
+      //qDebug() << "new tocken : " << currentToken;
 
       getSubscribedChannelsList();
   }
@@ -214,7 +215,7 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
           getListOfVideos(playlistId);
       }
 
-      qDebug() << "I need to fetch : " << channelsToFetch.count() << "playlits";
+      //qDebug() << "I need to fetch : " << channelsToFetch.count() << "playlits";
 
       if(channelsToFetch.count() > 0)
         getPlaylistId(channelsToFetch);
@@ -326,8 +327,12 @@ void RssFeed::decodeListOfVideos(QNetworkReply* reply)
 {
   int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+  //qDebug() << "Status code :" << statusCode;
+
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
+
+      //qDebug() << "received data :" << data;
 
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();

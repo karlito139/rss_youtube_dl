@@ -87,11 +87,9 @@ private slots:
   void on_helpButton_clicked();
   void on_loginButton_clicked();
 
-
-  void on_authCode_editingFinished();
+  void updateUI();
   void decodeAuthToken(QNetworkReply* reply);
-
-
+  void on_authCode_textChanged();
 
 private:
     Ui::MainWindow *ui;
