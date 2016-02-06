@@ -54,8 +54,8 @@ class RssFeed: public QObject
 Q_OBJECT
 
 public:
-    RssFeed(QString url, QSettings *settings, QString apiKey);
-    RssFeed(QSettings *settings, QString apiKey);
+    RssFeed(QString url, QSettings *settings);
+    RssFeed(QSettings *settings);
     ~RssFeed();
 
     QList<Video *> *getListVideos(){return listVideos;}
@@ -70,7 +70,7 @@ public slots:
 private slots:
     void read(QNetworkReply *reply);
 
-    void getSubscribedChannelsList();
+    void getChannelInfo();
     void decodeSubscribedChannelsList(QNetworkReply* reply);
     void getPlaylistId(QList<QString> channelIDs);
     void decondePlaylistId(QNetworkReply* reply);
@@ -78,6 +78,10 @@ private slots:
     void decodeListOfVideos(QNetworkReply* reply);
     void decodeVideoInfo(QNetworkReply* reply);
     void getMissingVidInfos();
+
+
+    void getSubscribedChannelsList();
+    void decodeChannelInfo(QNetworkReply *reply);
 
 signals:
     void doneReading();
@@ -98,7 +102,6 @@ private:
     QString currentTag;
     QString linkString;
     QString titleString;
-    QString apiKey;
     QStringList linkStrings;
     QSettings *settings;
     QString url;

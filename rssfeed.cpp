@@ -19,12 +19,11 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "rssfeed.h"
 
-RssFeed::RssFeed(QString url, QSettings *settings, QString apiKey) :
+RssFeed::RssFeed(QString url, QSettings *settings) :
   QObject()
 {
   this->settings = settings;
   this->url = url;
-  this->apiKey = apiKey;
 
   videoInfoFetchingTimer = new QTimer();
   videoInfoFetchingTimer->setInterval(10*1000);  //10 seconds
@@ -38,12 +37,11 @@ RssFeed::RssFeed(QString url, QSettings *settings, QString apiKey) :
   fetch();
 }
 
-RssFeed::RssFeed(QSettings *settings, QString apiKey) :
+RssFeed::RssFeed(QSettings *settings) :
   QObject()
 {
 
   this->settings = settings;
-  this->apiKey = apiKey;
 
   quotaCount = 0;
   initPlaylistsInfos();
@@ -82,6 +80,8 @@ void RssFeed::setChannelId(QString id)
 void RssFeed::fetch()
 {
   getSubscribedChannelsList();
+
+  //getChannelInfo();
 }
 
 
@@ -119,6 +119,47 @@ void RssFeed::savePlaylistsInfos()
 
 
 
+void RssFeed::getChannelInfo()
+{
+    QString url;
+
+    url = "https://www.googleapis.com/youtube/v3";
+    url += "/channels";
+
+    url += "?part=id";
+    url += "&mine=true";
+    url += "&access_token=" + settings->value("token", "").toString();
+
+    qDebug() << url;
+
+    QNetworkRequest request(url);
+    manager.get(request);
+    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeChannelInfo(QNetworkReply*)));
+}
+
+
+void RssFeed::decodeChannelInfo(QNetworkReply *reply)
+{
+  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+
+  if (statusCode >= 200 && statusCode < 300) {
+      QString data = (QString)reply->readAll();
+
+      qDebug() << "channel info" << data;
+
+      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
+      QJsonObject jsonResponseObj = jsonResponse.object();
+
+      //QString channelId = jsonResponseObj.value("items").toArray();
+
+
+
+  }
+}
+
+
+
 
 void RssFeed::getSubscribedChannelsList()
 {
@@ -128,9 +169,9 @@ void RssFeed::getSubscribedChannelsList()
     url += "/subscriptions";
 
     url += "?part=snippet";
-    url += "&channelId=" + this->channelID;
+    url += "&mine=true";
     url += "&maxResults=50";
-    url += "&key=" + this->apiKey;
+    url += "&access_token=" + settings->value("token", "").toString();
 
     //qDebug() << url;
 
@@ -146,8 +187,12 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
 {
   int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+  //qDebug() << "statusCode : " << statusCode;
+
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
+
+      //qDebug() << "list of subscriptions : " << data;
 
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();
@@ -209,7 +254,7 @@ void RssFeed::getPlaylistId(QList<QString> channelIDs)
   url = url.left(url.size()-1);
 
   url += "&maxResults=50";
-  url += "&key=" + this->apiKey;
+  url += "&access_token=" + settings->value("token", "").toString();
 
   //qDebug() << url;
 
@@ -277,7 +322,7 @@ void RssFeed::getListOfVideos(QString playlistID)
   url += "?part=contentDetails";
   url += "&playlistId=" + playlistID;
   url += "&maxResults=5";
-  url += "&key=" + this->apiKey;
+  url += "&access_token=" + settings->value("token", "").toString();
 
   //qDebug() << url;
 
@@ -368,7 +413,7 @@ void RssFeed::getVideosInfo(QList<QString> videoList)
     url = url.left(url.size()-1);
 
     url += "&maxResults=50";
-    url += "&key=" + this->apiKey;
+    url += "&access_token=" + settings->value("token", "").toString();
 
     QNetworkRequest request(url);
     manager4.get(request);

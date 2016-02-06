@@ -33,23 +33,17 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Youtube Channel ID : </string>
+         <string>Auth code : </string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="userId">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>0</height>
-         </size>
+       <widget class="QLineEdit" name="authCode"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="loginButton">
+        <property name="text">
+         <string>login</string>
         </property>
        </widget>
       </item>
@@ -147,7 +141,7 @@
      <x>0</x>
      <y>0</y>
      <width>817</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

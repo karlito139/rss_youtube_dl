@@ -74,27 +74,35 @@ MainWindow::MainWindow(QWidget *parent) :
   headerView->resizeSection(1, 150);
   headerView->resizeSection(2, 50);
 
-
   this->YoutubeDlInstalled = false;
   installYoutubeDl();
 
+  //Get the client id keys that is in the apiKey.txt file
+  QFile clientIdFile(":/clientId.txt");
+  clientIdFile.open(QIODevice::ReadOnly);
 
-  user = settings->value("user", "");
+  QTextStream clientIdStream(&clientIdFile);
+  clientId = clientIdStream.readAll();
+  clientIdFile.close();
 
-  ui->userId->setText(user.toString());
-
-  //Get the API key that is in the apiKey.txt file
-  QFile apiKeyFile(":/apiKey.txt");
-  apiKeyFile.open(QIODevice::ReadOnly);
-
-  QTextStream apiKeyStream(&apiKeyFile);
-  QString apiKey = apiKeyStream.readAll();
-  apiKeyFile.close();
-
-  apiKey.remove(QRegExp("[\\n\\t\\r]"));
+  clientId.remove(QRegExp("[\\n\\t\\r]"));
 
 
-  rssFeed = new RssFeed(settings, apiKey);
+
+  //Get the client secret keys that is in the apiKey.txt file
+  QFile clientSecretFile(":/clientSecret.txt");
+  clientSecretFile.open(QIODevice::ReadOnly);
+
+  QTextStream clientSecretStream(&clientIdFile);
+  clientSecret = clientSecretStream.readAll();
+  clientSecretFile.close();
+
+  clientSecret.remove(QRegExp("[\\n\\t\\r]"));
+
+
+
+
+  rssFeed = new RssFeed(settings);
   connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
 
   trayIcon = NULL;
@@ -299,13 +307,6 @@ void MainWindow::writeDownVersion(QNetworkReply* pReply)
 }
 
 
-
-
-
-
-
-
-
 void MainWindow::doneInstallingYoutubeDl(){
 
   this->YoutubeDlInstalled = true;
@@ -402,26 +403,8 @@ void MainWindow::showWindow()
 
 void MainWindow::updateRSSFeed(){
 
-  rssFeed->setChannelId(ui->userId->text());
+  rssFeed->fetch();
 }
-
-
-
-void MainWindow::on_userId_editingFinished()
-{
-  if( ui->userId->text() != user)
-  {
-    user = ui->userId->text();
-
-    settings->setValue("user", user.toString());
-    settings->sync();
-
-    updateRSSFeed();
-
-    qDebug() << "finished user id";
-  }
-}
-
 
 
 void MainWindow::on_actionQuite_triggered()
@@ -492,4 +475,67 @@ void MainWindow::on_helpButton_clicked()
 {
     QDesktopServices::openUrl(QUrl("http://www.youtube.com/account_advanced"));
 }
+
+
+void MainWindow::on_loginButton_clicked()
+{
+  QString url;
+
+  url = "https://accounts.google.com/o/oauth2/auth";
+  url += "?client_id="+clientId;
+  url += "&redirect_uri=urn:ietf:wg:oauth:2.0:oob";
+  url += "&scope=https://www.googleapis.com/auth/youtube";
+  url += "&response_type=code";
+  url += "&access_type=offline";
+
+  QDesktopServices::openUrl( url );
+}
+
+
+void MainWindow::on_authCode_editingFinished()
+{
+  QString url = "https://www.googleapis.com/oauth2/v4/token";
+  QUrlQuery postData;
+  postData.addQueryItem("code", ui->authCode->text());
+  postData.addQueryItem("client_id", clientId);
+  postData.addQueryItem("client_secret", clientSecret);
+  postData.addQueryItem("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
+  postData.addQueryItem("grant_type", "authorization_code");
+
+  QNetworkRequest request(url);
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+  networkManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+
+  connect(&networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeAuthToken(QNetworkReply*)));
+}
+
+
+
+void MainWindow::decodeAuthToken(QNetworkReply* reply)
+{
+  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+  if (statusCode >= 200 && statusCode < 300) {
+      QString data = (QString)reply->readAll();
+
+      //qDebug() << "Received data : " << data;
+
+      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
+      QJsonObject jsonResponseObj = jsonResponse.object();
+
+      QString token = jsonResponseObj.value("access_token").toString();
+      QString refreshToken = jsonResponseObj.value("refresh_token").toString();
+
+      qDebug() << "Tocken : " << token;
+      qDebug() << "refresh tocken : " << refreshToken;
+
+      settings->setValue("token", token);
+      settings->setValue("refreshToken", refreshToken);
+      settings->sync();
+
+      rssFeed->fetch();
+  }
+
+}
+
 
