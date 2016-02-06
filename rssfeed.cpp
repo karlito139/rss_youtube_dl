@@ -34,7 +34,7 @@ RssFeed::RssFeed(QString url, QSettings *settings) :
   listVideos = new QList<Video *>();
   quotaCount = 0;
 
-  fetch();
+  //fetch();
 }
 
 RssFeed::RssFeed(QSettings *settings) :
@@ -63,11 +63,11 @@ RssFeed::~RssFeed()
 }
 
 
-void RssFeed::fetch()
+void RssFeed::fetch(QString clientId, QString clientSecret)
 {
-  getSubscribedChannelsList();
+  //getSubscribedChannelsList();
 
-  //getChannelInfo();
+  getNewToken(clientId, clientSecret);
 }
 
 
@@ -101,6 +101,52 @@ void RssFeed::savePlaylistsInfos()
   settings->sync();
 }
 
+
+
+void RssFeed::getNewToken(QString clientId, QString clientSecret)
+{
+  QString url = "https://www.googleapis.com/oauth2/v4/token";
+  QUrlQuery postData;
+  postData.addQueryItem("client_id", clientId);
+  postData.addQueryItem("client_secret", clientSecret);
+  postData.addQueryItem("refresh_token", settings->value("refreshToken", "").toString());
+  postData.addQueryItem("grant_type", "refresh_token");
+
+  QNetworkRequest request(url);
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+  tokenManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+
+  connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)));
+}
+
+
+
+
+void RssFeed::decodeNewToken(QNetworkReply* reply)
+{
+  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+  if (statusCode >= 200 && statusCode < 300) {
+      QString data = (QString)reply->readAll();
+
+      //qDebug() << "Received data : " << data;
+
+      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
+      QJsonObject jsonResponseObj = jsonResponse.object();
+
+      currentToken = jsonResponseObj.value("access_token").toString();
+
+      //qDebug() << "new tocken : " << token;
+
+      getSubscribedChannelsList();
+  }
+}
+
+
+
+
+
+
 void RssFeed::getSubscribedChannelsList()
 {
     QString url;
@@ -111,7 +157,7 @@ void RssFeed::getSubscribedChannelsList()
     url += "?part=snippet";
     url += "&mine=true";
     url += "&maxResults=50";
-    url += "&access_token=" + settings->value("token", "").toString();
+    url += "&access_token=" + currentToken;
 
     //qDebug() << url;
 
@@ -194,7 +240,7 @@ void RssFeed::getPlaylistId(QList<QString> channelIDs)
   url = url.left(url.size()-1);
 
   url += "&maxResults=50";
-  url += "&access_token=" + settings->value("token", "").toString();
+  url += "&access_token=" + currentToken;
 
   //qDebug() << url;
 
@@ -262,7 +308,7 @@ void RssFeed::getListOfVideos(QString playlistID)
   url += "?part=contentDetails";
   url += "&playlistId=" + playlistID;
   url += "&maxResults=5";
-  url += "&access_token=" + settings->value("token", "").toString();
+  url += "&access_token=" + currentToken;
 
   //qDebug() << url;
 
@@ -353,7 +399,7 @@ void RssFeed::getVideosInfo(QList<QString> videoList)
     url = url.left(url.size()-1);
 
     url += "&maxResults=50";
-    url += "&access_token=" + settings->value("token", "").toString();
+    url += "&access_token=" + currentToken;
 
     QNetworkRequest request(url);
     manager4.get(request);

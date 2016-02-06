@@ -77,7 +77,6 @@ private slots:
   void on_downloadDestination_textChanged();
   void updateRSSFeed();
 
-  void recheckFeed();
   void on_actionQuite_triggered();
 
   void downloadFinished(QNetworkReply* pReply);
