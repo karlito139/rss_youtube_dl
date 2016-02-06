@@ -39,6 +39,9 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStandardPaths>
 #include <QDesktopServices>
 #include <QItemSelectionModel>
+#include <QDesktopServices>
+#include <QUrlQuery>
+#include <QNetworkRequest>
 
 #include "rssfeed.h"
 
@@ -75,7 +78,6 @@ private slots:
   void updateRSSFeed();
 
   void recheckFeed();
-  void on_userId_editingFinished();
   void on_actionQuite_triggered();
 
   void downloadFinished(QNetworkReply* pReply);
@@ -84,6 +86,13 @@ private slots:
   void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
 
   void on_helpButton_clicked();
+  void on_loginButton_clicked();
+
+
+  void on_authCode_editingFinished();
+  void decodeAuthToken(QNetworkReply* reply);
+
+
 
 private:
     Ui::MainWindow *ui;
@@ -118,6 +127,11 @@ private:
     QAction *actionReset;
     QAction *actionDownloaded;
 
+    QString clientId;
+    QString clientSecret;
+
+
+    QNetworkAccessManager networkManager;
 
 protected:
      void closeEvent(QCloseEvent *event);

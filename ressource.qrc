@@ -8,5 +8,7 @@
         <file alias="downloading_small">images/downloading_small.png</file>
         <file alias="not_downloaded_small">images/not_downloaded_small.png</file>
         <file>apiKey.txt</file>
+        <file>clientId.txt</file>
+        <file>clientSecret.txt</file>
     </qresource>
 </RCC>
