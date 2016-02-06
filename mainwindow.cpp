@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QFile clientSecretFile(":/clientSecret.txt");
   clientSecretFile.open(QIODevice::ReadOnly);
 
-  QTextStream clientSecretStream(&clientIdFile);
+  QTextStream clientSecretStream(&clientSecretFile);
   clientSecret = clientSecretStream.readAll();
   clientSecretFile.close();
 
@@ -115,7 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
   timer->setInterval(15*60*1000); //fetch new video every 10 minutes
   timer->start();
 
-  connect(timer, SIGNAL(timeout()), this, SLOT(recheckFeed()));
+  connect(timer, SIGNAL(timeout()), this, SLOT(updateRSSFeed()));
 
 
   installProc = new QProcess();
@@ -360,13 +360,6 @@ void MainWindow::on_downloadDestination_textChanged()
   settings->setValue("destination", ui->downloadDestination->text());
 }
 
-
-void MainWindow::recheckFeed(){
-
-  rssFeed->fetch();
-}
-
-
 void MainWindow::createTrayIcon(){
 
   showAction = new QAction(tr("&Show"), this);
@@ -403,7 +396,7 @@ void MainWindow::showWindow()
 
 void MainWindow::updateRSSFeed(){
 
-  rssFeed->fetch();
+  rssFeed->fetch(clientId, clientSecret);
 }
 
 
@@ -526,14 +519,12 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
       QString token = jsonResponseObj.value("access_token").toString();
       QString refreshToken = jsonResponseObj.value("refresh_token").toString();
 
-      qDebug() << "Tocken : " << token;
       qDebug() << "refresh tocken : " << refreshToken;
 
-      settings->setValue("token", token);
       settings->setValue("refreshToken", refreshToken);
       settings->sync();
 
-      rssFeed->fetch();
+      updateRSSFeed();
   }
 }
 

@@ -34,6 +34,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QTimer>
+#include <QUrlQuery>
 
 #include "video.h"
 
@@ -62,7 +63,7 @@ public:
     void displayQotaStatus();
 
 public slots:
-    void fetch();
+    void fetch(QString clientId, QString clientSecret);
 
 private slots:
     void read(QNetworkReply *reply);
@@ -75,6 +76,9 @@ private slots:
     void decodeListOfVideos(QNetworkReply* reply);
     void decodeVideoInfo(QNetworkReply* reply);
     void getMissingVidInfos();
+
+    void getNewToken(QString clientId, QString clientSecret);
+    void decodeNewToken(QNetworkReply* reply);
 
 signals:
     void doneReading();
@@ -93,12 +97,14 @@ private:
 
     QXmlStreamReader xml;
     QString currentTag;
+    QString currentToken;
     QString linkString;
     QString titleString;
     QStringList linkStrings;
     QSettings *settings;
     QString url;
     QList<Video *> *listVideos;
+    QNetworkAccessManager tokenManager;
     QNetworkAccessManager manager;
     QNetworkAccessManager manager2;
     QNetworkAccessManager manager3;
