@@ -62,20 +62,6 @@ RssFeed::~RssFeed()
   delete videoInfoFetchingTimer;
 }
 
-void RssFeed::setURL(QString url){
-
-  this->url = url;
-  fetch();
-}
-
-
-void RssFeed::setChannelId(QString id)
-{
-  this->channelID = id;
-  fetch();
-}
-
-
 
 void RssFeed::fetch()
 {
@@ -114,52 +100,6 @@ void RssFeed::savePlaylistsInfos()
   settings->endArray();
   settings->sync();
 }
-
-
-
-
-
-void RssFeed::getChannelInfo()
-{
-    QString url;
-
-    url = "https://www.googleapis.com/youtube/v3";
-    url += "/channels";
-
-    url += "?part=id";
-    url += "&mine=true";
-    url += "&access_token=" + settings->value("token", "").toString();
-
-    qDebug() << url;
-
-    QNetworkRequest request(url);
-    manager.get(request);
-    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeChannelInfo(QNetworkReply*)));
-}
-
-
-void RssFeed::decodeChannelInfo(QNetworkReply *reply)
-{
-  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-
-  if (statusCode >= 200 && statusCode < 300) {
-      QString data = (QString)reply->readAll();
-
-      qDebug() << "channel info" << data;
-
-      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
-      QJsonObject jsonResponseObj = jsonResponse.object();
-
-      //QString channelId = jsonResponseObj.value("items").toArray();
-
-
-
-  }
-}
-
-
-
 
 void RssFeed::getSubscribedChannelsList()
 {
