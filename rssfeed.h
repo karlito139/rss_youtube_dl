@@ -63,14 +63,11 @@ public:
 
 public slots:
     void fetch();
-    void setURL(QString url);
-    void setChannelId(QString id);
-
 
 private slots:
     void read(QNetworkReply *reply);
 
-    void getChannelInfo();
+    void getSubscribedChannelsList();
     void decodeSubscribedChannelsList(QNetworkReply* reply);
     void getPlaylistId(QList<QString> channelIDs);
     void decondePlaylistId(QNetworkReply* reply);
@@ -78,10 +75,6 @@ private slots:
     void decodeListOfVideos(QNetworkReply* reply);
     void decodeVideoInfo(QNetworkReply* reply);
     void getMissingVidInfos();
-
-
-    void getSubscribedChannelsList();
-    void decodeChannelInfo(QNetworkReply *reply);
 
 signals:
     void doneReading();

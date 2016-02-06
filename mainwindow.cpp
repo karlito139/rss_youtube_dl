@@ -535,7 +535,6 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
 
       rssFeed->fetch();
   }
-
 }
 
 
