@@ -128,6 +128,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //Hide as soon as possible the app once created
   QTimer::singleShot(1, this, SLOT(close()));
+
+  updateUI();
 }
 
 MainWindow::~MainWindow()
@@ -203,13 +205,36 @@ void MainWindow::displayingVideos(){
   ui->widgetListVideos->setModel(modelListVideo);
   ui->widgetListVideos->setCurrentIndex(currentlySelected);
 
+  updateUI();
   if(isCurrentlyDownloading == 0)
     downloadVideo();
 }
 
 
+void MainWindow::updateUI()
+{
+
+  if(modelListVideo->rowCount() == 0)
+  {
+    //Display the login options
+    ui->widgetListVideos->hide();
+    ui->loginBox->show();
+  }
+  else
+  {
+    //Display the list of videos
+    ui->widgetListVideos->show();
+    ui->loginBox->hide();
+  }
+
+
+}
+
+
 
 void MainWindow::downloadVideo(){
+
+  updateUI();
 
   if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
@@ -344,6 +369,7 @@ void MainWindow::videoDoneDownloading(Video *vid){
   }
 
   displayingVideos();
+  updateUI();
 }
 
 void MainWindow::on_browse_clicked()
@@ -485,7 +511,7 @@ void MainWindow::on_loginButton_clicked()
 }
 
 
-void MainWindow::on_authCode_editingFinished()
+void MainWindow::on_authCode_textChanged()
 {
   QString url = "https://www.googleapis.com/oauth2/v4/token";
   QUrlQuery postData;
@@ -519,12 +545,15 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
       QString token = jsonResponseObj.value("access_token").toString();
       QString refreshToken = jsonResponseObj.value("refresh_token").toString();
 
-      qDebug() << "refresh tocken : " << refreshToken;
+      //qDebug() << "refresh tocken : " << refreshToken;
 
-      settings->setValue("refreshToken", refreshToken);
-      settings->sync();
+      if(!refreshToken.isEmpty())
+      {
+        settings->setValue("refreshToken", refreshToken);
+        settings->sync();
 
-      updateRSSFeed();
+        updateRSSFeed();
+      }
   }
 }
 
