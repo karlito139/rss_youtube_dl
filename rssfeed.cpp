@@ -33,6 +33,7 @@ RssFeed::RssFeed(QString url, QSettings *settings) :
 
   listVideos = new QList<Video *>();
   quotaCount = 0;
+  isAlreadyFetching = false;
 }
 
 RssFeed::RssFeed(QSettings *settings) :
@@ -42,6 +43,7 @@ RssFeed::RssFeed(QSettings *settings) :
   this->settings = settings;
 
   quotaCount = 0;
+  isAlreadyFetching = false;
   initPlaylistsInfos();
 
   videoInfoFetchingTimer = new QTimer();
@@ -112,6 +114,8 @@ void RssFeed::getNewToken(QString clientId, QString clientSecret)
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
   tokenManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
 
+  //qDebug() << "Ask for a new tocken";
+
   connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)));
 }
 
@@ -152,21 +156,26 @@ void RssFeed::getSubscribedChannelsList()
 {
     QString url;
 
-    url = "https://www.googleapis.com/youtube/v3";
-    url += "/subscriptions";
+    if(isAlreadyFetching == false)
+    {
+      isAlreadyFetching = true;
 
-    url += "?part=snippet";
-    url += "&mine=true";
-    url += "&maxResults=50";
-    url += "&access_token=" + currentToken;
+      url = "https://www.googleapis.com/youtube/v3";
+      url += "/subscriptions";
 
-    //qDebug() << url;
+      url += "?part=snippet";
+      url += "&mine=true";
+      url += "&maxResults=50";
+      url += "&access_token=" + currentToken;
 
-    QNetworkRequest request(url);
-    manager.get(request);
-    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeSubscribedChannelsList(QNetworkReply*)));
+      //qDebug() << url;
 
-    addQuotaUsage(1+2);  // 1 for the request, 2 for the snippet
+      QNetworkRequest request(url);
+      manager.get(request);
+      connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeSubscribedChannelsList(QNetworkReply*)));
+
+      addQuotaUsage(1+2);  // 1 for the request, 2 for the snippet
+    }
 }
 
 
@@ -175,6 +184,7 @@ void RssFeed::decodeSubscribedChannelsList(QNetworkReply* reply)
   int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
   //qDebug() << "statusCode : " << statusCode;
+  isAlreadyFetching = false;
 
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
@@ -302,6 +312,7 @@ void RssFeed::decondePlaylistId(QNetworkReply* reply)
 void RssFeed::getListOfVideos(QString playlistID)
 {
   QString url;
+  //static int count = 0;
 
   url = "https://www.googleapis.com/youtube/v3";
   url += "/playlistItems";
@@ -312,6 +323,8 @@ void RssFeed::getListOfVideos(QString playlistID)
   url += "&access_token=" + currentToken;
 
   //qDebug() << url;
+  //count++;
+  //qDebug() << "Got called for " << playlistID << " : " << QString::number(count);
 
   QNetworkRequest request(url);
   manager3.get(request);
@@ -332,7 +345,7 @@ void RssFeed::decodeListOfVideos(QNetworkReply* reply)
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
 
-      //qDebug() << "received data :" << data;
+      //qDebug() << "\n\n\nreceived data :" << data;
 
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();
@@ -466,7 +479,7 @@ void RssFeed::addQuotaUsage(int amount)
 
 void RssFeed::displayQotaStatus()
 {
-  qDebug() << "We now got : " << listVideos->count() << " videos. That costed : " << QString::number(quotaCount) << " of cota.";
+  qDebug() << "We now got : " << listVideos->count() << " videos. That costed : " << QString::number(quotaCount) << " of youtube cota.";
 }
 
 

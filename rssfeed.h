@@ -110,6 +110,7 @@ private:
     QNetworkAccessManager manager3;
     QNetworkAccessManager manager4;
     QTimer *videoInfoFetchingTimer;
+    bool isAlreadyFetching;
 
     //youtube API V3.0
     int quotaCount;
