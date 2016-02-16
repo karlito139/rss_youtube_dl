@@ -130,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QTimer::singleShot(1, this, SLOT(close()));
 
   updateUI();
+  updateRSSFeed();
 }
 
 MainWindow::~MainWindow()
