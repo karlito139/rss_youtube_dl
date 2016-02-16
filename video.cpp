@@ -82,9 +82,11 @@ void Video::download(){
 
     QStringList arguments;
 
-    arguments << "-f" << "best";
+    arguments << "-f" << "bestvideo+bestaudio/best";
     arguments << "-o" << settings->value("destination", "").toString() + "%(title)s.%(ext)s";
     arguments << this->code;
+
+    //qDebug() << "Downloading with args : " << arguments;
 
 #ifdef  Q_OS_LINUX
     proc->start(pathToFiles->toLatin1()+"/youtube-dl/youtube-dl", arguments);
