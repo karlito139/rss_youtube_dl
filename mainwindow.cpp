@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
   this->downloadEnable = true;
   this->starting = true;
 
+  ui->statusBar->addPermanentWidget(&statusBarText);
+
   settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "localtube", "config");
   QFileInfo setting_file(settings->fileName());
   pathToFiles = new QString(setting_file.path());
@@ -423,6 +425,8 @@ void MainWindow::showWindow()
 void MainWindow::updateRSSFeed(){
 
   rssFeed->fetch(clientId, clientSecret);
+
+  statusBarText.setText("Last fetched at : " + QTime::currentTime().toString("H:m:s a"));
 }
 
 
