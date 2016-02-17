@@ -42,6 +42,8 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDesktopServices>
 #include <QUrlQuery>
 #include <QNetworkRequest>
+#include <QLabel>
+#include <QTime>
 
 #include "rssfeed.h"
 
@@ -113,6 +115,7 @@ private:
 
     QAction *showAction;
     QAction *quitAction;
+    QLabel statusBarText;
 
     QNetworkAccessManager qnam;
     QUrl url;
