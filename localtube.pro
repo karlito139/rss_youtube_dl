@@ -19,13 +19,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         rssfeed.cpp \
-        video.cpp
+        video.cpp \
+    about.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
-            video.h
+            video.h \
+    about.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    about.ui
 
 RESOURCES += \
     ressource.qrc

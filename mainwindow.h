@@ -44,6 +44,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QNetworkRequest>
 #include <QLabel>
 #include <QTime>
+#include <about.h>
 
 #include "rssfeed.h"
 
@@ -92,6 +93,8 @@ private slots:
   void updateUI();
   void decodeAuthToken(QNetworkReply* reply);
   void on_authCode_textChanged();
+
+  void on_actionAbout_triggered();
 
 private:
     Ui::MainWindow *ui;

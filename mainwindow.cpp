@@ -458,8 +458,6 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
   bool containDownloadedVid = false;
   bool containsUndownloadedVid = false;
 
-
-
   if(actionReset != NULL)
     delete actionReset;
   actionReset = new QAction("Reset", this);
@@ -481,7 +479,6 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
     connect(actionReset, SIGNAL(triggered()), vid, SLOT(reset()));
     connect(actionDownloaded, SIGNAL(triggered()), vid, SLOT(setAsDownloaded()));
   }
-
 
   if(containDownloadedVid == true)
     menu->addAction(actionReset);
@@ -562,3 +559,12 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
 }
 
 
+
+void MainWindow::on_actionAbout_triggered()
+{
+  About *aboutWindow = new About();
+
+  aboutWindow->show();
+
+  //qDebug() << "kikoo";
+}

@@ -95,14 +95,14 @@
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
        <property name="bottomMargin">
         <number>9</number>
        </property>
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>It looks like I can not find any videos. You may want to click on login and past a youtube code bellow : </string>
+          <string>It looks like I can not find any videos. You may want to click on the login button and past a youtube code bellow : </string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -162,7 +162,14 @@
     </property>
     <addaction name="actionQuite"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuite">
@@ -171,6 +178,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>
