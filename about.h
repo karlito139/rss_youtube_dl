@@ -2,6 +2,7 @@
 #define ABOUT_H
 
 #include <QDialog>
+#include <mainwindow.h>
 
 namespace Ui {
 class About;
