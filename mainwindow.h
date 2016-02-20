@@ -48,6 +48,14 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "rssfeed.h"
 
+
+
+
+#define CURRENT_VERSION    "v1.1"
+
+
+
+
 extern QString *pathToFiles;
 
 

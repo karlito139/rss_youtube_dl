@@ -6,6 +6,8 @@ About::About(QWidget *parent) :
   ui(new Ui::About)
 {
   ui->setupUi(this);
+
+  ui->version->setText(CURRENT_VERSION);
 }
 
 About::~About()
