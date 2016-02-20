@@ -83,7 +83,8 @@ void Video::download(){
     QStringList arguments;
 
 #ifdef  Q_OS_LINUX
-    arguments << "-f" << "bestvideo+bestaudio/best";
+    //arguments << "-f" << "bestvideo+bestaudio/best";
+    //arguments << "-f" << "best";
 #else
     arguments << "-f" << "best";
 #endif
