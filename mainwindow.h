@@ -67,7 +67,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
@@ -82,7 +82,7 @@ public slots:
   void doneInstallingYoutubeDl();
   void showWindow();
 
-    
+
 private slots:
   void on_browse_clicked();
   void on_downloadDestination_textChanged();
