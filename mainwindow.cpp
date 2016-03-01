@@ -592,7 +592,6 @@ void MainWindow::on_actionAbout_triggered()
   //qDebug() << "kikoo";
 }
 
-
 void MainWindow::pauseResume()
 {
   //If we just asked for the downloading to pause
@@ -608,4 +607,11 @@ void MainWindow::pauseResume()
   }
 
   updateUIRequest();
+}
+
+void MainWindow::on_actionDisk_Space_limit_triggered()
+{
+  Disk_space *diskSpaceWindow = new Disk_space();
+
+  diskSpaceWindow->show();
 }
