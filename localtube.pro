@@ -24,7 +24,9 @@ SOURCES += main.cpp\
     feedFetcher/feedfetcheruser.cpp \
     feedFetcher/feedfetcherplaylist.cpp \
     feedFetcher/feedfetcher.cpp \
-    feedFetcher/feedfetcherchannel.cpp
+    feedFetcher/feedfetcherchannel.cpp \
+    disk_space.cpp \
+    uidiskspace.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
@@ -33,10 +35,13 @@ HEADERS  += mainwindow.h \
     feedFetcher/feedfetcheruser.h \
     feedFetcher/feedfetcherplaylist.h \
     feedFetcher/feedfetcher.h \
-    feedFetcher/feedfetcherchannel.h
+    feedFetcher/feedfetcherchannel.h \
+    disk_space.h \
+    uidiskspace.h
 
 FORMS    += mainwindow.ui \
-    about.ui
+    about.ui \
+    uidiskspace.ui
 
 RESOURCES += \
     ressource.qrc
