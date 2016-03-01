@@ -45,6 +45,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLabel>
 #include <QTime>
 #include <about.h>
+#include <disk_space.h>
 
 #include "rssfeed.h"
 
@@ -103,6 +104,7 @@ private slots:
   void on_authCode_textChanged();
 
   void on_actionAbout_triggered();
+  void on_actionDisk_Space_limit_triggered();
 
 private:
     Ui::MainWindow *ui;

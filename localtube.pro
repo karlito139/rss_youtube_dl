@@ -20,15 +20,20 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         rssfeed.cpp \
         video.cpp \
-    about.cpp
+    about.cpp \
+    disk_space.cpp \
+    uidiskspace.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
             video.h \
-    about.h
+    about.h \
+    disk_space.h \
+    uidiskspace.h
 
 FORMS    += mainwindow.ui \
-    about.ui
+    about.ui \
+    uidiskspace.ui
 
 RESOURCES += \
     ressource.qrc
