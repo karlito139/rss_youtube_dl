@@ -91,4 +91,14 @@ void FeedFetcher::getUserVideos()
 void FeedFetcher::userFetched()
 {
   emit doneFetching();
+
+  displayQotaStatus();
 }
+
+void FeedFetcher::displayQotaStatus()
+{
+
+  qDebug() << "We now got : " << getVideos()->count() << " videos. That costed : " << QString::number(currentUser->getQuotaUsed()) << " of youtube cota.";
+}
+
+

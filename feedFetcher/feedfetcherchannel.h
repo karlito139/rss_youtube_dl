@@ -27,6 +27,7 @@ Q_OBJECT
 public:
   FeedFetcherChannel(QString channelName, QString channelID, QSettings *settings, QString clientId, QString clientSecret);
   QList<Video *> *getVideos();
+  int getQuotaUsed();
 
 public slots:
   void fetch(QString currentToken);

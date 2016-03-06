@@ -7,6 +7,7 @@ FeedFetcherChannel::FeedFetcherChannel(QString channelName, QString channelID, Q
   this->settings = settings;
   this->clientId = clientId;
   this->clientSecret = clientSecret;
+  this->quotaCount = 0;
 
   playlistList = new QList<FeedFetcherPlaylist *>();
 
@@ -169,4 +170,16 @@ void FeedFetcherChannel::savePlaylistsInfos()
 void FeedFetcherChannel::addQuotaUsage(int amount)
 {
   quotaCount += amount;
+}
+
+int FeedFetcherChannel::getQuotaUsed()
+{
+  int totalQuota = 0;
+
+  totalQuota += quotaCount;
+
+  for(int i=0; i<playlistList->count(); i++)
+    totalQuota += playlistList->at(i)->getQuotaUsed();
+
+  return totalQuota;
 }

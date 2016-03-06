@@ -31,6 +31,7 @@ Video::Video(QString title, QString link, QSettings *settings, QObject *parent) 
   this->currentlyDownloading = false;
   this->proc = NULL;
   this->haveBeenInitialised = true;
+  this->isBeingInitialised = false;
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
   this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
@@ -48,6 +49,7 @@ Video::Video(QString id, QSettings *settings, QObject *parent) :
   this->currentlyDownloading = false;
   this->proc = NULL;
   this->haveBeenInitialised = false;
+  this->isBeingInitialised = false;
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
   this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
@@ -163,10 +165,10 @@ void Video::decodeVideoInfo(QJsonObject reply)
 
   this->title = videoTitle;
   this->releaseDate = QDateTime::fromString(releaseDate, "yyyy-MM-ddThh:mm:ss.zzzZ");
+  this->haveBeenInitialised = true;
+  this->isBeingInitialised = false;
 
   emit videoStatusChanged();
-
-
 }
 
 bool Video::lessThan(const Video *v1, const Video *v2)

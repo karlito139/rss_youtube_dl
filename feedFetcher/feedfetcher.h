@@ -53,6 +53,7 @@ private slots:
 
 private:
   void getUserVideos();
+  void displayQotaStatus();
 
   FeedFetcherUser *currentUser;
 

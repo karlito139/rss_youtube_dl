@@ -45,6 +45,7 @@ Q_OBJECT
 public:
   FeedFetcherUser(QSettings *settings, QString clientId, QString clientSecret);
   QList<Video *> *getVideos();
+  int getQuotaUsed();
 
 public slots:
   void fetch(QString currentToken);
@@ -56,13 +57,13 @@ private slots:
     void channelFetched();
     void getSubscribedChannelsList();
     void decodeSubscribedChannelsList(QNetworkReply* reply);
-    void getVideosInfo(QList<QString> videoList);
+    void getVideosInfo(QList<Video *> videoList);
     void decodeVideoInfo(QNetworkReply* reply);
     void getMissingVidInfos();
     void getMissingVidInfosForce();
 
 private:
-  QList<QString> getVideosMissingInfos();
+  QList<Video *> getVideosMissingInfos();
   void addQuotaUsage(int amount);
 
   QSettings *settings;
