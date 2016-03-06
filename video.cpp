@@ -75,6 +75,14 @@ QString Video::extractCode(QString link){
 
 
 void Video::download(){
+    QStorageInfo storage(settings->value("destination", "").toString());
+        if (storage.isValid() == false)
+            return;
+
+    float DiskLimit = settings->value("disk_limit", 0).toFloat();
+
+    if( (storage.bytesAvailable()/1000/1000) < DiskLimit )
+        return;
 
   if(!alreadyDownloaded){
     /* create QProcess object */

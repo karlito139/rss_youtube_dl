@@ -19,7 +19,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "disk_space.h"
 
 
 
@@ -571,7 +571,14 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionDisk_Space_limit_triggered()
 {
-  Disk_space *diskSpaceWindow = new Disk_space();
+  Disk_space* diskSpaceWindow = new Disk_space(this);
+  diskSpaceWindow->setParent( this );
 
   diskSpaceWindow->show();
+}
+
+void MainWindow::storeDiskLimit( float diskLimit )
+{
+    settings->setValue("disk_limit", diskLimit);
+    //settings->setValue( "disk_limit", QString( diskLimit ).toString() );
 }

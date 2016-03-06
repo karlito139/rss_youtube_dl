@@ -45,7 +45,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLabel>
 #include <QTime>
 #include <about.h>
-#include <disk_space.h>
+//#include <disk_space.h>
 
 #include "rssfeed.h"
 
@@ -72,6 +72,7 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
+   void storeDiskLimit( float diskLimit );
 
 signals:
   void stopDownloading();
