@@ -30,6 +30,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QStorageInfo>
 
 
 extern QString *pathToFiles;
