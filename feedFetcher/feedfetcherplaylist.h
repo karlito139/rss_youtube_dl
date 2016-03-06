@@ -40,6 +40,7 @@ Q_OBJECT
 public:
   FeedFetcherPlaylist(QString playlistId, QSettings *settings, QString clientId, QString clientSecret);
   QList<Video *> *getVideos();
+  int getQuotaUsed();
 
 public slots:
   void fetch(QString currentToken);

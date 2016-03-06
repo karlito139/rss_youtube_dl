@@ -51,6 +51,9 @@ public:
   bool haveAlreadyBeenDownloaded(){return alreadyDownloaded;}
   bool isCurrentlyDownloading(){return currentlyDownloading;}
   bool isVideoInitialised(){return haveBeenInitialised;}
+  bool isVideoInitialising(){return isBeingInitialised;}
+
+  void setInitialising(bool status){isBeingInitialised = status;}
 
   void download();
 
@@ -85,6 +88,7 @@ private:
 
   QNetworkAccessManager manager;
   bool haveBeenInitialised;
+  bool isBeingInitialised;
   
 
 };

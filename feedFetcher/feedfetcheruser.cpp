@@ -24,7 +24,7 @@ FeedFetcherUser::FeedFetcherUser(QSettings *settings, QString clientId, QString 
   this->settings = settings;
   this->clientId = clientId;
   this->clientSecret = clientSecret;
-  quotaCount = 0;
+  this->quotaCount = 0;
 
   videoInfoFetchingTimer = new QTimer();
   videoInfoFetchingTimer->setInterval(10*1000);  //10 seconds
@@ -112,18 +112,18 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
 
 
 
-QList<QString> FeedFetcherUser::getVideosMissingInfos()
+QList<Video *> FeedFetcherUser::getVideosMissingInfos()
 {
-  QList<QString> videosToFetch;
+  QList<Video *> videosToFetch;
   QList<Video *> *listOfVideos;
 
   listOfVideos = getVideos();
 
   for(int i=0; i<listOfVideos->count(); i++)
   {
-    if(listOfVideos->at(i)->isVideoInitialised() == false)
+    if( (listOfVideos->at(i)->isVideoInitialised() == false) && (listOfVideos->at(i)->isVideoInitialising() == false) )
     {
-      videosToFetch.append(listOfVideos->at(i)->getCode());
+      videosToFetch.append(listOfVideos->at(i));
     }
   }
 
@@ -134,8 +134,8 @@ QList<QString> FeedFetcherUser::getVideosMissingInfos()
 
 void FeedFetcherUser::getMissingVidInfos()
 {
-  QList<QString> videosToFetch;
-  QList<QString> videosFetching;
+  QList<Video *> videosToFetch;
+  QList<Video *> videosFetching;
   int nbrRequests;
 
   videosToFetch = getVideosMissingInfos();
@@ -157,7 +157,7 @@ void FeedFetcherUser::getMissingVidInfos()
 
 void FeedFetcherUser::getMissingVidInfosForce()
 {
-  QList<QString> videosToFetch;
+  QList<Video *> videosToFetch;
 
   videoInfoFetchingTimer->stop();
 
@@ -167,9 +167,11 @@ void FeedFetcherUser::getMissingVidInfosForce()
 }
 
 
-void FeedFetcherUser::getVideosInfo(QList<QString> videoList)
+void FeedFetcherUser::getVideosInfo(QList<Video *> videoList)
 {
   //we need to make requests of 50 videos at a time else youtube refuses to process it
+
+  //qDebug() << "Fetching infos for : " << QString::number(videoList.count()) << " vidéos.";
 
   for(int i=0; i<((videoList.count()/MAX_ITEMS_PER_REQUESTS)+1); i++)
   {
@@ -181,7 +183,10 @@ void FeedFetcherUser::getVideosInfo(QList<QString> videoList)
     url += "&id=";
 
     for(int j=0; ((((i*MAX_ITEMS_PER_REQUESTS)+j)<videoList.count()) && (j<MAX_ITEMS_PER_REQUESTS)); j++)
-      url += videoList.at((i*MAX_ITEMS_PER_REQUESTS)+j) + ",";
+    {
+      url += videoList.at((i*MAX_ITEMS_PER_REQUESTS)+j)->getCode() + ",";
+      videoList.at((i*MAX_ITEMS_PER_REQUESTS)+j)->setInitialising(true);
+    }
 
     url = url.left(url.size()-1);
 
@@ -220,8 +225,6 @@ void FeedFetcherUser::decodeVideoInfo(QNetworkReply* reply)
             listVideos->at(i)->decodeVideoInfo(video.value("snippet").toObject());
       }
   }
-
-  //displayQotaStatus();
 }
 
 
@@ -242,3 +245,14 @@ void FeedFetcherUser::addQuotaUsage(int amount)
   quotaCount += amount;
 }
 
+int FeedFetcherUser::getQuotaUsed()
+{
+  int totalQuota = 0;
+
+  totalQuota += quotaCount;
+
+  for(int i=0; i<channelList->count(); i++)
+    totalQuota += channelList->at(i)->getQuotaUsed();
+
+  return totalQuota;
+}

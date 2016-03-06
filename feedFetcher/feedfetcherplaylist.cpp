@@ -25,6 +25,7 @@ FeedFetcherPlaylist::FeedFetcherPlaylist(QString playlistId, QSettings *settings
   this->settings = settings;
   this->clientId = clientId;
   this->clientSecret = clientSecret;
+  this->quotaCount = 0;
 
   listVideos = new QList<Video *>();
 }
@@ -119,5 +120,14 @@ void FeedFetcherPlaylist::decodeListOfVideos(QNetworkReply* reply)
 void FeedFetcherPlaylist::addQuotaUsage(int amount)
 {
   quotaCount += amount;
+}
+
+int FeedFetcherPlaylist::getQuotaUsed()
+{
+  int totalQuota = 0;
+
+  totalQuota += quotaCount;
+
+  return totalQuota;
 }
 
