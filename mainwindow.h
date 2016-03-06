@@ -46,8 +46,8 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QTime>
 #include <about.h>
 
-#include "rssfeed.h"
-
+//#include "rssfeed.h"
+#include "feedFetcher/feedfetcher.h"
 
 
 
@@ -113,7 +113,9 @@ private:
     bool downloadEnable;
     bool YoutubeDlInstalled;
     bool starting;
-    RssFeed *rssFeed;
+    //RssFeed *rssFeed;
+    FeedFetcher *feedFetcher;
+
     QList<Video *> *listVideos;
     QTimer *timer;
     QSystemTrayIcon *trayIcon;
