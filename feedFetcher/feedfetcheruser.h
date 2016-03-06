@@ -30,8 +30,13 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QTimer>
 
 #include "feedfetcherchannel.h"
+
+
+#define MAX_ITEMS_PER_REQUESTS 50
+
 
 class FeedFetcherUser: public QObject
 {
@@ -51,8 +56,13 @@ private slots:
     void channelFetched();
     void getSubscribedChannelsList();
     void decodeSubscribedChannelsList(QNetworkReply* reply);
+    void getVideosInfo(QList<QString> videoList);
+    void decodeVideoInfo(QNetworkReply* reply);
+    void getMissingVidInfos();
+    void getMissingVidInfosForce();
 
 private:
+  QList<QString> getVideosMissingInfos();
   void addQuotaUsage(int amount);
 
   QSettings *settings;
@@ -60,7 +70,9 @@ private:
   QString clientSecret;
   QString currentToken;
   QNetworkAccessManager manager;
+  QNetworkAccessManager manager2;
   QList<FeedFetcherChannel *> *channelList;
+  QTimer *videoInfoFetchingTimer;
 
   int quotaCount;
 
