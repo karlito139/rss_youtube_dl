@@ -104,8 +104,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-  rssFeed = new RssFeed(settings);
-  connect(rssFeed, SIGNAL(doneReading()), this, SLOT(updateUIRequest()));
+  /*rssFeed = new RssFeed(settings);
+  connect(rssFeed, SIGNAL(doneReading()), this, SLOT(updateUIRequest()));*/
+
+  feedFetcher = new FeedFetcher(settings, clientId, clientSecret);
+  connect(feedFetcher, SIGNAL(doneFetching()), this, SLOT(updateUIRequest()));
+
 
   trayIcon = NULL;
   trayIconMenu = NULL;
@@ -138,7 +142,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete rssFeed;
+  //delete rssFeed;
+  delete feedFetcher;
   delete timer;
   if(trayIcon)
     delete trayIcon;
@@ -187,7 +192,8 @@ void MainWindow::updateUI()
 
   uiUpdateTimer.stop();
 
-  listVideos = rssFeed->getListVideos();
+  //listVideos = rssFeed->getListVideos();
+  listVideos = feedFetcher->getVideos();
   qSort(listVideos->begin(), listVideos->end(), Video::lessThan);
 
   for(int i=0; i<listVideos->count(); i++)
@@ -246,7 +252,8 @@ void MainWindow::downloadVideo(){
 
   if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
-    QList<Video *> *listvid = rssFeed->getListVideos();
+    //QList<Video *> *listvid = rssFeed->getListVideos();
+    QList<Video *> *listvid = feedFetcher->getVideos();
     for(int i=0; i<listvid->count(); i++){
 
       if(!listvid->at(i)->haveAlreadyBeenDownloaded()){
@@ -429,7 +436,8 @@ void MainWindow::showWindow()
 
 void MainWindow::updateRSSFeed(){
 
-  rssFeed->fetch(clientId, clientSecret);
+  //rssFeed->fetch(clientId, clientSecret);
+  feedFetcher->fetch();
 
   statusBarText.setText("Last fetched at : " + QTime::currentTime().toString("H:m:s a"));
 }

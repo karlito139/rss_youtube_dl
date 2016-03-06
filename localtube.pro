@@ -20,12 +20,20 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         rssfeed.cpp \
         video.cpp \
-    about.cpp
+    about.cpp \
+    feedFetcher/feedfetcheruser.cpp \
+    feedFetcher/feedfetcherplaylist.cpp \
+    feedFetcher/feedfetcher.cpp \
+    feedFetcher/feedfetcherchannel.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
             video.h \
-    about.h
+    about.h \
+    feedFetcher/feedfetcheruser.h \
+    feedFetcher/feedfetcherplaylist.h \
+    feedFetcher/feedfetcher.h \
+    feedFetcher/feedfetcherchannel.h
 
 FORMS    += mainwindow.ui \
     about.ui
