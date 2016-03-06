@@ -17,6 +17,7 @@ class Disk_space : public QDialog
 
 public:
     explicit Disk_space(QWidget *parent = 0);
+    void setParent( MainWindow* parent );
     ~Disk_space();
 
 private slots:
@@ -24,6 +25,7 @@ private slots:
 
 private:
   Ui::uiDiskSpace *ui;
+  MainWindow* Parent;
 };
 
 #endif // DISK_SPACE_H
