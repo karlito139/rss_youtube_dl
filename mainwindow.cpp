@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
   createTrayIcon();
 
   timer = new QTimer();
-  timer->setInterval(15*60*1000); //fetch new video every 10 minutes
+  timer->setInterval(15*60*1000); //fetch new video every 15 minutes
   timer->start();
 
   connect(timer, SIGNAL(timeout()), this, SLOT(updateRSSFeed()));
