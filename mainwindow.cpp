@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
   rssFeed = new RssFeed(settings);
-  connect(rssFeed, SIGNAL(doneReading()), this, SLOT(displayingVideos()));
+  connect(rssFeed, SIGNAL(doneReading()), this, SLOT(updateUIRequest()));
 
   trayIcon = NULL;
   trayIconMenu = NULL;
@@ -129,7 +129,9 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 
   //Hide as soon as possible the app once created
-  QTimer::singleShot(1, this, SLOT(close()));
+  QTimer::singleShot(100, this, SLOT(close()));
+
+  connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));
 
   updateUI();
 }
@@ -166,23 +168,37 @@ MainWindow::~MainWindow()
 
 
 
-void MainWindow::displayingVideos(){
+void MainWindow::updateUIRequest()
+{
+  //If an update is not already being waitting
+  if(uiUpdateTimer.isActive() == false)
+  {
+    uiUpdateTimer.start(100);
+  }
+}
+
+
+void MainWindow::updateUI()
+{
+  //qDebug() << "update UI";
 
   int isCurrentlyDownloading = 0;
   QModelIndex currentlySelected = ui->widgetListVideos->currentIndex();
+
+  uiUpdateTimer.stop();
 
   listVideos = rssFeed->getListVideos();
   qSort(listVideos->begin(), listVideos->end(), Video::lessThan);
 
   for(int i=0; i<listVideos->count(); i++)
-    connect(listVideos->at(i), SIGNAL(videoStatusChanged()), this, SLOT(displayingVideos()), Qt::UniqueConnection );
+    connect(listVideos->at(i), SIGNAL(videoStatusChanged()), this, SLOT(updateUIRequest()), Qt::UniqueConnection );
 
   modelListVideo->removeRows(0, modelListVideo->rowCount());
   modelListVideo->setRowCount(listVideos->count());
 
   Video *vid;
-  for(int i=0; i<listVideos->count(); i++){
-
+  for(int i=0; i<listVideos->count(); i++)
+  {
     vid = listVideos->at(i);
 
     if(vid->isCurrentlyDownloading())
@@ -207,15 +223,6 @@ void MainWindow::displayingVideos(){
   ui->widgetListVideos->setModel(modelListVideo);
   ui->widgetListVideos->setCurrentIndex(currentlySelected);
 
-  updateUI();
-  if(isCurrentlyDownloading == 0)
-    downloadVideo();
-}
-
-
-void MainWindow::updateUI()
-{
-
   if(modelListVideo->rowCount() == 0)
   {
     //Display the login options
@@ -229,14 +236,13 @@ void MainWindow::updateUI()
     ui->loginBox->hide();
   }
 
-
+  if(isCurrentlyDownloading == 0)
+    downloadVideo();
 }
 
 
 
 void MainWindow::downloadVideo(){
-
-  updateUI();
 
   if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
@@ -348,7 +354,7 @@ void MainWindow::doneInstallingYoutubeDl(){
 
 void MainWindow::videoStartDownloading(Video *){
 
-  displayingVideos();
+  updateUIRequest();
 }
 
 void MainWindow::videoDoneDownloading(Video *vid){
@@ -370,8 +376,7 @@ void MainWindow::videoDoneDownloading(Video *vid){
     trayIcon->showMessage("Video downloaded", vid->getTitle().toUtf8(), QSystemTrayIcon::Information, 5000);
   }
 
-  displayingVideos();
-  updateUI();
+  updateUIRequest();
 }
 
 void MainWindow::on_browse_clicked()
