@@ -76,7 +76,7 @@ signals:
   void stopDownloading();
 
 public slots:
-  void displayingVideos();
+  void updateUIRequest();
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
   void doneInstallingYoutubeDl();
@@ -140,6 +140,8 @@ private:
 
     QString clientId;
     QString clientSecret;
+
+    QTimer uiUpdateTimer;
 
 
     QNetworkAccessManager networkManager;

@@ -43,7 +43,7 @@ Video::Video(QString id, QSettings *settings, QObject *parent) :
 {
   this->link = id;
   this->code = id;
-  this->title = "Unknown";
+  this->title = "Fetching...";
   this->settings = settings;
   this->currentlyDownloading = false;
   this->proc = NULL;
