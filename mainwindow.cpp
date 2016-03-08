@@ -571,14 +571,8 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionDisk_Space_limit_triggered()
 {
-  Disk_space* diskSpaceWindow = new Disk_space(this);
+  Disk_space* diskSpaceWindow = new Disk_space(this, this->settings);
   diskSpaceWindow->setParent( this );
 
   diskSpaceWindow->show();
-}
-
-void MainWindow::storeDiskLimit( float diskLimit )
-{
-    settings->setValue("disk_limit", diskLimit);
-    //settings->setValue( "disk_limit", QString( diskLimit ).toString() );
 }
