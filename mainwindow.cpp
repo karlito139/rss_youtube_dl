@@ -374,6 +374,11 @@ void MainWindow::videoDoneDownloading(Video *vid){
   updateUI();
 }
 
+void MainWindow::diskSPaceChangedSlot(){
+
+  downloadVideo();
+}
+
 void MainWindow::on_browse_clicked()
 {
   QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
@@ -572,7 +577,8 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionDisk_Space_limit_triggered()
 {
   Disk_space* diskSpaceWindow = new Disk_space(this, this->settings);
-  diskSpaceWindow->setParent( this );
+
+  connect(diskSpaceWindow, SIGNAL(disklimitChanged()), this, SLOT(diskSPaceChangedSlot()));
 
   diskSpaceWindow->show();
 }
