@@ -19,6 +19,9 @@ public:
     explicit Disk_space(QWidget *parent = 0, QSettings* settings = 0);
     ~Disk_space();
 
+signals:
+    void disklimitChanged();
+
 private slots:
     void on_DiskSpaceButton_accepted();
 

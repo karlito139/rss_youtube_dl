@@ -79,6 +79,7 @@ public slots:
   void updateUIRequest();
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
+  void diskSPaceChangedSlot();
   void doneInstallingYoutubeDl();
   void showWindow();
 
