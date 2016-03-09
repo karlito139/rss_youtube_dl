@@ -21,6 +21,11 @@ Disk_space::~Disk_space()
 // Store the disk limit size in Mb
 void Disk_space::on_DiskSpaceButton_accepted()
 {
-    Settings->setValue("disk_limit", ui->DiskSpaceLimitBox->text().replace(",",".").toFloat());
-    Settings->sync();
+    // If the value changed rise a signal and store the new info
+    if( ui->DiskSpaceLimitBox->text().replace(",",".").toFloat() != Settings->value("disk_limit", 0).toFloat() )
+    {
+        Settings->setValue("disk_limit", ui->DiskSpaceLimitBox->text().replace(",",".").toFloat());
+        Settings->sync();
+        emit disklimitChanged();
+    }
 }
