@@ -30,6 +30,11 @@ FeedFetcherPlaylist::FeedFetcherPlaylist(QString playlistId, QSettings *settings
   listVideos = new QList<Video *>();
 }
 
+QString FeedFetcherPlaylist::getPlaylistId()
+{
+  return this->playlistId;
+}
+
 
 void FeedFetcherPlaylist::fetch(QString currentToken)
 {

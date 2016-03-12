@@ -26,6 +26,7 @@ Q_OBJECT
 
 public:
   FeedFetcherChannel(QString channelName, QString channelID, QSettings *settings, QString clientId, QString clientSecret);
+  QString getChannelId();
   QList<Video *> *getVideos();
   int getQuotaUsed();
 

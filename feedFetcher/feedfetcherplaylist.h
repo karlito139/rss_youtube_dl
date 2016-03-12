@@ -39,6 +39,7 @@ Q_OBJECT
 
 public:
   FeedFetcherPlaylist(QString playlistId, QSettings *settings, QString clientId, QString clientSecret);
+  QString getPlaylistId();
   QList<Video *> *getVideos();
   int getQuotaUsed();
 
