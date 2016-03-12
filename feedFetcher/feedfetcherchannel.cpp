@@ -14,6 +14,10 @@ FeedFetcherChannel::FeedFetcherChannel(QString channelName, QString channelID, Q
   initPlaylistsInfos();
 }
 
+QString FeedFetcherChannel::getChannelId()
+{
+  return this->channelID;
+}
 
 void FeedFetcherChannel::fetch(QString currentToken)
 {
@@ -21,6 +25,8 @@ void FeedFetcherChannel::fetch(QString currentToken)
   QString playlistId;
 
   this->currentToken = currentToken;
+
+  //qDebug() << "Request to fetch channels.";
 
   //Seach in the current config if we didn't already fetch the right playlist ID for this channel
   for(int j=0; j<playlistInfos.size(); j++)
@@ -122,10 +128,25 @@ void FeedFetcherChannel::decondePlaylistId(QNetworkReply* reply)
 
 void FeedFetcherChannel::addPlayList(QString playlistId)
 {
-  FeedFetcherPlaylist *playlist = new FeedFetcherPlaylist(playlistId, settings, clientId, clientSecret);
-  playlistList->append(playlist);
+  FeedFetcherPlaylist *playlist;
+  bool alreadyExists = false;
 
-  connect(playlist, SIGNAL(doneFetching()), this, SLOT(playlistFetched()));
+  for(int i=0; i<playlistList->count(); i++)
+  {
+    if(playlistList->at(i)->getPlaylistId().compare(playlistId) == 0)
+    {
+       alreadyExists = true;
+       playlist = playlistList->at(i);
+    }
+  }
+
+  if(alreadyExists == false)
+  {
+    playlist = new FeedFetcherPlaylist(playlistId, settings, clientId, clientSecret);
+    playlistList->append(playlist);
+
+    connect(playlist, SIGNAL(doneFetching()), this, SLOT(playlistFetched()), Qt::UniqueConnection);
+  }
 
   playlist->fetch(currentToken);
 }

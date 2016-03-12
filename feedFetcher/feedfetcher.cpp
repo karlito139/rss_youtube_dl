@@ -55,7 +55,7 @@ void FeedFetcher::getNewToken()
 
   //qDebug() << "Ask for a new tocken";
 
-  connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)));
+  connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)), Qt::UniqueConnection);
 }
 
 void FeedFetcher::decodeNewToken(QNetworkReply* reply)
@@ -85,6 +85,7 @@ void FeedFetcher::decodeNewToken(QNetworkReply* reply)
 
 void FeedFetcher::getUserVideos()
 {
+  //qDebug() << "Request to fetch user.";
   currentUser->fetch(currentToken);
 }
 
