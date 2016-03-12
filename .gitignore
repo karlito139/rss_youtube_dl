@@ -2,4 +2,5 @@
 release_linux
 doc/*.gz
 icon/debian
-apiKey.txt
+clientId.txt
+clientSecret.txt

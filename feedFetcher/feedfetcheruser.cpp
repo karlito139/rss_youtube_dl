@@ -68,7 +68,7 @@ void FeedFetcherUser::getSubscribedChannelsList()
 
     QNetworkRequest request(url);
     manager.get(request);
-    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeSubscribedChannelsList(QNetworkReply*)));
+    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeSubscribedChannelsList(QNetworkReply*)), Qt::UniqueConnection);
 
     addQuotaUsage(1+2);  // 1 for the request, 2 for the snippet
 }
@@ -100,10 +100,28 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
         //qDebug() << "Channel " << channelName << "'s ID is : " << channelID;
 
 
-        FeedFetcherChannel *newChannel = new FeedFetcherChannel(channelName, channelID, settings, clientId, clientSecret);
-        newChannel->fetch(currentToken);
-        connect(newChannel, SIGNAL(doneFetching()), this, SLOT(channelFetched()));
-        channelList->append(newChannel);
+        bool channelExists = false;
+        FeedFetcherChannel *channelSearched;
+        for(int i=0; i<channelList->count(); i++)
+        {
+          if(channelList->at(i)->getChannelId().compare(channelID) == 0)
+          {
+            channelExists = true;
+            channelSearched = channelList->at(i);
+          }
+        }
+
+        if(channelExists == true)
+        {
+          channelSearched->fetch(currentToken);
+        }
+        else
+        {
+          FeedFetcherChannel *newChannel = new FeedFetcherChannel(channelName, channelID, settings, clientId, clientSecret);
+          newChannel->fetch(currentToken);
+          connect(newChannel, SIGNAL(doneFetching()), this, SLOT(channelFetched()), Qt::UniqueConnection);
+          channelList->append(newChannel);
+        }
     }
   }
 }
