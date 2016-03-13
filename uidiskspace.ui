@@ -6,81 +6,164 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>272</width>
-    <height>175</height>
+    <width>276</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>DiskSpace</string>
   </property>
-  <widget class="QWidget" name="gridLayoutWidget">
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="gridLayoutWidget_3">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>246</width>
-     <height>31</height>
+     <x>20</x>
+     <y>10</y>
+     <width>228</width>
+     <height>217</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,1,0" columnstretch="0,1,0">
     <property name="sizeConstraint">
-     <enum>QLayout::SetMinimumSize</enum>
+     <enum>QLayout::SetMaximumSize</enum>
     </property>
-    <property name="horizontalSpacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
-     <widget class="QLabel" name="FreeSpace">
-      <property name="text">
-       <string>Free Space Limit:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QDoubleSpinBox" name="DiskSpaceLimitBox"/>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="Unit">
-      <property name="text">
-       <string>GB</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="Infos">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>50</y>
-     <width>251</width>
-     <height>91</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Set a free space restriction, when the drive 
+    <item row="1" column="1">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
+        <property name="horizontalSpacing">
+         <number>0</number>
+        </property>
+        <item row="1" column="2">
+         <widget class="QLabel" name="Unit">
+          <property name="text">
+           <string>GB</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="DiskSpaceLimitBox">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="accelerated">
+           <bool>false</bool>
+          </property>
+          <property name="showGroupSeparator" stdset="0">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="FreeSpace">
+          <property name="text">
+           <string>Free Space Limit:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QLabel" name="Infos">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Set a free space restriction, when the drive 
  is almost full it can cause some trouble to your 
  cumputer. When the disk have less free space 
- than the specified limit, localtube won't download 
- any content unless you free some space or 
- reduce the space limit.</string>
-   </property>
-  </widget>
-  <widget class="QDialogButtonBox" name="DiskSpaceButton">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>140</y>
-     <width>156</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
+ than the specified limit, localtube won't download any content unless you free some space or reduce the space limit.</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="3">
+         <widget class="QDialogButtonBox" name="DiskSpaceButton">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+          </property>
+          <property name="centerButtons">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="1">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="2">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="1">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
