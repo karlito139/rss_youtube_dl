@@ -114,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent) :
   trayIcon = NULL;
   trayIconMenu = NULL;
   showAction = NULL;
+  pauseAction = NULL;
   quitAction = NULL;
   createTrayIcon();
 
@@ -151,6 +152,8 @@ MainWindow::~MainWindow()
     delete trayIconMenu;
   if(showAction)
     delete showAction;
+  if(pauseAction)
+    delete pauseAction;
   if(quitAction)
     delete quitAction;
 
@@ -242,7 +245,7 @@ void MainWindow::updateUI()
     ui->loginBox->hide();
   }
 
-  if(isCurrentlyDownloading == 0)
+  if( (isCurrentlyDownloading == 0) && (!pauseAction->isChecked()) )
     downloadVideo();
 }
 
@@ -406,12 +409,17 @@ void MainWindow::createTrayIcon(){
   showAction->setCheckable(true);
   connect(showAction, SIGNAL(triggered()), this, SLOT(showWindow()));
 
+  pauseAction = new QAction(tr("&Pause"), this);
+  pauseAction->setCheckable(true);
+  connect(pauseAction, SIGNAL(triggered()), this, SLOT(pauseResume()));
+
   quitAction = new QAction(tr("&Quit"), this);
   connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 
   trayIconMenu = new QMenu(this);
   trayIconMenu->addAction(showAction);
+  trayIconMenu->addAction(pauseAction);
   trayIconMenu->addAction(quitAction);
 
   trayIcon = new QSystemTrayIcon(this);
@@ -425,7 +433,9 @@ void MainWindow::createTrayIcon(){
 void MainWindow::showWindow()
 {
   if(!showAction->isChecked())
+  {
     this->hide();
+  }
   else
   {
     this->show();
@@ -580,4 +590,22 @@ void MainWindow::on_actionAbout_triggered()
   aboutWindow->show();
 
   //qDebug() << "kikoo";
+}
+
+
+void MainWindow::pauseResume()
+{
+  //If we just asked for the downloading to pause
+  if(pauseAction->isChecked())
+  {
+    QList<Video *> *listvid = feedFetcher->getVideos();
+
+    for(int currentVideo=0; currentVideo<listvid->count(); currentVideo++)
+    {
+      if( listvid->at(currentVideo)->isCurrentlyDownloading() == true )
+        listvid->at(currentVideo)->stopDownload();
+    }
+  }
+
+  updateUIRequest();
 }

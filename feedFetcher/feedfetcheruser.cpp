@@ -121,6 +121,8 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
           newChannel->fetch(currentToken);
           connect(newChannel, SIGNAL(doneFetching()), this, SLOT(channelFetched()), Qt::UniqueConnection);
           channelList->append(newChannel);
+
+          //qDebug() << "We are fetching : " << QString::number(channelList->count()) << " channels.";
         }
     }
   }
