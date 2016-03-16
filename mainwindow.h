@@ -87,6 +87,7 @@ private slots:
   void on_browse_clicked();
   void on_downloadDestination_textChanged();
   void updateRSSFeed();
+  void pauseResume();
 
   void on_actionQuite_triggered();
 
@@ -127,6 +128,7 @@ private:
     QStandardItemModel *modelListVideo;
 
     QAction *showAction;
+    QAction *pauseAction;
     QAction *quitAction;
     QLabel statusBarText;
 

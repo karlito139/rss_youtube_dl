@@ -125,8 +125,11 @@ void Video::doneDownloading(){
 
 void Video::stopDownload(){
 
-  proc->kill();
-  this->currentlyDownloading = false;
+  if( this->currentlyDownloading == true )
+  {
+    proc->kill();
+    this->currentlyDownloading = false;
+  }
 }
 
 
