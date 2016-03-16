@@ -99,7 +99,7 @@ void FeedFetcherChannel::decondePlaylistId(QNetworkReply* reply)
   if (statusCode >= 200 && statusCode < 300) {
       QString data = (QString)reply->readAll();
 
-      //qDebug() << "received data :" << data;
+      //qDebug() << "received data for channel : " << this->channelName << " : " << data;
 
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();
