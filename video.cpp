@@ -28,13 +28,20 @@ Video::Video(QString title, QString link, QSettings *settings, QObject *parent) 
   //this->code = extractCode(link);
   this->code = link;
   this->settings = settings;
-  this->currentlyDownloading = false;
   this->proc = NULL;
   this->haveBeenInitialised = true;
   this->isBeingInitialised = false;
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
-  this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
+
+  if( videoDownloaded.split("/").contains(code) == true )
+  {
+    this->status = videoDoneDownloaded;
+  }
+  else
+  {
+    this->status = videoNotDownloaded;
+  }
 }
 
 
@@ -46,20 +53,27 @@ Video::Video(QString id, QSettings *settings, QObject *parent) :
   this->code = id;
   this->title = "Fetching...";
   this->settings = settings;
-  this->currentlyDownloading = false;
   this->proc = NULL;
   this->haveBeenInitialised = false;
   this->isBeingInitialised = false;
 
   QString videoDownloaded = settings->value("downloaded", "").toString();
-  this->alreadyDownloaded = videoDownloaded.split("/").contains(code);
+
+  if( videoDownloaded.split("/").contains(code) == true )
+  {
+    this->status = videoDoneDownloaded;
+  }
+  else
+  {
+    this->status = videoNotDownloaded;
+  }
 }
 
 Video::~Video(){
 
   if(proc != NULL)
   {
-    if(this->currentlyDownloading)
+    if(this->status == videoDownloading)
       stopDownload();
 
     delete proc;
@@ -76,9 +90,31 @@ QString Video::extractCode(QString link){
 }
 
 
-void Video::download(){
+bool Video::download(){
 
-  if(!alreadyDownloaded){
+  QString destination = settings->value("destination", "").toString();
+
+  //If the storage is not valid, we don't download
+  QStorageInfo storage(destination);
+      if (storage.isValid() == false)
+          return false;
+
+  float DiskLimit = settings->value("disk_limit", 0).toFloat();   //In Go
+  DiskLimit = DiskLimit * 1000; //In Mo
+  float diskSpace = (storage.bytesAvailable()/(1000*1000)); //In Mo
+
+  //qDebug() << "Trying to put a video in a disk with : " << QString::number(diskSpace) << "Mo left. Limit at : " << QString::number(DiskLimit);
+
+  //If there is not enough free space, we don't download
+  if( diskSpace < DiskLimit )
+  {
+    this->status = videoError;
+
+    return false;
+  }
+
+  if( (this->status == videoNotDownloaded) || (this->status == videoError) )
+  {
     /* create QProcess object */
     proc= new QProcess();
 
@@ -101,15 +137,17 @@ void Video::download(){
     proc->start(pathToFiles->toLatin1()+"/youtube-dl.exe", arguments);
 #endif
 
-    this->currentlyDownloading = true;
+    this->status = videoDownloading;
 
     emit videoDownloadStarted(this);
 
     /* show output */
     connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
-    //connect(proc, SIGNAL(readyReadStandardOutput()),this, SLOT(rightMessage()) );
-    //connect(proc, SIGNAL(readyReadStandardError()), this, SLOT(wrongMessage()) );
+
+    return true;
   }
+
+  return false;
 }
 
 
@@ -125,17 +163,17 @@ void Video::doneDownloading(){
 
 void Video::stopDownload(){
 
-  if( this->currentlyDownloading == true )
+  if( this->status == videoDownloading )
   {
     proc->kill();
-    this->currentlyDownloading = false;
+    this->status = videoNotDownloaded;
   }
 }
 
 
 void Video::reset()
 {
-  this->alreadyDownloaded = false;
+  this->status = videoNotDownloaded;
 
   QString listVideoDownloaded = settings->value("downloaded", "").toString();
   listVideoDownloaded.replace("/"+code, "");
@@ -150,8 +188,7 @@ void Video::setAsDownloaded()
     if(proc->state() != QProcess::NotRunning)
       stopDownload();
 
-  this->alreadyDownloaded = true;
-  this->currentlyDownloading = false;
+  this->status = videoDoneDownloaded;
   QString listVideoDownloaded = settings->value("downloaded", "").toString();
   listVideoDownloaded.append("/"+code);
   settings->setValue("downloaded", listVideoDownloaded);
@@ -182,4 +219,9 @@ bool Video::lessThan(const Video *v1, const Video *v2)
     return false;
 }
 
+
+VideoStatus Video::getStatus()
+{
+  return this->status;
+}
 

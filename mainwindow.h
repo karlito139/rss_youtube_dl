@@ -48,6 +48,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include "rssfeed.h"
 #include "feedFetcher/feedfetcher.h"
+#include "appsettings.h"
 
 
 
@@ -104,6 +105,8 @@ private slots:
   void on_authCode_textChanged();
 
   void on_actionAbout_triggered();
+  void on_actionSettings_triggered();
+  void settingsChanged();
 
 private:
     Ui::MainWindow *ui;
