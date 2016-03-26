@@ -64,7 +64,7 @@ public:
 
   void setInitialising(bool status){isBeingInitialised = status;}
 
-  void download();
+  bool download();
 
   bool operator<(const Video &i1) const;
   static bool lessThan(const Video *v1, const Video *v2);

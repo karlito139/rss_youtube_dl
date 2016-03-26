@@ -269,6 +269,8 @@ void MainWindow::downloadVideo(){
 
     //QList<Video *> *listvid = rssFeed->getListVideos();
     QList<Video *> *listvid = feedFetcher->getVideos();
+    qSort(listvid->begin(), listvid->end(), Video::lessThan);
+
     for(int i=0; i<listvid->count(); i++){
 
       if( listvid->at(i)->getStatus() != videoDoneDownloaded ){
@@ -277,9 +279,8 @@ void MainWindow::downloadVideo(){
         connect(listvid->at(i), SIGNAL(videoDownloadStarted(Video*)), this, SLOT(videoStartDownloading(Video*)));
         connect(this, SIGNAL(stopDownloading()), listvid->at(i), SLOT(stopDownload()));
 
-        listvid->at(i)->download();
-
-        break;
+        if( listvid->at(i)->download() == true )
+          break;
       }
     }
   }

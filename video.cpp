@@ -90,27 +90,27 @@ QString Video::extractCode(QString link){
 }
 
 
-void Video::download(){
+bool Video::download(){
 
   QString destination = settings->value("destination", "").toString();
 
   //If the storage is not valid, we don't download
   QStorageInfo storage(destination);
       if (storage.isValid() == false)
-          return;
+          return false;
 
   float DiskLimit = settings->value("disk_limit", 0).toFloat();   //In Go
   DiskLimit = DiskLimit * 1000; //In Mo
   float diskSpace = (storage.bytesAvailable()/(1000*1000)); //In Mo
 
-  qDebug() << "Trying to put a video in a disk with : " << QString::number(diskSpace) << "Mo left. Limit at : " << QString::number(DiskLimit);
+  //qDebug() << "Trying to put a video in a disk with : " << QString::number(diskSpace) << "Mo left. Limit at : " << QString::number(DiskLimit);
 
   //If there is not enough free space, we don't download
   if( diskSpace < DiskLimit )
   {
     this->status = videoError;
 
-    return;
+    return false;
   }
 
   if( (this->status == videoNotDownloaded) || (this->status == videoError) )
@@ -129,7 +129,7 @@ void Video::download(){
     arguments << "-o" << settings->value("destination", "").toString() + "%(title)s.%(ext)s";
     arguments << this->code;
 
-    qDebug() << "Downloading with args : " << arguments;
+    //qDebug() << "Downloading with args : " << arguments;
 
 #ifdef  Q_OS_LINUX
     proc->start(pathToFiles->toLatin1()+"/youtube-dl/youtube-dl", arguments);
@@ -143,7 +143,11 @@ void Video::download(){
 
     /* show output */
     connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
+
+    return true;
   }
+
+  return false;
 }
 
 
