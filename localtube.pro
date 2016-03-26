@@ -16,32 +16,30 @@ TARGET = localtube
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-        rssfeed.cpp \
-        video.cpp \
-    about.cpp \
-    feedFetcher/feedfetcheruser.cpp \
-    feedFetcher/feedfetcherplaylist.cpp \
-    feedFetcher/feedfetcher.cpp \
-    feedFetcher/feedfetcherchannel.cpp \
-    disk_space.cpp \
-    uidiskspace.cpp
+SOURCES +=  main.cpp\
+            mainwindow.cpp \
+            rssfeed.cpp \
+            video.cpp \
+            about.cpp \
+            feedFetcher/feedfetcheruser.cpp \
+            feedFetcher/feedfetcherplaylist.cpp \
+            feedFetcher/feedfetcher.cpp \
+            feedFetcher/feedfetcherchannel.cpp \
+            appsettings.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
             video.h \
-    about.h \
-    feedFetcher/feedfetcheruser.h \
-    feedFetcher/feedfetcherplaylist.h \
-    feedFetcher/feedfetcher.h \
-    feedFetcher/feedfetcherchannel.h \
-    disk_space.h \
-    uidiskspace.h
+            about.h \
+            feedFetcher/feedfetcheruser.h \
+            feedFetcher/feedfetcherplaylist.h \
+            feedFetcher/feedfetcher.h \
+            feedFetcher/feedfetcherchannel.h \
+            appsettings.h
 
 FORMS    += mainwindow.ui \
     about.ui \
-    uidiskspace.ui
+    appsettings.ui
 
 RESOURCES += \
     ressource.qrc

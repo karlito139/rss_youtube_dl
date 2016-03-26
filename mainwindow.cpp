@@ -19,8 +19,6 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "disk_space.h"
-
 
 
 
@@ -210,7 +208,7 @@ void MainWindow::updateUI()
   {
     vid = listVideos->at(i);
 
-    if(vid->isCurrentlyDownloading())
+    if(vid->getStatus() == videoDownloading)
       isCurrentlyDownloading++;
 
     modelListVideo->setItem(i, 0, new QStandardItem(vid->getTitle()));
@@ -219,9 +217,23 @@ void MainWindow::updateUI()
     QStandardItem *item = new QStandardItem();
     QImage itemIcon;
 
-    if(vid->haveAlreadyBeenDownloaded()) itemIcon.load(":downloaded_small");
-    else if(vid->isCurrentlyDownloading()) itemIcon.load(":downloading_small");
-    else itemIcon.load(":not_downloaded_small");
+    switch( vid->getStatus() )
+    {
+
+      case videoDoneDownloaded :
+        itemIcon.load(":downloaded_small");
+        break;
+      case videoDownloading :
+        itemIcon.load(":downloading_small");
+        break;
+
+      case videoNotDownloaded :
+        itemIcon.load(":not_downloaded_small");
+        break;
+      case videoError :
+        itemIcon.load(":error_small");
+        break;
+    }
 
     itemIcon.scaled(QSize(5, 5), Qt::KeepAspectRatio);
 
@@ -259,7 +271,7 @@ void MainWindow::downloadVideo(){
     QList<Video *> *listvid = feedFetcher->getVideos();
     for(int i=0; i<listvid->count(); i++){
 
-      if(!listvid->at(i)->haveAlreadyBeenDownloaded()){
+      if( listvid->at(i)->getStatus() != videoDoneDownloaded ){
 
         connect(listvid->at(i), SIGNAL(videoDownloaded(Video *)), this, SLOT(videoDoneDownloading(Video *)));
         connect(listvid->at(i), SIGNAL(videoDownloadStarted(Video*)), this, SLOT(videoStartDownloading(Video*)));
@@ -389,9 +401,9 @@ void MainWindow::videoDoneDownloading(Video *vid){
   updateUIRequest();
 }
 
-void MainWindow::diskSPaceChangedSlot(){
-
-  downloadVideo();
+void MainWindow::settingsChanged()
+{
+  updateUIRequest();
 }
 
 void MainWindow::on_browse_clicked()
@@ -499,7 +511,7 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
   {
     vid = listVideos->at(selected[i].row());
 
-    if(vid->haveAlreadyBeenDownloaded())
+    if( vid->getStatus() == videoDoneDownloaded )
       containDownloadedVid = true;
     else
       containsUndownloadedVid = true;
@@ -593,8 +605,6 @@ void MainWindow::on_actionAbout_triggered()
   About *aboutWindow = new About();
 
   aboutWindow->show();
-
-  //qDebug() << "kikoo";
 }
 
 void MainWindow::pauseResume()
@@ -606,7 +616,7 @@ void MainWindow::pauseResume()
 
     for(int currentVideo=0; currentVideo<listvid->count(); currentVideo++)
     {
-      if( listvid->at(currentVideo)->isCurrentlyDownloading() == true )
+      if( listvid->at(currentVideo)->getStatus() == videoDownloading )
         listvid->at(currentVideo)->stopDownload();
     }
   }
@@ -614,11 +624,12 @@ void MainWindow::pauseResume()
   updateUIRequest();
 }
 
-void MainWindow::on_actionDisk_Space_limit_triggered()
-{
-  Disk_space* diskSpaceWindow = new Disk_space(this, this->settings);
 
-  connect(diskSpaceWindow, SIGNAL(disklimitChanged()), this, SLOT(diskSPaceChangedSlot()));
+void MainWindow::on_actionSettings_triggered()
+{
+  AppSettings *diskSpaceWindow = new AppSettings(this->settings, this);
+
+  connect(diskSpaceWindow, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 
   diskSpaceWindow->show();
 }

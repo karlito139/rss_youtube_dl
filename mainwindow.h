@@ -48,6 +48,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include "rssfeed.h"
 #include "feedFetcher/feedfetcher.h"
+#include "appsettings.h"
 
 
 
@@ -79,7 +80,6 @@ public slots:
   void updateUIRequest();
   void videoDoneDownloading(Video *vid);
   void videoStartDownloading(Video *);
-  void diskSPaceChangedSlot();
   void doneInstallingYoutubeDl();
   void showWindow();
 
@@ -105,7 +105,8 @@ private slots:
   void on_authCode_textChanged();
 
   void on_actionAbout_triggered();
-  void on_actionDisk_Space_limit_triggered();
+  void on_actionSettings_triggered();
+  void settingsChanged();
 
 private:
     Ui::MainWindow *ui;
