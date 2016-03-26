@@ -1,11 +1,9 @@
 #include <QStorageInfo>
-#include "disk_space.h"
-#include "uidiskspace.h"
-#include "ui_uidiskspace.h"
+#include "appSettings.h"
 
-Disk_space::Disk_space(QWidget *parent, QSettings* settings) :
+AppSettings::AppSettings(QWidget *parent, QSettings *settings) :
   QDialog(parent),
-  ui(new Ui::uiDiskSpace)
+  ui(new Ui::AppSettings)
 {
   ui->setupUi(this);
   Settings = settings;
@@ -13,13 +11,13 @@ Disk_space::Disk_space(QWidget *parent, QSettings* settings) :
   ui->DiskSpaceLimitBox->setValue( settings->value("disk_limit", 0).toDouble() );
 }
 
-Disk_space::~Disk_space()
+AppSettings::~AppSettings()
 {
   delete ui;
 }
 
 // Store the disk limit size in Mb
-void Disk_space::on_DiskSpaceButton_accepted()
+void AppSettings::on_DiskSpaceButton_accepted()
 {
     // If the value changed rise a signal and store the new info
     if( ui->DiskSpaceLimitBox->text().replace(",",".").toFloat() != Settings->value("disk_limit", 0).toFloat() )

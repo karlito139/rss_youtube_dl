@@ -9,5 +9,7 @@
         <file alias="not_downloaded_small">images/not_downloaded_small.png</file>
         <file>clientId.txt</file>
         <file>clientSecret.txt</file>
+        <file alias="error">images/error.png</file>
+        <file alias="error_small">images/error_small.png</file>
     </qresource>
 </RCC>
