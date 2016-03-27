@@ -136,6 +136,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
   connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));
 
+  fistAboutWindow = new About();
+  connect(fistAboutWindow, SIGNAL(lastestVersionFetched(QString)), this, SLOT(processVersionNumber(QString)));
+  fistAboutWindow->checkVersion();
+
   updateUI();
 }
 
@@ -172,6 +176,28 @@ MainWindow::~MainWindow()
 
 
 
+void MainWindow::processVersionNumber(QString versionNumber)
+{
+  if( versionNumber.compare(CURRENT_VERSION) > 0)
+  {
+    QString desktop;
+    bool isUnity;
+
+    //qDebug() << "Need update";
+
+    desktop = getenv("XDG_CURRENT_DESKTOP");
+    isUnity = (desktop.toLower() == "unity");
+
+    if(isUnity) //only use this in unity
+    {
+      system("notify-send 'A new version of localtube if avalable' 'at http://localtube.org' -i " + pathToFiles->toLatin1() + "/icon.png -t 5000");
+    }
+    else
+    {
+      trayIcon->showMessage("A new version of localtube if avalable", "at http://localtube.org", QSystemTrayIcon::Information, 5000);
+    }
+  }
+}
 
 
 void MainWindow::updateUIRequest()
