@@ -1,6 +1,7 @@
-localtube (1.1-1) UNRELEASED; urgency=low
+localtube (1.2-1) UNRELEASED; urgency=low
 
   * Initial release.
   * Update 1.1
+  * Update 1.2
 
- -- karlito <karlito@martobre.fr>  Sat, 20 Feb 2016 01:17:03 +0200
+ -- karlito <karlito@martobre.fr>  Sun, 27 Mar 2016 20:59:03 +0200
