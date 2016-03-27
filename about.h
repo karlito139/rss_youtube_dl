@@ -2,7 +2,15 @@
 #define ABOUT_H
 
 #include <QDialog>
-#include <mainwindow.h>
+#include <constants.h>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+
+
+extern QString *pathToFiles;
+
 
 namespace Ui {
 class About;
@@ -15,9 +23,19 @@ class About : public QDialog
 public:
   explicit About(QWidget *parent = 0);
   ~About();
+  void checkVersion();
+
+signals:
+  void lastestVersionFetched(QString);
+
+private slots:
+  void processVersionNumber(QNetworkReply* reply);
 
 private:
   Ui::About *ui;
+
+  QNetworkAccessManager manager;
+
 };
 
 #endif // ABOUT_H

@@ -35,7 +35,8 @@ HEADERS  += mainwindow.h \
             feedFetcher/feedfetcherplaylist.h \
             feedFetcher/feedfetcher.h \
             feedFetcher/feedfetcherchannel.h \
-            appsettings.h
+            appsettings.h \
+    constants.h
 
 FORMS    += mainwindow.ui \
     about.ui \
