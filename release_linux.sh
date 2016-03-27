@@ -5,8 +5,10 @@
 
 #sudo apt-get install build-essential devscripts-el debhelper librsvg2-bin
 
+releaseName="localtube_1.2"
+
 rm -r release_linux
-rm localtube_1.0.tar.gz
+rm $releaseName.tar.gz
 rm doc/localtube.1.gz
 
 cd icon
@@ -15,14 +17,14 @@ rm -r debian
 cd ..
 
 tar -cvf doc/localtube.1.gz doc/localtube.1
-tar -czf localtube_1.1.tar.gz *
+tar -czf $releaseName.tar.gz *
 
 mkdir release_linux
-mv localtube_1.1.tar.gz release_linux/localtube_1.1.orig.tar.gz
+mv $releaseName.tar.gz release_linux/$releaseName.orig.tar.gz
 
 cd release_linux
-mkdir localtube_1.1
-tar -xvf localtube_1.1.orig.tar.gz -C localtube_1.1/
+mkdir $releaseName
+tar -xvf $releaseName.orig.tar.gz -C $releaseName/
 
-cd localtube_1.1
+cd $releaseName
 debuild -us -uc
