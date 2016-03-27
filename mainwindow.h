@@ -45,14 +45,11 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLabel>
 #include <QTime>
 #include <about.h>
+#include <constants.h>
 
 //#include "rssfeed.h"
 #include "feedFetcher/feedfetcher.h"
 #include "appsettings.h"
-
-
-
-#define CURRENT_VERSION    "v1.1"
 
 
 
@@ -89,6 +86,7 @@ private slots:
   void on_downloadDestination_textChanged();
   void updateRSSFeed();
   void pauseResume();
+  void processVersionNumber(QString versionNumber);
 
   void on_actionQuite_triggered();
 
@@ -119,6 +117,7 @@ private:
     bool starting;
     //RssFeed *rssFeed;
     FeedFetcher *feedFetcher;
+    About *fistAboutWindow;
 
     QList<Video *> *listVideos;
     QTimer *timer;
@@ -150,7 +149,7 @@ private:
 
     QTimer uiUpdateTimer;
 
-
+    QNetworkAccessManager manager;
     QNetworkAccessManager networkManager;
 
 protected:
