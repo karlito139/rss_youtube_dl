@@ -30,9 +30,20 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QStorageInfo>
 
 
 extern QString *pathToFiles;
+
+
+typedef enum
+{
+  videoDoneDownloaded,
+  videoDownloading,
+  videoNotDownloaded,
+  videoError
+
+}VideoStatus;
 
 
 
@@ -48,17 +59,16 @@ public:
   QString getLink(){return link;}
   QString getCode(){return code;}
   QDateTime getReleaseDate()const{return releaseDate;}
-  bool haveAlreadyBeenDownloaded(){return alreadyDownloaded;}
-  bool isCurrentlyDownloading(){return currentlyDownloading;}
   bool isVideoInitialised(){return haveBeenInitialised;}
   bool isVideoInitialising(){return isBeingInitialised;}
 
   void setInitialising(bool status){isBeingInitialised = status;}
 
-  void download();
+  bool download();
 
   bool operator<(const Video &i1) const;
   static bool lessThan(const Video *v1, const Video *v2);
+  VideoStatus getStatus();
 
 
 signals:
@@ -80,11 +90,10 @@ private:
   QString title;
   QString link;
   QString code;
-  bool alreadyDownloaded;
-  bool currentlyDownloading;
   QProcess *proc;
   QSettings *settings;
   QDateTime releaseDate;
+  VideoStatus status;
 
   QNetworkAccessManager manager;
   bool haveBeenInitialised;
