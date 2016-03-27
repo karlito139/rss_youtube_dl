@@ -194,7 +194,7 @@ void MainWindow::processVersionNumber(QString versionNumber)
     }
     else
     {
-      trayIcon->showMessage("Video downloaded", "A new version of localtube if avalable at http://localtube.org", QSystemTrayIcon::Information, 5000);
+      trayIcon->showMessage("A new version of localtube if avalable", "at http://localtube.org", QSystemTrayIcon::Information, 5000);
     }
   }
 }
