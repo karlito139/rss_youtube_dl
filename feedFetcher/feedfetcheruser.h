@@ -55,7 +55,7 @@ signals:
 
 private slots:
     void channelFetched();
-    void getSubscribedChannelsList();
+    void getSubscribedChannelsList(QString nextPageTocken = NULL);
     void decodeSubscribedChannelsList(QNetworkReply* reply);
     void getVideosInfo(QList<Video *> videoList);
     void decodeVideoInfo(QNetworkReply* reply);

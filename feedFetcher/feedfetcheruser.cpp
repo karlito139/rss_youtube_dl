@@ -52,7 +52,7 @@ QList<Video *> *FeedFetcherUser::getVideos()
   return videoList;
 }
 
-void FeedFetcherUser::getSubscribedChannelsList()
+void FeedFetcherUser::getSubscribedChannelsList( QString nextPageTocken )
 {
     QString url;
 
@@ -62,6 +62,10 @@ void FeedFetcherUser::getSubscribedChannelsList()
     url += "?part=snippet";
     url += "&mine=true";
     url += "&maxResults=50";
+
+    if( nextPageTocken != NULL )
+      url += "&pageToken=" + nextPageTocken;
+
     url += "&access_token=" + currentToken;
 
     //qDebug() << url;
@@ -88,9 +92,17 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
       QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
       QJsonObject jsonResponseObj = jsonResponse.object();
 
+      // Ask for the next page if needed
+      QString nextPageTocken = jsonResponseObj.value("nextPageToken").toString();
 
+      if( nextPageTocken.isEmpty() == false )
+          getSubscribedChannelsList( nextPageTocken );
+
+      // Process the info I just received
       QJsonArray fetchList = jsonResponseObj.value("items").toArray();
-      QList<QString> channelsToFetch;
+
+      //qDebug() << "I got info about " << fetchList.count() << " channels.";
+
       for(int i=0; i<fetchList.count(); i++)
       {
         QJsonObject channel = fetchList.at(i).toObject();
