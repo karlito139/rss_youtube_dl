@@ -146,6 +146,7 @@ private:
 
     QString clientId;
     QString clientSecret;
+    QString youtubeDlFileName;
 
     QTimer uiUpdateTimer;
 

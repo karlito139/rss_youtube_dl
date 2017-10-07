@@ -332,14 +332,55 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
 
   if(QString::compare(installedVersion, currentLastVersion, Qt::CaseInsensitive))
   {
+
+    //AWS is hard to download from in such an application so we use QT resources
+    /*
 #ifdef  Q_OS_LINUX
-    url = "http://yt-dl.org/latest/youtube-dl.tar.gz";
+    youtubeDlFileName = "youtube-dl-"+currentLastVersion+".tar.gz";
 #else
-    url = "http://yt-dl.org/latest/youtube-dl.exe";
+    youtubeDlFileName = "youtube-dl.exe";
 #endif
 
+    //https://github.com/rg3/youtube-dl/releases/download/2017.08.27.1/youtube-dl-2017.08.27.1.tar.gz
+    //https://github.com/rg3/youtube-dl/releases/download/2017.08.27.1/youtube-dl.exe
+
+    //url = "http://yt-dl.org/latest/"+youtubeDlFileName;
+    url = "https://github.com/rg3/youtube-dl/releases/download/"+currentLastVersion+"/"+youtubeDlFileName;
+
+    qDebug() << "url : " << url;
+
     qnam.get(QNetworkRequest(url));
-    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));*/
+
+
+
+#ifdef  Q_OS_LINUX
+      QFile srcFile(":/youtube-dl-linux");
+      QFile dstFile(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+#else
+      QFile srcFile(":/youtube-dl-windows");
+      QFile dstFile(pathToFiles->toLatin1()+"/youtube-dl.exe");
+#endif
+
+    srcFile.open(QIODevice::ReadOnly);
+
+    if (dstFile.open(QIODevice::ReadWrite)) {
+        dstFile.write(srcFile.readAll());
+    }
+    srcFile.close();
+    dstFile.close();
+
+
+#ifdef  Q_OS_LINUX
+    QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
+    if(installFolder.exists())
+        installFolder.remove();
+    installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+    connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
+#else
+    doneInstallingYoutubeDl();
+#endif
+
   }
   else
   {
@@ -351,35 +392,53 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
 void MainWindow::downloadFinished(QNetworkReply* pReply)
 {
     QByteArray m_DownloadedData;
+
     m_DownloadedData = pReply->readAll();
     pReply->deleteLater();
 
-#ifdef  Q_OS_LINUX
-    QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
-#else
-    QFile file(pathToFiles->toLatin1()+"/youtube-dl.exe");
-#endif
+    // If the response is smaller the 10KB something is not right
+    // ceratinly an AWS redirection
+    if( m_DownloadedData.size() < 10000 )
+    {
 
-    if(file.exists())
-      file.remove();
-    file.open(QIODevice::WriteOnly);
-    file.write(m_DownloadedData);
-    file.close();
+        QRegExp rx(".*a href=\"(.*)\"");
+        int pos = rx.indexIn( QString(m_DownloadedData) );
+        QStringList list = rx.capturedTexts();
+        // list is now ("36 inches", "36", " ", "inches", "es")
 
-    disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
-    //Write down the version we downloaded
-    qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
-    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(writeDownVersion(QNetworkReply*)));
 
-#ifdef  Q_OS_LINUX
-    QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
-    if(installFolder.exists())
-      installFolder.remove();
-    installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
-    connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
-#else
-    doneInstallingYoutubeDl();
-#endif
+        qDebug() << "initial : " << m_DownloadedData;
+        qDebug() << "extract : " << list.at(1);
+
+        m_DownloadedData = "kikoo";
+
+    }
+    else
+    {
+        QFile file(pathToFiles->toLatin1()+"/"+youtubeDlFileName);
+
+        if(file.exists())
+          file.remove();
+        file.open(QIODevice::WriteOnly);
+        file.write(m_DownloadedData);
+        file.close();
+
+        disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+        //Write down the version we downloaded
+        qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
+        //connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(writeDownVersion(QNetworkReply*)));
+
+    #ifdef  Q_OS_LINUX
+    //    QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
+    //    if(installFolder.exists())
+    //      installFolder.remove();
+        qDebug() << "kikoooo : tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/"+youtubeDlFileName;
+    //    installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/"+youtubeDlFileName);
+    //    //connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
+    #else
+        doneInstallingYoutubeDl();
+    #endif
+    }
 }
 
 
