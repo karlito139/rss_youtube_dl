@@ -45,7 +45,10 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     ressource.qrc
 
-
+win32{
+    LIBS += -LC:/OpenSSL-Win32/lib -lubsec
+    INCLUDEPATH += C:/OpenSSL-Win32/include
+}
 
 DESTDIR = ../bin
 MOC_DIR = ../build/moc
