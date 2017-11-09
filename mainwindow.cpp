@@ -133,6 +133,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //Hide as soon as possible the app once created
   QTimer::singleShot(100, this, SLOT(close()));
+  //Fire a second time to try to catch some slow boot on ubuntu
+  QTimer::singleShot(2000, this, SLOT(close()));
 
   connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));
 
