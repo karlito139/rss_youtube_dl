@@ -25,7 +25,8 @@ SOURCES +=  main.cpp\
             feedFetcher/feedfetcherplaylist.cpp \
             feedFetcher/feedfetcher.cpp \
             feedFetcher/feedfetcherchannel.cpp \
-            appsettings.cpp
+            appsettings.cpp \
+    networkisonline.cpp
 
 HEADERS  += mainwindow.h \
             rssfeed.h \
@@ -36,7 +37,8 @@ HEADERS  += mainwindow.h \
             feedFetcher/feedfetcher.h \
             feedFetcher/feedfetcherchannel.h \
             appsettings.h \
-    constants.h
+    constants.h \
+    networkisonline.h
 
 FORMS    += mainwindow.ui \
     about.ui \

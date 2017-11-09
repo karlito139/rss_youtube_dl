@@ -50,6 +50,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 //#include "rssfeed.h"
 #include "feedFetcher/feedfetcher.h"
 #include "appsettings.h"
+#include "networkisonline.h"
 
 
 
@@ -152,6 +153,8 @@ private:
 
     QNetworkAccessManager manager;
     QNetworkAccessManager networkManager;
+
+    NetworkIsOnline *youtubeTester;
 
 protected:
      void closeEvent(QCloseEvent *event);

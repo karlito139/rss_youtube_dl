@@ -142,6 +142,9 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(fistAboutWindow, SIGNAL(lastestVersionFetched(QString)), this, SLOT(processVersionNumber(QString)));
   fistAboutWindow->checkVersion();
 
+  youtubeTester = new NetworkIsOnline(QUrl("https://www.youtube.com/"));
+  connect(youtubeTester, SIGNAL(isNowOnline()), this, SLOT(updateRSSFeed()));
+
   updateUI();
 }
 
@@ -549,9 +552,8 @@ void MainWindow::showWindow()
 }
 
 
-void MainWindow::updateRSSFeed(){
-
-  //rssFeed->fetch(clientId, clientSecret);
+void MainWindow::updateRSSFeed()
+{
   feedFetcher->fetch();
 
   statusBarText.setText("Last fetched at : " + QTime::currentTime().toString("H:m:s a"));
@@ -573,8 +575,6 @@ void MainWindow::closeEvent(QCloseEvent *event){
   //an ignore the close event
   event->ignore();
 }
-
-
 
 
 void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &pos)
@@ -658,7 +658,6 @@ void MainWindow::on_authCode_textChanged()
 }
 
 
-
 void MainWindow::decodeAuthToken(QNetworkReply* reply)
 {
   int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -687,13 +686,13 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
 }
 
 
-
 void MainWindow::on_actionAbout_triggered()
 {
   About *aboutWindow = new About();
 
   aboutWindow->show();
 }
+
 
 void MainWindow::pauseResume()
 {
