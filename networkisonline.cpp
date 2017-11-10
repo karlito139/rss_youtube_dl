@@ -21,6 +21,7 @@ NetworkIsOnline::NetworkIsOnline(QUrl url, int interval, QObject *parent) : QObj
         isHostOnline = false;    // Save the new status
 }
 
+
 void NetworkIsOnline::doesItPing()
 {
     if( ping(distantHost) == true )

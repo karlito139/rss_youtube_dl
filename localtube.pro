@@ -18,7 +18,6 @@ TEMPLATE = app
 
 SOURCES +=  main.cpp\
             mainwindow.cpp \
-            rssfeed.cpp \
             video.cpp \
             about.cpp \
             feedFetcher/feedfetcheruser.cpp \
@@ -29,7 +28,6 @@ SOURCES +=  main.cpp\
     networkisonline.cpp
 
 HEADERS  += mainwindow.h \
-            rssfeed.h \
             video.h \
             about.h \
             feedFetcher/feedfetcheruser.h \

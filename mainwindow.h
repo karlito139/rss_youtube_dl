@@ -47,7 +47,6 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <about.h>
 #include <constants.h>
 
-//#include "rssfeed.h"
 #include "feedFetcher/feedfetcher.h"
 #include "appsettings.h"
 #include "networkisonline.h"
@@ -116,7 +115,6 @@ private:
     bool downloadEnable;
     bool YoutubeDlInstalled;
     bool starting;
-    //RssFeed *rssFeed;
     FeedFetcher *feedFetcher;
     About *fistAboutWindow;
 

@@ -21,11 +21,10 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_mainwindow.h"
 
 
-
-//need to be installed :
-//- sudo apt-get install libgtk2.0-dev libappindicator-dev libnotify-dev
-
-
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -41,15 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QFileInfo setting_file(settings->fileName());
     pathToFiles = new QString(setting_file.path());
 
-    //just FYI
-    //QString settingsPath = QFileInfo(settings.fileName()).absolutePath();
-
     //create the path to the images if it doesn't exist
     QDir resourceFolder(*pathToFiles);
-    if(!resourceFolder.exists()){
-
+    if(!resourceFolder.exists())
         resourceFolder.mkpath(".");
-    }
 
 
     QImage *img = new QImage(":/images/icon.png");
@@ -100,10 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-
-    /*rssFeed = new RssFeed(settings);
-  connect(rssFeed, SIGNAL(doneReading()), this, SLOT(updateUIRequest()));*/
-
     feedFetcher = new FeedFetcher(settings, clientId, clientSecret);
     connect(feedFetcher, SIGNAL(doneFetching()), this, SLOT(updateUIRequest()));
 
@@ -130,10 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    /*//Hide as soon as possible the app once created
-  QTimer::singleShot(100, this, SLOT(close()));
-  //Fire a second time to try to catch some slow boot on ubuntu
-  QTimer::singleShot(2000, this, SLOT(close()));*/
+    //Hide as soon as possible the app once created
+    QTimer::singleShot(100, this, SLOT(close()));
 
     connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));
 
@@ -147,9 +135,11 @@ MainWindow::MainWindow(QWidget *parent) :
     updateUI();
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ */
 MainWindow::~MainWindow()
 {
-    //delete rssFeed;
     delete feedFetcher;
     delete timer;
     if(trayIcon)
@@ -179,7 +169,10 @@ MainWindow::~MainWindow()
 }
 
 
-
+/**
+ * @brief MainWindow::processVersionNumber
+ * @param versionNumber
+ */
 void MainWindow::processVersionNumber(QString versionNumber)
 {
     if( versionNumber.compare(CURRENT_VERSION) > 0)
@@ -223,7 +216,6 @@ void MainWindow::updateUI()
 
     uiUpdateTimer.stop();
 
-    //listVideos = rssFeed->getListVideos();
     listVideos = feedFetcher->getVideos();
     qSort(listVideos->begin(), listVideos->end(), Video::lessThan);
 
@@ -297,7 +289,6 @@ void MainWindow::downloadVideo(){
 
     if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
-        //QList<Video *> *listvid = rssFeed->getListVideos();
         QList<Video *> *listvid = feedFetcher->getVideos();
         qSort(listvid->begin(), listvid->end(), Video::lessThan);
 
