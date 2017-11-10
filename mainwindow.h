@@ -68,44 +68,44 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = 0);
-  ~MainWindow();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
 signals:
-  void stopDownloading();
+    void stopDownloading();
 
 public slots:
-  void updateUIRequest();
-  void videoDoneDownloading(Video *vid);
-  void videoStartDownloading(Video *);
-  void doneInstallingYoutubeDl();
-  void showWindow();
+    void updateUIRequest();
+    void videoDoneDownloading(Video *vid);
+    void videoStartDownloading(Video *);
+    void doneInstallingYoutubeDl();
+    void showWindow();
 
 
 private slots:
-  void on_browse_clicked();
-  void on_downloadDestination_textChanged();
-  void updateRSSFeed();
-  void pauseResume();
-  void processVersionNumber(QString versionNumber);
+    void on_browse_clicked();
+    void on_downloadDestination_textChanged();
+    void updateRSSFeed();
+    void pauseResume();
+    void processVersionNumber(QString versionNumber);
 
-  void on_actionQuite_triggered();
+    void on_actionQuite_triggered();
 
-  void downloadFinished(QNetworkReply* pReply);
-  void writeDownVersion(QNetworkReply* pReply);
-  void downloadYoutubeDlIfNecessary(QNetworkReply* pReply);
-  void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
+    void downloadFinished(QNetworkReply* pReply);
+    void writeDownVersion(QNetworkReply* pReply);
+    void downloadYoutubeDlIfNecessary(QNetworkReply* pReply);
+    void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
 
-  void on_helpButton_clicked();
-  void on_loginButton_clicked();
+    void on_helpButton_clicked();
+    void on_loginButton_clicked();
 
-  void updateUI();
-  void decodeAuthToken(QNetworkReply* reply);
-  void on_authCode_textChanged();
+    void updateUI();
+    void decodeAuthToken(QNetworkReply* reply);
+    void on_authCode_textChanged();
 
-  void on_actionAbout_triggered();
-  void on_actionSettings_triggered();
-  void settingsChanged();
+    void on_actionAbout_triggered();
+    void on_actionSettings_triggered();
+    void settingsChanged();
 
 private:
     Ui::MainWindow *ui;
@@ -157,7 +157,7 @@ private:
     NetworkIsOnline *youtubeTester;
 
 protected:
-     void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

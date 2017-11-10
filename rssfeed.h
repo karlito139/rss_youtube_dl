@@ -45,14 +45,14 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 struct PlaylistInfo{
 
-  QString channelID;
-  QString playlistID;
+    QString channelID;
+    QString playlistID;
 };
 
 
 class RssFeed: public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     RssFeed(QString url, QSettings *settings);

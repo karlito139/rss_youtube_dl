@@ -21,57 +21,57 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 FeedFetcherPlaylist::FeedFetcherPlaylist(QString playlistId, QSettings *settings, QString clientId, QString clientSecret)
 {
-  this->playlistId = playlistId;
-  this->settings = settings;
-  this->clientId = clientId;
-  this->clientSecret = clientSecret;
-  this->quotaCount = 0;
+    this->playlistId = playlistId;
+    this->settings = settings;
+    this->clientId = clientId;
+    this->clientSecret = clientSecret;
+    this->quotaCount = 0;
 
-  listVideos = new QList<Video *>();
+    listVideos = new QList<Video *>();
 }
 
 QString FeedFetcherPlaylist::getPlaylistId()
 {
-  return this->playlistId;
+    return this->playlistId;
 }
 
 
 void FeedFetcherPlaylist::fetch(QString currentToken)
 {
-  this->currentToken = currentToken;
+    this->currentToken = currentToken;
 
-  getListOfVideos();
+    getListOfVideos();
 }
 
 
 QList<Video *> *FeedFetcherPlaylist::getVideos()
 {
-  return listVideos;
+    return listVideos;
 }
 
 
 void FeedFetcherPlaylist::getListOfVideos()
 {
-  QString url;
-  //static int count = 0;
+    QString url;
+    //static int count = 0;
 
-  url = "https://www.googleapis.com/youtube/v3";
-  url += "/playlistItems";
+    url = "https://www.googleapis.com/youtube/v3";
+    url += "/playlistItems";
 
-  url += "?part=contentDetails";
-  url += "&playlistId=" + playlistId;
-  url += "&maxResults=5";
-  url += "&access_token=" + currentToken;
+    url += "?part=contentDetails";
+    url += "&playlistId=" + playlistId;
+    url += "&maxResults=5";
+    url += "&access_token=" + currentToken;
 
-  //qDebug() << url;
-  //count++;
-  //qDebug() << "Got called for " << playlistID << " : " << QString::number(count);
+    //qDebug() << url;
+    //count++;
+    //qDebug() << "Got called for " << playlistID << " : " << QString::number(count);
 
-  QNetworkRequest request(url);
-  manager.get(request);
-  connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeListOfVideos(QNetworkReply*)), Qt::UniqueConnection);
+    QNetworkRequest request(url);
+    manager.get(request);
+    connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeListOfVideos(QNetworkReply*)), Qt::UniqueConnection);
 
-  addQuotaUsage(1+2);  // 1 for the request, 2 for the contentDetails
+    addQuotaUsage(1+2);  // 1 for the request, 2 for the contentDetails
 }
 
 
@@ -79,60 +79,60 @@ void FeedFetcherPlaylist::getListOfVideos()
 
 void FeedFetcherPlaylist::decodeListOfVideos(QNetworkReply* reply)
 {
-  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-  //qDebug() << "Status code :" << statusCode;
+    //qDebug() << "Status code :" << statusCode;
 
-  if (statusCode >= 200 && statusCode < 300)
-  {
-      QString data = (QString)reply->readAll();
+    if (statusCode >= 200 && statusCode < 300)
+    {
+        QString data = (QString)reply->readAll();
 
-      //qDebug() << "\n\n\nreceived data :" << data;
+        //qDebug() << "\n\n\nreceived data :" << data;
 
-      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
-      QJsonObject jsonResponseObj = jsonResponse.object();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
+        QJsonObject jsonResponseObj = jsonResponse.object();
 
-      QJsonArray videoList = jsonResponseObj.value("items").toArray();
-      for(int i=0; i<videoList.count(); i++)
-      {
-        QJsonObject video = videoList.at(i).toObject();
-
-        QString videoID = video.value("contentDetails").toObject().value("videoId").toString();
-
-
-        //if not already existing
-        bool videoExiste = false;
-        for(int i=0; i<listVideos->count(); i++)
-          if(listVideos->at(i)->getCode() == videoID)
-            videoExiste = true;
-
-        if(videoExiste == false)
+        QJsonArray videoList = jsonResponseObj.value("items").toArray();
+        for(int i=0; i<videoList.count(); i++)
         {
-          //qDebug() << "Created the video : " << videoID;
-          listVideos->append(new Video(videoID, settings));
+            QJsonObject video = videoList.at(i).toObject();
 
-          /*if(videoInfoFetchingTimer->isActive() == false)
+            QString videoID = video.value("contentDetails").toObject().value("videoId").toString();
+
+
+            //if not already existing
+            bool videoExiste = false;
+            for(int i=0; i<listVideos->count(); i++)
+                if(listVideos->at(i)->getCode() == videoID)
+                    videoExiste = true;
+
+            if(videoExiste == false)
+            {
+                //qDebug() << "Created the video : " << videoID;
+                listVideos->append(new Video(videoID, settings));
+
+                /*if(videoInfoFetchingTimer->isActive() == false)
             videoInfoFetchingTimer->start();*/
+            }
         }
-      }
-  }
+    }
 
-  emit doneFetching();
+    emit doneFetching();
 }
 
 
 
 void FeedFetcherPlaylist::addQuotaUsage(int amount)
 {
-  quotaCount += amount;
+    quotaCount += amount;
 }
 
 int FeedFetcherPlaylist::getQuotaUsed()
 {
-  int totalQuota = 0;
+    int totalQuota = 0;
 
-  totalQuota += quotaCount;
+    totalQuota += quotaCount;
 
-  return totalQuota;
+    return totalQuota;
 }
 

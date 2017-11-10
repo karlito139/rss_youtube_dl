@@ -35,16 +35,16 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 class FeedFetcherPlaylist: public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-  FeedFetcherPlaylist(QString playlistId, QSettings *settings, QString clientId, QString clientSecret);
-  QString getPlaylistId();
-  QList<Video *> *getVideos();
-  int getQuotaUsed();
+    FeedFetcherPlaylist(QString playlistId, QSettings *settings, QString clientId, QString clientSecret);
+    QString getPlaylistId();
+    QList<Video *> *getVideos();
+    int getQuotaUsed();
 
 public slots:
-  void fetch(QString currentToken);
+    void fetch(QString currentToken);
 
 signals:
     void doneFetching();
@@ -54,16 +54,16 @@ private slots:
     void decodeListOfVideos(QNetworkReply* reply);
 
 private:
-  void addQuotaUsage(int amount);
+    void addQuotaUsage(int amount);
 
-  QString playlistId;
-  QSettings *settings;
-  QString clientId;
-  QString clientSecret;
-  QString currentToken;
-  QList<Video *> *listVideos;
-  QNetworkAccessManager manager;
-  int quotaCount;
+    QString playlistId;
+    QSettings *settings;
+    QString clientId;
+    QString clientSecret;
+    QString currentToken;
+    QList<Video *> *listVideos;
+    QNetworkAccessManager manager;
+    int quotaCount;
 
 };
 

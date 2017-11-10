@@ -6,5 +6,5 @@ Comment=Download a youtube feed
 Exec=localtube
 Icon=localtube
 Terminal=false
-Categories=Internet;
+Categories=Network;
 Name[en_US]=localtube

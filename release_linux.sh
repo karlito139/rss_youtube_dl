@@ -5,7 +5,7 @@
 
 #sudo apt-get install build-essential devscripts-el debhelper librsvg2-bin
 
-releaseName="localtube_1.4"
+releaseName="localtube_1.5"
 
 rm -r release_linux
 rm $releaseName.tar.gz

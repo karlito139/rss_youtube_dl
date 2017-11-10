@@ -38,10 +38,10 @@ extern QString *pathToFiles;
 
 typedef enum
 {
-  videoDoneDownloaded,
-  videoDownloading,
-  videoNotDownloaded,
-  videoError
+    videoDoneDownloaded,
+    videoDownloading,
+    videoNotDownloaded,
+    videoError
 
 }VideoStatus;
 
@@ -50,55 +50,55 @@ typedef enum
 
 class Video : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  explicit Video(QString title, QString link, QSettings *settings, QObject *parent = 0);
-  explicit Video(QString id, QSettings *settings, QObject *parent = 0);
-  ~Video();
-  QString getTitle(){return title;}
-  QString getLink(){return link;}
-  QString getCode(){return code;}
-  QDateTime getReleaseDate()const{return releaseDate;}
-  bool isVideoInitialised(){return haveBeenInitialised;}
-  bool isVideoInitialising(){return isBeingInitialised;}
+    explicit Video(QString title, QString link, QSettings *settings, QObject *parent = 0);
+    explicit Video(QString id, QSettings *settings, QObject *parent = 0);
+    ~Video();
+    QString getTitle(){return title;}
+    QString getLink(){return link;}
+    QString getCode(){return code;}
+    QDateTime getReleaseDate()const{return releaseDate;}
+    bool isVideoInitialised(){return haveBeenInitialised;}
+    bool isVideoInitialising(){return isBeingInitialised;}
 
-  void setInitialising(bool status){isBeingInitialised = status;}
+    void setInitialising(bool status){isBeingInitialised = status;}
 
-  bool download();
+    bool download();
 
-  bool operator<(const Video &i1) const;
-  static bool lessThan(const Video *v1, const Video *v2);
-  VideoStatus getStatus();
+    bool operator<(const Video &i1) const;
+    static bool lessThan(const Video *v1, const Video *v2);
+    VideoStatus getStatus();
 
 
 signals:
-  void videoDownloaded(Video *);
-  void videoDownloadStarted(Video *);
-  void videoStatusChanged();
-  
+    void videoDownloaded(Video *);
+    void videoDownloadStarted(Video *);
+    void videoStatusChanged();
+
 public slots:
-  void doneDownloading();
-  void stopDownload();
-  void reset();
-  void setAsDownloaded();
-  void decodeVideoInfo(QJsonObject reply);
+    void doneDownloading();
+    void stopDownload();
+    void reset();
+    void setAsDownloaded();
+    void decodeVideoInfo(QJsonObject reply);
 
 private:
 
-  QString extractCode(QString link);
+    QString extractCode(QString link);
 
-  QString title;
-  QString link;
-  QString code;
-  QProcess *proc;
-  QSettings *settings;
-  QDateTime releaseDate;
-  VideoStatus status;
+    QString title;
+    QString link;
+    QString code;
+    QProcess *proc;
+    QSettings *settings;
+    QDateTime releaseDate;
+    VideoStatus status;
 
-  QNetworkAccessManager manager;
-  bool haveBeenInitialised;
-  bool isBeingInitialised;
-  
+    QNetworkAccessManager manager;
+    bool haveBeenInitialised;
+    bool isBeingInitialised;
+
 
 };
 

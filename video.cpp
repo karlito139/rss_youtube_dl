@@ -20,208 +20,208 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include "video.h"
 
 Video::Video(QString title, QString link, QSettings *settings, QObject *parent) :
-  QObject(parent)
+    QObject(parent)
 {
 
-  this->title = title;
-  this->link = link;
-  //this->code = extractCode(link);
-  this->code = link;
-  this->settings = settings;
-  this->proc = NULL;
-  this->haveBeenInitialised = true;
-  this->isBeingInitialised = false;
+    this->title = title;
+    this->link = link;
+    //this->code = extractCode(link);
+    this->code = link;
+    this->settings = settings;
+    this->proc = NULL;
+    this->haveBeenInitialised = true;
+    this->isBeingInitialised = false;
 
-  QString videoDownloaded = settings->value("downloaded", "").toString();
+    QString videoDownloaded = settings->value("downloaded", "").toString();
 
-  if( videoDownloaded.split("/").contains(code) == true )
-  {
-    this->status = videoDoneDownloaded;
-  }
-  else
-  {
-    this->status = videoNotDownloaded;
-  }
+    if( videoDownloaded.split("/").contains(code) == true )
+    {
+        this->status = videoDoneDownloaded;
+    }
+    else
+    {
+        this->status = videoNotDownloaded;
+    }
 }
 
 
 //Using youtuve API V3.0
 Video::Video(QString id, QSettings *settings, QObject *parent) :
-  QObject(parent)
+    QObject(parent)
 {
-  this->link = id;
-  this->code = id;
-  this->title = "Fetching...";
-  this->settings = settings;
-  this->proc = NULL;
-  this->haveBeenInitialised = false;
-  this->isBeingInitialised = false;
+    this->link = id;
+    this->code = id;
+    this->title = "Fetching...";
+    this->settings = settings;
+    this->proc = NULL;
+    this->haveBeenInitialised = false;
+    this->isBeingInitialised = false;
 
-  QString videoDownloaded = settings->value("downloaded", "").toString();
+    QString videoDownloaded = settings->value("downloaded", "").toString();
 
-  if( videoDownloaded.split("/").contains(code) == true )
-  {
-    this->status = videoDoneDownloaded;
-  }
-  else
-  {
-    this->status = videoNotDownloaded;
-  }
+    if( videoDownloaded.split("/").contains(code) == true )
+    {
+        this->status = videoDoneDownloaded;
+    }
+    else
+    {
+        this->status = videoNotDownloaded;
+    }
 }
 
 Video::~Video(){
 
-  if(proc != NULL)
-  {
-    if(this->status == videoDownloading)
-      stopDownload();
+    if(proc != NULL)
+    {
+        if(this->status == videoDownloading)
+            stopDownload();
 
-    delete proc;
-  }
+        delete proc;
+    }
 }
 
 QString Video::extractCode(QString link){
 
-  QRegExp regExp("videos/.*");
+    QRegExp regExp("videos/.*");
 
-  regExp.indexIn(link, 0);
+    regExp.indexIn(link, 0);
 
-  return regExp.cap(0).mid(7,-1);
+    return regExp.cap(0).mid(7,-1);
 }
 
 
 bool Video::download(){
 
-  QString destination = settings->value("destination", "").toString();
+    QString destination = settings->value("destination", "").toString();
 
-  //If the storage is not valid, we don't download
-  QStorageInfo storage(destination);
-      if (storage.isValid() == false)
-          return false;
+    //If the storage is not valid, we don't download
+    QStorageInfo storage(destination);
+    if (storage.isValid() == false)
+        return false;
 
-  float DiskLimit = settings->value("disk_limit", 0).toFloat();   //In Go
-  DiskLimit = DiskLimit * 1000; //In Mo
-  float diskSpace = (storage.bytesAvailable()/(1000*1000)); //In Mo
+    float DiskLimit = settings->value("disk_limit", 0).toFloat();   //In Go
+    DiskLimit = DiskLimit * 1000; //In Mo
+    float diskSpace = (storage.bytesAvailable()/(1000*1000)); //In Mo
 
-  //qDebug() << "Trying to put a video in a disk with : " << QString::number(diskSpace) << "Mo left. Limit at : " << QString::number(DiskLimit);
+    //qDebug() << "Trying to put a video in a disk with : " << QString::number(diskSpace) << "Mo left. Limit at : " << QString::number(DiskLimit);
 
-  //If there is not enough free space, we don't download
-  if( diskSpace < DiskLimit )
-  {
-    this->status = videoError;
+    //If there is not enough free space, we don't download
+    if( diskSpace < DiskLimit )
+    {
+        this->status = videoError;
+
+        return false;
+    }
+
+    if( (this->status == videoNotDownloaded) || (this->status == videoError) )
+    {
+        /* create QProcess object */
+        proc= new QProcess();
+
+        QStringList arguments;
+
+#ifdef  Q_OS_LINUX
+        //arguments << "-f" << "bestvideo+bestaudio/best";
+        //arguments << "-f" << "best";
+#else
+        arguments << "-f" << "best";
+#endif
+        arguments << "-o" << settings->value("destination", "").toString() + "%(title)s.%(ext)s";
+        arguments << this->code;
+
+        //qDebug() << "Downloading with args : " << arguments;
+
+#ifdef  Q_OS_LINUX
+        proc->start(pathToFiles->toLatin1()+"/youtube-dl/youtube-dl", arguments);
+#else
+        proc->start(pathToFiles->toLatin1()+"/youtube-dl.exe", arguments);
+#endif
+
+        this->status = videoDownloading;
+
+        emit videoDownloadStarted(this);
+
+        /* show output */
+        connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
+
+        return true;
+    }
 
     return false;
-  }
-
-  if( (this->status == videoNotDownloaded) || (this->status == videoError) )
-  {
-    /* create QProcess object */
-    proc= new QProcess();
-
-    QStringList arguments;
-
-#ifdef  Q_OS_LINUX
-    //arguments << "-f" << "bestvideo+bestaudio/best";
-    //arguments << "-f" << "best";
-#else
-    arguments << "-f" << "best";
-#endif
-    arguments << "-o" << settings->value("destination", "").toString() + "%(title)s.%(ext)s";
-    arguments << this->code;
-
-    //qDebug() << "Downloading with args : " << arguments;
-
-#ifdef  Q_OS_LINUX
-    proc->start(pathToFiles->toLatin1()+"/youtube-dl/youtube-dl", arguments);
-#else
-    proc->start(pathToFiles->toLatin1()+"/youtube-dl.exe", arguments);
-#endif
-
-    this->status = videoDownloading;
-
-    emit videoDownloadStarted(this);
-
-    /* show output */
-    connect(proc, SIGNAL(finished(int)), this, SLOT(doneDownloading()));
-
-    return true;
-  }
-
-  return false;
 }
 
 
 void Video::doneDownloading(){
 
-  if(!proc->exitStatus()){
+    if(!proc->exitStatus()){
 
-    setAsDownloaded();
+        setAsDownloaded();
 
-    emit videoDownloaded(this);
-  }
+        emit videoDownloaded(this);
+    }
 }
 
 void Video::stopDownload(){
 
-  if( this->status == videoDownloading )
-  {
-    proc->kill();
-    this->status = videoNotDownloaded;
-  }
+    if( this->status == videoDownloading )
+    {
+        proc->kill();
+        this->status = videoNotDownloaded;
+    }
 }
 
 
 void Video::reset()
 {
-  this->status = videoNotDownloaded;
+    this->status = videoNotDownloaded;
 
-  QString listVideoDownloaded = settings->value("downloaded", "").toString();
-  listVideoDownloaded.replace("/"+code, "");
-  settings->setValue("downloaded", listVideoDownloaded);
+    QString listVideoDownloaded = settings->value("downloaded", "").toString();
+    listVideoDownloaded.replace("/"+code, "");
+    settings->setValue("downloaded", listVideoDownloaded);
 
-  emit videoStatusChanged();
+    emit videoStatusChanged();
 }
 
 void Video::setAsDownloaded()
 {
-  if(proc != NULL)
-    if(proc->state() != QProcess::NotRunning)
-      stopDownload();
+    if(proc != NULL)
+        if(proc->state() != QProcess::NotRunning)
+            stopDownload();
 
-  this->status = videoDoneDownloaded;
-  QString listVideoDownloaded = settings->value("downloaded", "").toString();
-  listVideoDownloaded.append("/"+code);
-  settings->setValue("downloaded", listVideoDownloaded);
+    this->status = videoDoneDownloaded;
+    QString listVideoDownloaded = settings->value("downloaded", "").toString();
+    listVideoDownloaded.append("/"+code);
+    settings->setValue("downloaded", listVideoDownloaded);
 
-  emit videoStatusChanged();
+    emit videoStatusChanged();
 }
 
 
 
 void Video::decodeVideoInfo(QJsonObject reply)
 {
-  QString videoTitle = reply.value("title").toString();
-  QString releaseDate = reply.value("publishedAt").toString();
+    QString videoTitle = reply.value("title").toString();
+    QString releaseDate = reply.value("publishedAt").toString();
 
-  this->title = videoTitle;
-  this->releaseDate = QDateTime::fromString(releaseDate, "yyyy-MM-ddThh:mm:ss.zzzZ");
-  this->haveBeenInitialised = true;
-  this->isBeingInitialised = false;
+    this->title = videoTitle;
+    this->releaseDate = QDateTime::fromString(releaseDate, "yyyy-MM-ddThh:mm:ss.zzzZ");
+    this->haveBeenInitialised = true;
+    this->isBeingInitialised = false;
 
-  emit videoStatusChanged();
+    emit videoStatusChanged();
 }
 
 bool Video::lessThan(const Video *v1, const Video *v2)
 {
-  if(v1->getReleaseDate() > v2->getReleaseDate())
-    return true;
-  else
-    return false;
+    if(v1->getReleaseDate() > v2->getReleaseDate())
+        return true;
+    else
+        return false;
 }
 
 
 VideoStatus Video::getStatus()
 {
-  return this->status;
+    return this->status;
 }
 

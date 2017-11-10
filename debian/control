@@ -2,7 +2,7 @@ Source: localtube
 Maintainer: karlito <karlito@martobre.fr>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.5
+Standards-Version: 3.9.8
 Build-Depends: debhelper (>= 9)
 
 Package: localtube

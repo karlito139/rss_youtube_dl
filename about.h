@@ -18,23 +18,23 @@ class About;
 
 class About : public QDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit About(QWidget *parent = 0);
-  ~About();
-  void checkVersion();
+    explicit About(QWidget *parent = 0);
+    ~About();
+    void checkVersion();
 
 signals:
-  void lastestVersionFetched(QString);
+    void lastestVersionFetched(QString);
 
 private slots:
-  void processVersionNumber(QNetworkReply* reply);
+    void processVersionNumber(QNetworkReply* reply);
 
 private:
-  Ui::About *ui;
+    Ui::About *ui;
 
-  QNetworkAccessManager manager;
+    QNetworkAccessManager manager;
 
 };
 

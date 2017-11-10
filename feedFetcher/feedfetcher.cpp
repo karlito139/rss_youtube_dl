@@ -21,85 +21,85 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 FeedFetcher::FeedFetcher(QSettings *settings, QString clientId, QString clientSecret)
 {
-  this->settings = settings;
-  this->clientId = clientId;
-  this->clientSecret = clientSecret;
-  quotaCount = 0;
+    this->settings = settings;
+    this->clientId = clientId;
+    this->clientSecret = clientSecret;
+    quotaCount = 0;
 
-  currentUser = new FeedFetcherUser(settings, clientId, clientSecret);
-  connect(currentUser, SIGNAL(doneFetching()), this, SLOT(userFetched()));
+    currentUser = new FeedFetcherUser(settings, clientId, clientSecret);
+    connect(currentUser, SIGNAL(doneFetching()), this, SLOT(userFetched()));
 }
 
 void FeedFetcher::fetch()
 {
-  getNewToken();
+    getNewToken();
 }
 
 QList<Video *> *FeedFetcher::getVideos()
 {
-  return currentUser->getVideos();
+    return currentUser->getVideos();
 }
 
 void FeedFetcher::getNewToken()
 {
-  QString url = "https://www.googleapis.com/oauth2/v4/token";
-  QUrlQuery postData;
-  postData.addQueryItem("client_id", clientId);
-  postData.addQueryItem("client_secret", clientSecret);
-  postData.addQueryItem("refresh_token", settings->value("refreshToken", "").toString());
-  postData.addQueryItem("grant_type", "refresh_token");
+    QString url = "https://www.googleapis.com/oauth2/v4/token";
+    QUrlQuery postData;
+    postData.addQueryItem("client_id", clientId);
+    postData.addQueryItem("client_secret", clientSecret);
+    postData.addQueryItem("refresh_token", settings->value("refreshToken", "").toString());
+    postData.addQueryItem("grant_type", "refresh_token");
 
-  QNetworkRequest request(url);
-  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-  tokenManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    tokenManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
 
-  //qDebug() << "Ask for a new tocken";
+    //qDebug() << "Ask for a new tocken";
 
-  connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)), Qt::UniqueConnection);
+    connect(&tokenManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeNewToken(QNetworkReply*)), Qt::UniqueConnection);
 }
 
 void FeedFetcher::decodeNewToken(QNetworkReply* reply)
 {
-  int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-  //qDebug() << "statusCode : " << statusCode;
+    //qDebug() << "statusCode : " << statusCode;
 
-  if (statusCode >= 200 && statusCode < 300) {
-      QString data = (QString)reply->readAll();
+    if (statusCode >= 200 && statusCode < 300) {
+        QString data = (QString)reply->readAll();
 
-      //qDebug() << "Received data : " << data;
+        //qDebug() << "Received data : " << data;
 
-      QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
-      QJsonObject jsonResponseObj = jsonResponse.object();
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
+        QJsonObject jsonResponseObj = jsonResponse.object();
 
-      QString token = jsonResponseObj.value("access_token").toString();
+        QString token = jsonResponseObj.value("access_token").toString();
 
-      if(!token.isEmpty())
-        currentToken = token;
+        if(!token.isEmpty())
+            currentToken = token;
 
-      //qDebug() << "new tocken : " << currentToken;
+        //qDebug() << "new tocken : " << currentToken;
 
-      getUserVideos();
-  }
+        getUserVideos();
+    }
 }
 
 void FeedFetcher::getUserVideos()
 {
-  //qDebug() << "Request to fetch user.";
-  currentUser->fetch(currentToken);
+    //qDebug() << "Request to fetch user.";
+    currentUser->fetch(currentToken);
 }
 
 void FeedFetcher::userFetched()
 {
-  emit doneFetching();
+    emit doneFetching();
 
-  displayQotaStatus();
+    displayQotaStatus();
 }
 
 void FeedFetcher::displayQotaStatus()
 {
 
-  qDebug() << "We now got : " << getVideos()->count() << " videos. That costed : " << QString::number(currentUser->getQuotaUsed()) << " of youtube cota.";
+    qDebug() << "We now got : " << getVideos()->count() << " videos. That costed : " << QString::number(currentUser->getQuotaUsed()) << " of youtube cota.";
 }
 
 

@@ -53,11 +53,11 @@ bool NetworkIsOnline::ping(QString host)
     QStringList parameters;
     QProcess pingProcess;
 
-    #if defined(WIN32)
-        parameters << "-n" << "1";
-    #else
-        parameters << "-c 1";
-    #endif
+#if defined(WIN32)
+    parameters << "-n" << "1";
+#else
+    parameters << "-c 1";
+#endif
 
     parameters << host;
 

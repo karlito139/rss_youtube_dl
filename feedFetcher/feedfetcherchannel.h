@@ -16,22 +16,22 @@
 
 struct PlaylistInfo{
 
-  QString channelID;
-  QString playlistID;
+    QString channelID;
+    QString playlistID;
 };
 
 class FeedFetcherChannel: public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-  FeedFetcherChannel(QString channelName, QString channelID, QSettings *settings, QString clientId, QString clientSecret);
-  QString getChannelId();
-  QList<Video *> *getVideos();
-  int getQuotaUsed();
+    FeedFetcherChannel(QString channelName, QString channelID, QSettings *settings, QString clientId, QString clientSecret);
+    QString getChannelId();
+    QList<Video *> *getVideos();
+    int getQuotaUsed();
 
 public slots:
-  void fetch(QString currentToken);
+    void fetch(QString currentToken);
 
 signals:
     void doneFetching();
@@ -42,24 +42,24 @@ private slots:
     void decondePlaylistId(QNetworkReply* reply);
 
 private:
-  void initPlaylistsInfos();
-  void savePlaylistsInfos();
-  void addPlayList(QString playlistId);
+    void initPlaylistsInfos();
+    void savePlaylistsInfos();
+    void addPlayList(QString playlistId);
 
-  void addQuotaUsage(int amount);
+    void addQuotaUsage(int amount);
 
 
-  QString channelName;
-  QString channelID;
-  QSettings *settings;
-  QString clientId;
-  QString clientSecret;
-  QString currentToken;
-  QList<PlaylistInfo> playlistInfos;
-  QNetworkAccessManager manager;
-  int quotaCount;
+    QString channelName;
+    QString channelID;
+    QSettings *settings;
+    QString clientId;
+    QString clientSecret;
+    QString currentToken;
+    QList<PlaylistInfo> playlistInfos;
+    QNetworkAccessManager manager;
+    int quotaCount;
 
-  QList<FeedFetcherPlaylist *> *playlistList;
+    QList<FeedFetcherPlaylist *> *playlistList;
 
 };
 
