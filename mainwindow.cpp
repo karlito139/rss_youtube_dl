@@ -209,8 +209,6 @@ void MainWindow::updateUIRequest()
 
 void MainWindow::updateUI()
 {
-    //qDebug() << "update UI";
-
     int isCurrentlyDownloading = 0;
     QModelIndex currentlySelected = ui->widgetListVideos->currentIndex();
 
@@ -327,27 +325,6 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
 
     if(QString::compare(installedVersion, currentLastVersion, Qt::CaseInsensitive))
     {
-
-        //AWS is hard to download from in such an application so we use QT resources
-        /*
-#ifdef  Q_OS_LINUX
-    youtubeDlFileName = "youtube-dl-"+currentLastVersion+".tar.gz";
-#else
-    youtubeDlFileName = "youtube-dl.exe";
-#endif
-
-    //https://github.com/rg3/youtube-dl/releases/download/2017.08.27.1/youtube-dl-2017.08.27.1.tar.gz
-    //https://github.com/rg3/youtube-dl/releases/download/2017.08.27.1/youtube-dl.exe
-
-    //url = "http://yt-dl.org/latest/"+youtubeDlFileName;
-    url = "https://github.com/rg3/youtube-dl/releases/download/"+currentLastVersion+"/"+youtubeDlFileName;
-
-    qDebug() << "url : " << url;
-
-    qnam.get(QNetworkRequest(url));
-    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));*/
-
-
 
 #ifdef  Q_OS_LINUX
         QFile srcFile(":/youtube-dl-linux");
@@ -637,15 +614,11 @@ void MainWindow::decodeAuthToken(QNetworkReply* reply)
     if (statusCode >= 200 && statusCode < 300) {
         QString data = (QString)reply->readAll();
 
-        //qDebug() << "Received data : " << data;
-
         QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
         QJsonObject jsonResponseObj = jsonResponse.object();
 
         QString token = jsonResponseObj.value("access_token").toString();
         QString refreshToken = jsonResponseObj.value("refresh_token").toString();
-
-        //qDebug() << "refresh tocken : " << refreshToken;
 
         if(!refreshToken.isEmpty())
         {
