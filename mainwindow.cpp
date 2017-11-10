@@ -397,16 +397,10 @@ void MainWindow::downloadFinished(QNetworkReply* pReply)
     {
 
         QRegExp rx(".*a href=\"(.*)\"");
-        int pos = rx.indexIn( QString(m_DownloadedData) );
         QStringList list = rx.capturedTexts();
-        // list is now ("36 inches", "36", " ", "inches", "es")
-
 
         qDebug() << "initial : " << m_DownloadedData;
         qDebug() << "extract : " << list.at(1);
-
-        m_DownloadedData = "kikoo";
-
     }
     else
     {
@@ -421,18 +415,6 @@ void MainWindow::downloadFinished(QNetworkReply* pReply)
         disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
         //Write down the version we downloaded
         qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
-        //connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(writeDownVersion(QNetworkReply*)));
-
-#ifdef  Q_OS_LINUX
-        //    QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
-        //    if(installFolder.exists())
-        //      installFolder.remove();
-        qDebug() << "kikoooo : tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/"+youtubeDlFileName;
-        //    installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/"+youtubeDlFileName);
-        //    //connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
-#else
-        doneInstallingYoutubeDl();
-#endif
     }
 }
 
