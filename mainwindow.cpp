@@ -75,8 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //By default the list of videos is empty
     listVideos = NULL;
 
-    //Define a new process used to install youtube-dl
-    installProc = new QProcess();
+    //By default pointers are null
+    installProc = NULL;
 
     //By default we consider youtubeDL to be not installed
     this->YoutubeDlInstalled = false;
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Instanciate the youtube feed fetcher
     feedFetcher = new FeedFetcher(settings, clientId, clientSecret);
-    connect(feedFetcher, SIGNAL(doneFetching()), this, SLOT(updateUIRequest()));
+    connect(feedFetcher, SIGNAL(doneFetching()), this, SLOT(doneUpdatingRSSFeed()));
 
     //Creates the contextual menu of the tray icon
     trayIcon = NULL;
@@ -161,8 +161,6 @@ MainWindow::~MainWindow()
         delete pauseAction;
     if(quitAction)
         delete quitAction;
-    if(installProc)
-        delete installProc;
 
     settings->sync();
     delete settings;
@@ -318,19 +316,8 @@ void MainWindow::downloadVideo(){
 
 void MainWindow::installYoutubeDl()
 {
-    qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
-
-    connect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadYoutubeDlIfNecessary(QNetworkReply*)));
-}
-
-
-void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
-{
-    disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadYoutubeDlIfNecessary(QNetworkReply*)));
-
-    QString installedVersion, currentLastVersion;
+    QString installedVersion, currentLastVersion(CURRENT_VERSION);
     installedVersion = settings->value("yt-dl_version", "").toString();
-    currentLastVersion = QString(pReply->readAll());
 
     if(QString::compare(installedVersion, currentLastVersion, Qt::CaseInsensitive))
     {
@@ -356,6 +343,7 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
         QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
         if(installFolder.exists())
             installFolder.remove();
+        installProc = new QProcess();
         installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
         connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
 #else
@@ -369,57 +357,19 @@ void MainWindow::downloadYoutubeDlIfNecessary(QNetworkReply* pReply)
     }
 }
 
-
-void MainWindow::downloadFinished(QNetworkReply* pReply)
-{
-    QByteArray m_DownloadedData;
-
-    m_DownloadedData = pReply->readAll();
-    pReply->deleteLater();
-
-    // If the response is smaller the 10KB something is not right
-    // ceratinly an AWS redirection
-    if( m_DownloadedData.size() < 10000 )
-    {
-
-        QRegExp rx(".*a href=\"(.*)\"");
-        QStringList list = rx.capturedTexts();
-
-        qDebug() << "initial : " << m_DownloadedData;
-        qDebug() << "extract : " << list.at(1);
-    }
-    else
-    {
-        QFile file(pathToFiles->toLatin1()+"/"+youtubeDlFileName);
-
-        if(file.exists())
-            file.remove();
-        file.open(QIODevice::WriteOnly);
-        file.write(m_DownloadedData);
-        file.close();
-
-        disconnect(&qnam, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
-        //Write down the version we downloaded
-        qnam.get(QNetworkRequest(QUrl("http://yt-dl.org/latest/version")));
-    }
-}
-
-
-void MainWindow::writeDownVersion(QNetworkReply* pReply)
-{
-    settings->setValue("yt-dl_version", QString(pReply->readAll()));
-}
-
-
 void MainWindow::doneInstallingYoutubeDl(){
 
     this->YoutubeDlInstalled = true;
 
 #ifdef  Q_OS_LINUX
+    if(installProc)
+        delete installProc;
+
     QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
     file.remove();
 #endif
 
+    settings->setValue("yt-dl_version", CURRENT_VERSION_YOUTUBE_DL);
     updateRSSFeed();
 }
 
@@ -512,11 +462,15 @@ void MainWindow::showWindow()
 
 void MainWindow::updateRSSFeed()
 {
+    statusBarText.setText("Fetching");
     feedFetcher->fetch();
-
-    statusBarText.setText("Last fetched at : " + QTime::currentTime().toString("H:m:s a"));
 }
 
+void MainWindow::doneUpdatingRSSFeed()
+{
+    statusBarText.setText("Last fetched at : " + QTime::currentTime().toString("H:m:s a"));
+    updateUIRequest();
+}
 
 void MainWindow::on_actionQuite_triggered()
 {

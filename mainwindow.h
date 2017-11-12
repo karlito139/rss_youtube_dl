@@ -90,10 +90,8 @@ private slots:
 
     void on_actionQuite_triggered();
 
-    void downloadFinished(QNetworkReply* pReply);
-    void writeDownVersion(QNetworkReply* pReply);
-    void downloadYoutubeDlIfNecessary(QNetworkReply* pReply);
     void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
+    void doneUpdatingRSSFeed();
 
     void on_helpButton_clicked();
     void on_loginButton_clicked();
