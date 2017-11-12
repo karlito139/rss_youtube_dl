@@ -114,7 +114,6 @@ private:
     void createTrayIcon();
     bool downloadEnable;
     bool YoutubeDlInstalled;
-    bool starting;
     FeedFetcher *feedFetcher;
     About *fistAboutWindow;
 

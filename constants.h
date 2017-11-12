@@ -2,5 +2,6 @@
 #define CONSTANTS_H
 
 #define CURRENT_VERSION    "1.5.0"
+#define CURRENT_VERSION_YOUTUBE_DL  "2017.10.07"
 
 #endif // CONSTANTS_H

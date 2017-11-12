@@ -22,8 +22,8 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /**
- * @brief MainWindow::MainWindow
- * @param parent
+ * @brief Constructor of the main window
+ * @param parent parent widget
  */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,11 +31,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // By default we allow downloading of videos
     this->downloadEnable = true;
-    this->starting = true;
 
+    // Add a label to the statusbar (will be used to display the last time we fetched the feed)
     ui->statusBar->addPermanentWidget(&statusBarText);
 
+    //Open the saved settings
     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "localtube", "config");
     QFileInfo setting_file(settings->fileName());
     pathToFiles = new QString(setting_file.path());
@@ -45,21 +47,24 @@ MainWindow::MainWindow(QWidget *parent) :
     if(!resourceFolder.exists())
         resourceFolder.mkpath(".");
 
-
+    //Save the icon of the app (to be used to display in notifications latter)
     QImage *img = new QImage(":/images/icon.png");
     img->save(pathToFiles->toLatin1()+"/icon.png");
 
-    ui->downloadDestination->setText(settings->value("destination", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)+QDir::separator()).toString());
+    //Set the download location to the last one saved or the system default one
+    QString systemDefaultDownloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)+QDir::separator();
+    QString downloadLocation = settings->value("destination", systemDefaultDownloadLocation).toString();
+    ui->downloadDestination->setText(downloadLocation);
 
+    //Build the array containing the list of videos
     modelListVideo = new QStandardItemModel(0, 0, this);
     modelListVideo->setColumnCount(3);
     modelListVideo->setHorizontalHeaderItem(0, new QStandardItem(QString("Title")));
     modelListVideo->setHorizontalHeaderItem(1, new QStandardItem(QString("Code")));
     modelListVideo->setHorizontalHeaderItem(2, new QStandardItem(QString("Done")));
-
-    listVideos = NULL;
     ui->widgetListVideos->setModel(modelListVideo);
 
+    //Define the structure and rule of the array displaying the videos
     QHeaderView *headerView = new QHeaderView(Qt::Horizontal, ui->widgetListVideos);
     ui->widgetListVideos->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -67,37 +72,38 @@ MainWindow::MainWindow(QWidget *parent) :
     headerView->resizeSection(1, 150);
     headerView->resizeSection(2, 50);
 
+    //By default the list of videos is empty
+    listVideos = NULL;
+
+    //Define a new process used to install youtube-dl
+    installProc = new QProcess();
+
+    //By default we consider youtubeDL to be not installed
     this->YoutubeDlInstalled = false;
+    //So we try to install it
     installYoutubeDl();
 
     //Get the client id keys that is in the apiKey.txt file
     QFile clientIdFile(":/clientId.txt");
     clientIdFile.open(QIODevice::ReadOnly);
-
     QTextStream clientIdStream(&clientIdFile);
     clientId = clientIdStream.readAll();
     clientIdFile.close();
-
     clientId.remove(QRegExp("[\\n\\t\\r]"));
-
-
 
     //Get the client secret keys that is in the apiKey.txt file
     QFile clientSecretFile(":/clientSecret.txt");
     clientSecretFile.open(QIODevice::ReadOnly);
-
     QTextStream clientSecretStream(&clientSecretFile);
     clientSecret = clientSecretStream.readAll();
     clientSecretFile.close();
-
     clientSecret.remove(QRegExp("[\\n\\t\\r]"));
 
-
-
+    //Instanciate the youtube feed fetcher
     feedFetcher = new FeedFetcher(settings, clientId, clientSecret);
     connect(feedFetcher, SIGNAL(doneFetching()), this, SLOT(updateUIRequest()));
 
-
+    //Creates the contextual menu of the tray icon
     trayIcon = NULL;
     trayIconMenu = NULL;
     showAction = NULL;
@@ -105,38 +111,41 @@ MainWindow::MainWindow(QWidget *parent) :
     quitAction = NULL;
     createTrayIcon();
 
+    //Every 15 minutes we fetch the videos feeds
     timer = new QTimer();
     timer->setInterval(15*60*1000); //fetch new video every 15 minutes
     timer->start();
 
     connect(timer, SIGNAL(timeout()), this, SLOT(updateRSSFeed()));
 
-
-    installProc = new QProcess();
-
-
+    //Default to null the contextual menu actions (will be initialised latter)
     actionReset = NULL;
     actionDownloaded = NULL;
 
+    //We define our own context menu when right clicking in the video list (defined in on_widgetListVideos_customContextMenuRequested)
     ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //Hide as soon as possible the app once created
-    QTimer::singleShot(100, this, SLOT(close()));
+    //QTimer::singleShot(100, this, SLOT(close()));
 
+    //Timer used to buffer UI update requests. When it triggers we refresh the interface
     connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));
 
+    //Initialise the about window
     fistAboutWindow = new About();
     connect(fistAboutWindow, SIGNAL(lastestVersionFetched(QString)), this, SLOT(processVersionNumber(QString)));
     fistAboutWindow->checkVersion();
 
+    //Initialise the tester to trigger a recheck when we get back online
     youtubeTester = new NetworkIsOnline(QUrl("https://www.youtube.com/"));
     connect(youtubeTester, SIGNAL(isNowOnline()), this, SLOT(updateRSSFeed()));
 
+    //Finaly update the UI with all those modifications
     updateUI();
 }
 
 /**
- * @brief MainWindow::~MainWindow
+ * @brief Destructor of the mainwindow
  */
 MainWindow::~MainWindow()
 {
@@ -152,8 +161,8 @@ MainWindow::~MainWindow()
         delete pauseAction;
     if(quitAction)
         delete quitAction;
-
-    delete installProc;
+    if(installProc)
+        delete installProc;
 
     settings->sync();
     delete settings;
