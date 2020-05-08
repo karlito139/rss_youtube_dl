@@ -194,11 +194,11 @@ void MainWindow::processVersionNumber(QString versionNumber)
 
         if(isUnity) //only use this in unity
         {
-            system("notify-send 'A new version of localtube if avalable' 'at http://localtube.org' -i " + pathToFiles->toLatin1() + "/icon.png -t 5000");
+            system("notify-send 'A new version of localtube is avalable' 'at http://localtube.org' -i " + pathToFiles->toLatin1() + "/icon.png -t 5000");
         }
         else
         {
-            trayIcon->showMessage("A new version of localtube if avalable", "at http://localtube.org", QSystemTrayIcon::Information, 5000);
+            trayIcon->showMessage("A new version of localtube is avalable", "at http://localtube.org", QSystemTrayIcon::Information, 5000);
         }
     }
 }
