@@ -22,7 +22,7 @@ About::~About()
 void About::checkVersion()
 {
     QString url;
-    url = "http://localtube.org/latestVersion.json";
+    url = "https://localtube.gitlab.io/website/latestVersion.json";
 
     QNetworkRequest request(url);
     manager.get(request);

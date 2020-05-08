@@ -529,14 +529,6 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
     menu->popup(ui->widgetListVideos->viewport()->mapToGlobal(pos));
 }
 
-
-
-void MainWindow::on_helpButton_clicked()
-{
-    QDesktopServices::openUrl(QUrl("http://www.youtube.com/account_advanced"));
-}
-
-
 void MainWindow::on_loginButton_clicked()
 {
     QString url;

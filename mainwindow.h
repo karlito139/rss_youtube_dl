@@ -93,7 +93,6 @@ private slots:
     void on_widgetListVideos_customContextMenuRequested(const QPoint &pos);
     void doneUpdatingRSSFeed();
 
-    void on_helpButton_clicked();
     void on_loginButton_clicked();
 
     void updateUI();
