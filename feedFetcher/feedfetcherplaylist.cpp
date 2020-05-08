@@ -60,7 +60,7 @@ void FeedFetcherPlaylist::getListOfVideos()
 
     url += "?part=contentDetails";
     url += "&playlistId=" + playlistId;
-    url += "&maxResults=5";
+    url += "&maxResults=3";
     url += "&access_token=" + currentToken;
 
     //qDebug() << url;
