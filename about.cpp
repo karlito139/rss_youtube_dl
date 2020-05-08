@@ -10,8 +10,6 @@ About::About(QWidget *parent) :
     ui->newVersionLabel->hide();
 
     ui->version->setText(CURRENT_VERSION);
-
-    checkVersion();
 }
 
 About::~About()
