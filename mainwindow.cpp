@@ -362,9 +362,6 @@ void MainWindow::doneInstallingYoutubeDl(){
     this->YoutubeDlInstalled = true;
 
 #ifdef  Q_OS_LINUX
-    if(installProc)
-        delete installProc;
-
     QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
     file.remove();
 #endif
