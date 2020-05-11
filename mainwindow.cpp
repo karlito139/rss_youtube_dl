@@ -222,7 +222,7 @@ void MainWindow::updateUI()
     uiUpdateTimer.stop();
 
     listVideos = feedFetcher->getVideos();
-    qSort(listVideos->begin(), listVideos->end(), Video::lessThan);
+    std::sort(listVideos->begin(), listVideos->end(), Video::lessThan);
 
     for(int i=0; i<listVideos->count(); i++)
         connect(listVideos->at(i), SIGNAL(videoStatusChanged()), this, SLOT(updateUIRequest()), Qt::UniqueConnection );
@@ -295,7 +295,7 @@ void MainWindow::downloadVideo(){
     if( (this->downloadEnable) && (this->YoutubeDlInstalled) ){
 
         QList<Video *> *listvid = feedFetcher->getVideos();
-        qSort(listvid->begin(), listvid->end(), Video::lessThan);
+        std::sort(listvid->begin(), listvid->end(), Video::lessThan);
 
         for(int i=0; i<listvid->count(); i++){
 
