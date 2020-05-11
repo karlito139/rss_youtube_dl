@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=localtube
-AppVersion=1.4
+AppVersion=1.6
 DefaultDirName={pf}\localtube
 DefaultGroupName=localtube
 UninstallDisplayIcon={app}\localtube.exe
@@ -14,17 +14,15 @@ OutputBaseFilename=localtube_installer
 
 [Files]
 Source: "release_windows\localtube.exe"; DestDir: "{app}"
-Source: "release_windows\libeay32.dll"; DestDir: "{app}"
+Source: "release_windows\libcrypto-1_1.dll"; DestDir: "{app}"
 Source: "release_windows\libgcc_s_dw2-1.dll"; DestDir: "{app}"
+Source: "release_windows\libssl-1_1.dll"; DestDir: "{app}"
 Source: "release_windows\libstdc++-6.dll"; DestDir: "{app}"
 Source: "release_windows\libwinpthread-1.dll"; DestDir: "{app}"
-Source: "release_windows\msvcr120.dll"; DestDir: "{app}"
 Source: "release_windows\Qt5Core.dll"; DestDir: "{app}"
 Source: "release_windows\Qt5Gui.dll"; DestDir: "{app}"
 Source: "release_windows\Qt5Network.dll"; DestDir: "{app}"
-Source: "release_windows\Qt5Svg.dll"; DestDir: "{app}"
 Source: "release_windows\Qt5Widgets.dll"; DestDir: "{app}"
-Source: "release_windows\ssleay32.dll"; DestDir: "{app}"
 Source: "release_windows\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 
 [Icons]
