@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Save the icon of the app (to be used to display in notifications latter)
     QImage *img = new QImage(":/images/icon.png");
-    img->save(pathToFiles->toLatin1()+"/icon.png");
+    img->save(*pathToFiles+"/icon.png");
 
     //Set the download location to the last one saved or the system default one
     QString systemDefaultDownloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)+QDir::separator();
@@ -194,7 +194,7 @@ void MainWindow::processVersionNumber(QString versionNumber)
 
         if(isUnity) //only use this in unity
         {
-            system("notify-send 'A new version of localtube is avalable' 'at http://localtube.org' -i " + pathToFiles->toLatin1() + "/icon.png -t 5000");
+            system("notify-send 'A new version of localtube is avalable' 'at http://localtube.org' -i " + pathToFiles->toUtf8() + "/icon.png -t 5000");
         }
         else
         {
@@ -324,10 +324,10 @@ void MainWindow::installYoutubeDl()
 
 #ifdef  Q_OS_LINUX
         QFile srcFile(":/youtube-dl-linux");
-        QFile dstFile(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+        QFile dstFile(*pathToFiles+"/youtube-dl.tar.gz");
 #else
         QFile srcFile(":/youtube-dl-windows");
-        QFile dstFile(pathToFiles->toLatin1()+"/youtube-dl.exe");
+        QFile dstFile(*pathToFiles+"/youtube-dl.exe");
 #endif
 
         srcFile.open(QIODevice::ReadOnly);
@@ -340,11 +340,11 @@ void MainWindow::installYoutubeDl()
 
 
 #ifdef  Q_OS_LINUX
-        QFile installFolder(pathToFiles->toLatin1()+"/youtube-dl");
+        QFile installFolder(*pathToFiles+"/youtube-dl");
         if(installFolder.exists())
             installFolder.remove();
         installProc = new QProcess();
-        installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+pathToFiles->toLatin1()+"/ -xvf "+pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+        installProc->start("/bin/bash", QStringList() << "-c" << "tar -C "+*pathToFiles+"/ -xvf "+*pathToFiles+"/youtube-dl.tar.gz");
         connect(installProc, SIGNAL(finished(int)), this, SLOT(doneInstallingYoutubeDl()));
 #else
         doneInstallingYoutubeDl();
@@ -362,7 +362,7 @@ void MainWindow::doneInstallingYoutubeDl(){
     this->YoutubeDlInstalled = true;
 
 #ifdef  Q_OS_LINUX
-    QFile file(pathToFiles->toLatin1()+"/youtube-dl.tar.gz");
+    QFile file(*pathToFiles+"/youtube-dl.tar.gz");
     file.remove();
 #endif
 
@@ -387,7 +387,7 @@ void MainWindow::videoDoneDownloading(Video *vid){
 
     if(isUnity) //only use this in unity
     {
-        system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toLatin1()+"/icon.png -t 5000");
+        system("notify-send 'Video downloaded' '"+vid->getTitle().toUtf8()+"' -i "+pathToFiles->toUtf8()+"/icon.png -t 5000");
     }
     else
     {

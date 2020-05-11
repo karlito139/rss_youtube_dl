@@ -132,9 +132,9 @@ bool Video::download(){
         //qDebug() << "Downloading with args : " << arguments;
 
 #ifdef  Q_OS_LINUX
-        proc->start(pathToFiles->toLatin1()+"/youtube-dl/youtube-dl", arguments);
+        proc->start(*pathToFiles+"/youtube-dl/youtube-dl", arguments);
 #else
-        proc->start(pathToFiles->toLatin1()+"/youtube-dl.exe", arguments);
+        proc->start(*pathToFiles+"/youtube-dl.exe", arguments);
 #endif
 
         this->status = videoDownloading;
