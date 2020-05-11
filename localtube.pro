@@ -46,7 +46,7 @@ RESOURCES += \
     ressource.qrc
 
 win32{
-    LIBS += -LC:/OpenSSL-Win32/lib -lubsec
+    LIBS += -LC:/OpenSSL-Win32/lib
     INCLUDEPATH += C:/OpenSSL-Win32/include
 }
 
