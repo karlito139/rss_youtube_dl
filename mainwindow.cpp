@@ -78,11 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //By default pointers are null
     installProc = NULL;
 
-    //By default we consider youtubeDL to be not installed
-    this->YoutubeDlInstalled = false;
-    //So we try to install it
-    installYoutubeDl();
-
     //Get the client id keys that is in the apiKey.txt file
     QFile clientIdFile(":/clientId.txt");
     clientIdFile.open(QIODevice::ReadOnly);
@@ -139,6 +134,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //Initialise the tester to trigger a recheck when we get back online
     youtubeTester = new NetworkIsOnline(QUrl("https://www.youtube.com/"));
     connect(youtubeTester, SIGNAL(isNowOnline()), this, SLOT(updateRSSFeed()));
+
+    //By default we consider youtubeDL to be not installed
+    this->YoutubeDlInstalled = false;
+    //So we try to install it
+    installYoutubeDl();
 
     //Finaly update the UI with all those modifications
     updateUI();
