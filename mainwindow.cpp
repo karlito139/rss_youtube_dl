@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->widgetListVideos->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //Hide as soon as possible the app once created
-    //QTimer::singleShot(100, this, SLOT(close()));
+    QTimer::singleShot(100, this, SLOT(close()));
 
     //Timer used to buffer UI update requests. When it triggers we refresh the interface
     connect(&uiUpdateTimer, SIGNAL(timeout()), this, SLOT(updateUI()));

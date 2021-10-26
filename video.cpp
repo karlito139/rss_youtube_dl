@@ -126,13 +126,14 @@ bool Video::download(){
 #else
         arguments << "-f" << "best";
 #endif
-        arguments << "-o" << settings->value("destination", "").toString() + "%(title)s.%(ext)s";
+        arguments << "-o" << settings->value("destination", "").toString() + "[%(upload_date)s]%(channel)s_%(title)s.%(ext)s";
+        arguments << "-f" << "bestvideo+bestaudio";
         arguments << this->code;
 
         //qDebug() << "Downloading with args : " << arguments;
 
 #ifdef  Q_OS_LINUX
-        proc->start(*pathToFiles+"/youtube-dl/youtube-dl", arguments);
+        proc->start(*pathToFiles+"/yt-dlp/yt-dlp", arguments);
 #else
         proc->start(*pathToFiles+"/youtube-dl.exe", arguments);
 #endif

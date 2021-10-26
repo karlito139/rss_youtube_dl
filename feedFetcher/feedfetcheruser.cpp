@@ -138,6 +138,13 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
             }
         }
     }
+    else
+    {
+        QString data = (QString)reply->readAll();
+
+        qDebug() << "Error while fetching user's data";
+        qDebug() << data;
+    }
 }
 
 
