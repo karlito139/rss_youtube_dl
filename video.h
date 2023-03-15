@@ -55,9 +55,9 @@ public:
     explicit Video(QString title, QString link, QSettings *settings, QObject *parent = 0);
     explicit Video(QString id, QSettings *settings, QObject *parent = 0);
     ~Video();
-    QString getTitle(){return title;}
-    QString getLink(){return link;}
-    QString getCode(){return code;}
+    QString getTitle()const{return title;}
+    QString getLink()const{return link;}
+    QString getCode()const{return code;}
     QDateTime getReleaseDate()const{return releaseDate;}
     bool isVideoInitialised(){return haveBeenInitialised;}
     bool isVideoInitialising(){return isBeingInitialised;}

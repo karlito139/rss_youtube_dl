@@ -11,7 +11,7 @@
         <file>clientSecret.txt</file>
         <file alias="error">images/error.png</file>
         <file alias="error_small">images/error_small.png</file>
-        <file alias="youtube-dl-windows">resources/youtube-dl.exe</file>
         <file alias="youtube-dl-linux">resources/yt-dlp.tar.gz</file>
+        <file alias="youtube-dl-windows">resources/yt-dlp.exe</file>
     </qresource>
 </RCC>

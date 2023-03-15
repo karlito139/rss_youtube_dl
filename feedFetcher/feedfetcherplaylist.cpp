@@ -50,7 +50,7 @@ QList<Video *> *FeedFetcherPlaylist::getVideos()
 }
 
 
-void FeedFetcherPlaylist::getListOfVideos()
+void FeedFetcherPlaylist::getListOfVideos(QString nextPageTocken)
 {
     QString url;
     //static int count = 0;
@@ -60,7 +60,11 @@ void FeedFetcherPlaylist::getListOfVideos()
 
     url += "?part=contentDetails";
     url += "&playlistId=" + playlistId;
-    url += "&maxResults=3";
+    url += "&maxResults=50";
+
+    if( nextPageTocken != NULL )
+        url += "&pageToken=" + nextPageTocken;
+
     url += "&access_token=" + currentToken;
 
     //qDebug() << url;
@@ -91,6 +95,12 @@ void FeedFetcherPlaylist::decodeListOfVideos(QNetworkReply* reply)
 
         QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
         QJsonObject jsonResponseObj = jsonResponse.object();
+
+        // Ask for the next page if needed
+        QString nextPageTocken = jsonResponseObj.value("nextPageToken").toString();
+
+        if( nextPageTocken.isEmpty() == false )
+            getListOfVideos( nextPageTocken );
 
         QJsonArray videoList = jsonResponseObj.value("items").toArray();
         for(int i=0; i<videoList.count(); i++)

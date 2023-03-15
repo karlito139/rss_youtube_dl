@@ -50,7 +50,7 @@ signals:
     void doneFetching();
 
 private slots:
-    void getListOfVideos();
+    void getListOfVideos(QString nextPageTocken = NULL);
     void decodeListOfVideos(QNetworkReply* reply);
 
 private:

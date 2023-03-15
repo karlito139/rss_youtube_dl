@@ -97,7 +97,10 @@ bool Video::download(){
     //If the storage is not valid, we don't download
     QStorageInfo storage(destination);
     if (storage.isValid() == false)
+    {
+        qDebug() << "Storage destination is invalid : " << destination;
         return false;
+    }
 
     float DiskLimit = settings->value("disk_limit", 0).toFloat();   //In Go
     DiskLimit = DiskLimit * 1000; //In Mo
@@ -126,7 +129,7 @@ bool Video::download(){
 #else
         arguments << "-f" << "best";
 #endif
-        arguments << "-o" << settings->value("destination", "").toString() + "[%(upload_date)s]%(channel)s_%(title)s.%(ext)s";
+        arguments << "-o" << settings->value("destination", "").toString() + "%(channel)s_[%(upload_date)s]%(title)s.%(ext)s";
         arguments << "-f" << "bestvideo+bestaudio";
         arguments << this->code;
 
