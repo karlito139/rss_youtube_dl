@@ -19,6 +19,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <QCommandLineParser>
 
 
 QString *pathToFiles;
@@ -28,9 +29,34 @@ QString *pathToFiles;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    QApplication::setApplicationName("Localtube");
+    QApplication::setApplicationVersion(CURRENT_VERSION);
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Download your youtube subscription feed");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    //parser.addPositionalArgument("source", QCoreApplication::translate("main", "Source file to copy."));
+    //parser.addPositionalArgument("destination", QCoreApplication::translate("main", "Destination directory."));
+
+    QCommandLineOption configFileOption(QStringList() << "c" << "Config file",
+            QCoreApplication::translate("main", "Config file to use"),
+            QCoreApplication::translate("main", "File"));
+    parser.addOption(configFileOption);
+
+    parser.process(a);
+
+    const QStringList args = parser.positionalArguments();
+    QString configFile = parser.value(configFileOption);
+
+    MainWindow w(configFile);
     w.show();
 
     return a.exec();
+
+
+
+
 }
 

@@ -19,13 +19,14 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QNetworkReply>
+#include <QOAuth2AuthorizationCodeFlow>
 
 /**
  * @brief Constructor of the main window
  * @param parent parent widget
  */
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString configFile, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -38,7 +39,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(&statusBarText);
 
     //Open the saved settings
-    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "localtube", "config");
+    if(configFile.isEmpty())
+    {
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "localtube", "config");
+    }
+    else
+    {
+        settings = new QSettings(configFile, QSettings::IniFormat);
+    }
+
     QFileInfo setting_file(settings->fileName());
     pathToFiles = new QString(setting_file.path());
 
@@ -528,7 +537,7 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
 
 void MainWindow::on_loginButton_clicked()
 {
-    QString url;
+    /*QString url;
 
     url = "https://accounts.google.com/o/oauth2/auth";
     url += "?client_id="+clientId;
@@ -537,7 +546,11 @@ void MainWindow::on_loginButton_clicked()
     url += "&response_type=code";
     url += "&access_type=offline";
 
-    QDesktopServices::openUrl( url );
+    QDesktopServices::openUrl( url );*/
+
+    auto google = new QOAuth2AuthorizationCodeFlow;
+
+
 }
 
 
