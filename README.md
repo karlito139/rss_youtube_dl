@@ -24,3 +24,8 @@ Releasing on linux
 ==================
 Simply run the script "release_linux.sh" and read what is being asked if there is an error.
 
+In order to run the app, you might have to run:
+```
+sudo apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev 
+```
+

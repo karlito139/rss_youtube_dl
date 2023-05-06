@@ -215,6 +215,11 @@ void Video::decodeVideoInfo(QJsonObject reply)
     emit videoStatusChanged();
 }
 
+bool Video::operator<(const Video &i1) const
+{
+    return this->lessThan(this, &i1);
+}
+
 bool Video::lessThan(const Video *v1, const Video *v2)
 {
     if(v1->getReleaseDate() > v2->getReleaseDate())

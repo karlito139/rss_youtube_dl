@@ -20,7 +20,6 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QNetworkReply>
-#include <QOAuth2AuthorizationCodeFlow>
 
 /**
  * @brief Constructor of the main window
@@ -93,7 +92,8 @@ MainWindow::MainWindow(QString configFile, QWidget *parent) :
     QTextStream clientIdStream(&clientIdFile);
     clientId = clientIdStream.readAll();
     clientIdFile.close();
-    clientId.remove(QRegExp("[\\n\\t\\r]"));
+    static auto cleaningRegex = QRegularExpression("[\\n\\t\\r]");
+    clientId.remove(cleaningRegex);
 
     //Get the client secret keys that is in the apiKey.txt file
     QFile clientSecretFile(":/clientSecret.txt");
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QString configFile, QWidget *parent) :
     QTextStream clientSecretStream(&clientSecretFile);
     clientSecret = clientSecretStream.readAll();
     clientSecretFile.close();
-    clientSecret.remove(QRegExp("[\\n\\t\\r]"));
+    clientSecret.remove(cleaningRegex);
 
     //Instanciate the youtube feed fetcher
     feedFetcher = new FeedFetcher(settings, clientId, clientSecret);
@@ -271,7 +271,7 @@ void MainWindow::updateUI()
             break;
         }
 
-        itemIcon.scaled(QSize(5, 5), Qt::KeepAspectRatio);
+        itemIcon = itemIcon.scaled(QSize(5, 5), Qt::KeepAspectRatio);
 
         item->setData(QVariant(QPixmap::fromImage(itemIcon)), Qt::DecorationRole);
         modelListVideo->setItem(i, 2, item);
@@ -548,7 +548,8 @@ void MainWindow::on_loginButton_clicked()
 
     QDesktopServices::openUrl( url );*/
 
-    auto google = new QOAuth2AuthorizationCodeFlow;
+    //auto google = new QOAuth2AuthorizationCodeFlow;
+    //auto google = new QOA
 
 
 }

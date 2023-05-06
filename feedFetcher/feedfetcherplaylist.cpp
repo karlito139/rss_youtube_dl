@@ -62,7 +62,7 @@ void FeedFetcherPlaylist::getListOfVideos(QString nextPageTocken)
     url += "&playlistId=" + playlistId;
     url += "&maxResults=50";
 
-    if( nextPageTocken != NULL )
+    if( !nextPageTocken.isEmpty() )
         url += "&pageToken=" + nextPageTocken;
 
     url += "&access_token=" + currentToken;
