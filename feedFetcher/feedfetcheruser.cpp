@@ -145,6 +145,8 @@ void FeedFetcherUser::decodeSubscribedChannelsList(QNetworkReply* reply)
         qDebug() << "Error while fetching user's data";
         qDebug() << data;
     }
+
+    reply->deleteLater();
 }
 
 
@@ -264,6 +266,8 @@ void FeedFetcherUser::decodeVideoInfo(QNetworkReply* reply)
                     listVideos->at(i)->decodeVideoInfo(video.value("snippet").toObject());
         }
     }
+
+    reply->deleteLater();
 }
 
 

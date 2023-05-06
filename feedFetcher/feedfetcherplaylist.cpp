@@ -126,6 +126,7 @@ void FeedFetcherPlaylist::decodeListOfVideos(QNetworkReply* reply)
         }
     }
 
+    reply->deleteLater();
     emit doneFetching();
 }
 

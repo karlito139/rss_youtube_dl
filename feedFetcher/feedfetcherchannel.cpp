@@ -124,6 +124,8 @@ void FeedFetcherChannel::decondePlaylistId(QNetworkReply* reply)
 
         savePlaylistsInfos();
     }
+
+    reply->deleteLater();
 }
 
 void FeedFetcherChannel::addPlayList(QString playlistId)

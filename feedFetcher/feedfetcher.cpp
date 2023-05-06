@@ -81,6 +81,8 @@ void FeedFetcher::decodeNewToken(QNetworkReply* reply)
 
         getUserVideos();
     }
+
+    reply->deleteLater();
 }
 
 void FeedFetcher::getUserVideos()
