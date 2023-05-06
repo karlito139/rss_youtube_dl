@@ -20,6 +20,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QNetworkReply>
+#include <QOAuthHttpServerReplyHandler>
 
 /**
  * @brief Constructor of the main window
@@ -270,8 +271,6 @@ void MainWindow::updateUI()
             itemIcon.load(":error_small");
             break;
         }
-
-        itemIcon = itemIcon.scaled(QSize(5, 5), Qt::KeepAspectRatio);
 
         item->setData(QVariant(QPixmap::fromImage(itemIcon)), Qt::DecorationRole);
         modelListVideo->setItem(i, 2, item);
@@ -548,52 +547,28 @@ void MainWindow::on_loginButton_clicked()
 
     QDesktopServices::openUrl( url );*/
 
-    //auto google = new QOAuth2AuthorizationCodeFlow;
-    //auto google = new QOA
+    google = new QOAuth2AuthorizationCodeFlow(this);
+    google->setScope("https://www.googleapis.com/auth/youtube.readonly");
 
+    connect(google, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser, &QDesktopServices::openUrl);
 
-}
+    google->setAuthorizationUrl(QUrl("https://accounts.google.com/o/oauth2/auth"));
+    google->setClientIdentifier(clientId);
+    google->setAccessTokenUrl(QUrl("https://oauth2.googleapis.com/token"));
+    google->setClientIdentifierSharedKey(clientSecret);
 
+    auto replyHandler = new QOAuthHttpServerReplyHandler(7385, this);
+    google->setReplyHandler(replyHandler);
 
-void MainWindow::on_authCode_textChanged()
-{
-    QString url = "https://www.googleapis.com/oauth2/v4/token";
-    QUrlQuery postData;
-    postData.addQueryItem("code", ui->authCode->text());
-    postData.addQueryItem("client_id", clientId);
-    postData.addQueryItem("client_secret", clientSecret);
-    postData.addQueryItem("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
-    postData.addQueryItem("grant_type", "authorization_code");
+    google->grant();
 
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    networkManager.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    connect(this->google, &QOAuth2AuthorizationCodeFlow::granted, [=](){
+        const QString token = this->google->token();
+        settings->setValue("refreshToken", token);
+        settings->sync();
 
-    connect(&networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(decodeAuthToken(QNetworkReply*)));
-}
-
-
-void MainWindow::decodeAuthToken(QNetworkReply* reply)
-{
-    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    if (statusCode >= 200 && statusCode < 300) {
-        QString data = (QString)reply->readAll();
-
-        QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8());
-        QJsonObject jsonResponseObj = jsonResponse.object();
-
-        QString token = jsonResponseObj.value("access_token").toString();
-        QString refreshToken = jsonResponseObj.value("refresh_token").toString();
-
-        if(!refreshToken.isEmpty())
-        {
-            settings->setValue("refreshToken", refreshToken);
-            settings->sync();
-
-            updateRSSFeed();
-        }
-    }
+        updateRSSFeed();
+    });
 }
 
 

@@ -38,6 +38,7 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QAction>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QOAuth2AuthorizationCodeFlow>
 #include <QItemSelectionModel>
 #include <QDesktopServices>
 #include <QUrlQuery>
@@ -96,8 +97,6 @@ private slots:
     void on_loginButton_clicked();
 
     void updateUI();
-    void decodeAuthToken(QNetworkReply* reply);
-    void on_authCode_textChanged();
 
     void on_actionAbout_triggered();
     void on_actionSettings_triggered();
@@ -129,7 +128,6 @@ private:
     QAction *quitAction;
     QLabel statusBarText;
 
-    QNetworkAccessManager qnam;
     QUrl url;
 
     QPixmap buttonImage;
@@ -145,10 +143,10 @@ private:
 
     QTimer uiUpdateTimer;
 
-    QNetworkAccessManager manager;
     QNetworkAccessManager networkManager;
 
     NetworkIsOnline *youtubeTester;
+    QOAuth2AuthorizationCodeFlow *google;
 
 protected:
     void closeEvent(QCloseEvent *event);

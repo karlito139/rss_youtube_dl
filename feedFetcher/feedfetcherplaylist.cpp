@@ -80,7 +80,6 @@ void FeedFetcherPlaylist::getListOfVideos(QString nextPageTocken)
 
 
 
-
 void FeedFetcherPlaylist::decodeListOfVideos(QNetworkReply* reply)
 {
     int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
