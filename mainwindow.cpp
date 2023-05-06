@@ -536,17 +536,6 @@ void MainWindow::on_widgetListVideos_customContextMenuRequested(const QPoint &po
 
 void MainWindow::on_loginButton_clicked()
 {
-    /*QString url;
-
-    url = "https://accounts.google.com/o/oauth2/auth";
-    url += "?client_id="+clientId;
-    url += "&redirect_uri=urn:ietf:wg:oauth:2.0:oob";
-    url += "&scope=https://www.googleapis.com/auth/youtube";
-    url += "&response_type=code";
-    url += "&access_type=offline";
-
-    QDesktopServices::openUrl( url );*/
-
     google = new QOAuth2AuthorizationCodeFlow(this);
     google->setScope("https://www.googleapis.com/auth/youtube.readonly");
 
