@@ -47,6 +47,7 @@ void FeedFetcher::getNewToken()
     postData.addQueryItem("client_id", clientId);
     postData.addQueryItem("client_secret", clientSecret);
     postData.addQueryItem("refresh_token", settings->value("refreshToken", "").toString());
+    postData.addQueryItem("access_type", "offline");
     postData.addQueryItem("grant_type", "refresh_token");
 
     QNetworkRequest request(url);
