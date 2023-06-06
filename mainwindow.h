@@ -40,7 +40,6 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDesktopServices>
 #include <QOAuth2AuthorizationCodeFlow>
 #include <QItemSelectionModel>
-#include <QDesktopServices>
 #include <QUrlQuery>
 #include <QNetworkRequest>
 #include <QLabel>

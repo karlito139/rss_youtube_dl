@@ -18,6 +18,9 @@ along with localtube.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "feedfetcher.h"
+#include <QOAuthHttpServerReplyHandler>
+#include <QDesktopServices>
+
 
 FeedFetcher::FeedFetcher(QSettings *settings, QString clientId, QString clientSecret)
 {
@@ -42,13 +45,13 @@ QList<Video *> *FeedFetcher::getVideos()
 
 void FeedFetcher::getNewToken()
 {
-    QString url = "https://www.googleapis.com/oauth2/v4/token";
+    QString url = "https://oauth2.googleapis.com/token";
     QUrlQuery postData;
     postData.addQueryItem("client_id", clientId);
     postData.addQueryItem("client_secret", clientSecret);
+    postData.addQueryItem("grant_type", "refresh_token");
     postData.addQueryItem("refresh_token", settings->value("refreshToken", "").toString());
     postData.addQueryItem("access_type", "offline");
-    postData.addQueryItem("grant_type", "refresh_token");
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -76,11 +79,22 @@ void FeedFetcher::decodeNewToken(QNetworkReply* reply)
         QString token = jsonResponseObj.value("access_token").toString();
 
         if(!token.isEmpty())
+        {
             currentToken = token;
+            settings->setValue("refreshToken", token);
+            settings->sync();
+        }
 
-        //qDebug() << "new tocken : " << currentToken;
+        //qDebug() << "new token : " << currentToken;
 
         getUserVideos();
+    }
+    else if(statusCode == 400)
+    {
+        // We need to refresh the token
+        QString data = (QString)reply->readAll();
+
+        qDebug() << "new token error : " << data;
     }
 
     reply->deleteLater();
